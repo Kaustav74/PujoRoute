@@ -238,10 +238,10 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleBn: 'কোজাগরী লক্ষ্মীপূজা — ধনধান্য ও সৌভাগ্য আরাধনা',
     subTitle: 'Kojagori Lakshmi Puja (Purnima Worship)',
     targetDate: DateTime(2026, 10, 25),
-    tithiStart: DateTime(2026, 10, 24, 18, 30),
-    tithiEnd: DateTime(2026, 10, 25, 17, 45),
+    tithiStart: DateTime(2026, 10, 25, 11, 55),
+    tithiEnd: DateTime(2026, 10, 26, 9, 41),
     muhuratTitle: 'Nishitha Kaal Lakshmi Aradhana',
-    muhuratWindow: '11:15 PM - 12:05 AM',
+    muhuratWindow: '11:39 PM - 12:28 AM',
   ),
 ];
 
@@ -517,9 +517,9 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dateFormatted: 'Sunday, 25 October 2026',
     tithiName: 'Ashwin Shukla Purnima (Kojagari Purnima)',
     tithiTimings:
-        'Purnima begins: 24 Oct 06:30 PM | Purnima ends: 25 Oct 05:45 PM',
+        'Purnima begins: 25 Oct 11:55 AM | Purnima ends: 26 Oct 09:41 AM',
     auspiciousMoments:
-        'Nishitha Kaal Lakshmi Aradhana: 11:15 PM - 12:05 AM | Purnima Nishitha Puja & Alpana decoration: Nishitha window | Evening Pradosh Puja: 06:30 PM - 09:00 PM',
+        'Nishitha Kaal Lakshmi Aradhana: 11:39 PM - 12:28 AM | Purnima Nishitha Puja & Alpana decoration: Nishitha window | Evening Pradosh Puja: 06:30 PM - 09:00 PM',
     ritualSignificance:
         'Observed on the full moon night following Durga Puja. Bengali courtyards and thresholds are hand-painted with intricate white rice-paste Alpana patterns depicting the sacred footsteps of Goddess Lakshmi entering the household. Families stay awake ("Ko Jago" - who is awake?) awaiting the blessing of prosperity.',
     attireAndBhog:
