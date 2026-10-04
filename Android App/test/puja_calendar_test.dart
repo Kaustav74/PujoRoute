@@ -31,6 +31,18 @@ void main() {
       expect(ashtami.dateFormatted, contains('19 October 2026'));
       expect(dashami.dateFormatted, contains('21 October 2026'));
       expect(lakshmi.dateFormatted, contains('25 October 2026'));
+      expect(getPujaDayById('panchami').dateFormatted, contains('15 October 2026'));
+    });
+
+    test('Tithi windows match Drik Panchang / Vishuddha and Beni Madhab (Kolkata 2026)', () {
+      final ashtami = getPujaDayById('ashtami');
+      expect(ashtami.getTithiTimings(), contains('19 Oct 10:52 AM'));
+      expect(ashtami.getTithiTimings(isTraditionalPara: true), contains('19 Oct 07:50 AM'));
+      expect(getPujaDayById('dashami').getTithiTimings(), contains('21 Oct 02:12 PM'));
+      expect(getPujaDayById('lakshmi_puja').auspiciousMoments, contains('10:56 PM - 11:46 PM'));
+      for (final d in pujaCalendar2026) {
+        expect(d.tithiEnd.isAfter(d.tithiStart), isTrue);
+      }
     });
 
     test('Maha Ashtami has verified Sandhi Puja timing window (Belur Math & Traditional Para)', () {

@@ -63,7 +63,7 @@ class PujaDayTithi {
       case 'mahalaya':
         return DateTime(2026, 10, 10);
       case 'panchami':
-        return DateTime(2026, 10, 16);
+        return DateTime(2026, 10, 15);
       case 'shashthi':
         return DateTime(2026, 10, 17);
       case 'saptami':
@@ -87,9 +87,9 @@ class PujaDayTithi {
       case 'mahalaya':
         return DateTime(2026, 10, 10, 6, 0, 0);
       case 'panchami':
-        return DateTime(2026, 10, 16, 16, 0, 0);
+        return DateTime(2026, 10, 15, 16, 0, 0);
       case 'shashthi':
-        return DateTime(2026, 10, 16, 9, 0, 0);
+        return DateTime(2026, 10, 16, 6, 0, 0);
       case 'saptami':
         return DateTime(2026, 10, 18, 6, 0, 0);
       case 'ashtami':
@@ -99,7 +99,7 @@ class PujaDayTithi {
       case 'nabami':
         return DateTime(2026, 10, 20, 11, 30, 0);
       case 'dashami':
-        return DateTime(2026, 10, 21, 10, 0, 0);
+        return DateTime(2026, 10, 21, 6, 0, 0);
       case 'lakshmi_puja':
         return DateTime(2026, 10, 25, 18, 0, 0);
       default:
@@ -161,8 +161,8 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleBn: 'মহালয়া — আগমনী ও চণ্ডীপাঠ',
     subTitle: 'Mahalaya (Devi Paksha Invocation)',
     targetDate: DateTime(2026, 10, 10),
-    tithiStart: DateTime(2026, 10, 9, 23, 42),
-    tithiEnd: DateTime(2026, 10, 10, 21, 18),
+    tithiStart: DateTime(2026, 10, 9, 21, 35),
+    tithiEnd: DateTime(2026, 10, 10, 21, 19),
     muhuratTitle: 'Dawn Tarpan at Ganga Ghats',
     muhuratWindow: '04:30 AM - 08:30 AM',
   ),
@@ -171,9 +171,9 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleEn: 'Maha Panchami',
     titleBn: 'মহা পঞ্চমী — আনন্দময়ী আগমনী',
     subTitle: 'Maha Panchami (Grand Inaugurations)',
-    targetDate: DateTime(2026, 10, 16),
-    tithiStart: DateTime(2026, 10, 15, 4, 15),
-    tithiEnd: DateTime(2026, 10, 16, 5, 15),
+    targetDate: DateTime(2026, 10, 15),
+    tithiStart: DateTime(2026, 10, 15, 1, 13),
+    tithiEnd: DateTime(2026, 10, 16, 3, 26),
     muhuratTitle: 'VIP & Public Inaugurations',
     muhuratWindow: '04:00 PM onwards',
   ),
@@ -183,10 +183,10 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleBn: 'মহা ষষ্ঠী — বোধন, আমন্ত্রণ ও অধিবাস',
     subTitle: 'Maha Shashthi (Devi Bodhon & Awakening)',
     targetDate: DateTime(2026, 10, 17),
-    tithiStart: DateTime(2026, 10, 16, 5, 15),
-    tithiEnd: DateTime(2026, 10, 17, 6, 45),
+    tithiStart: DateTime(2026, 10, 16, 3, 26),
+    tithiEnd: DateTime(2026, 10, 17, 5, 55),
     muhuratTitle: 'Prabhat Kalparambha',
-    muhuratWindow: '06:45 AM - 08:30 AM',
+    muhuratWindow: '05:33 AM - 08:30 AM (Fri 16 Oct)',
   ),
   PujaTithiDay(
     id: 'saptami',
@@ -194,7 +194,7 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleBn: 'মহা সপ্তমী — নবপত্রিকা স্নান ও প্রাণ প্রতিষ্ঠা',
     subTitle: 'Maha Saptami (Nabapatrika / Kola Bou Snan)',
     targetDate: DateTime(2026, 10, 18),
-    tithiStart: DateTime(2026, 10, 17, 6, 45),
+    tithiStart: DateTime(2026, 10, 17, 5, 55),
     tithiEnd: DateTime(2026, 10, 18, 8, 30),
     muhuratTitle: 'Nabapatrika Pravesh & Snan (Kola Bou river bath)',
     muhuratWindow: '05:45 AM - 07:15 AM',
@@ -217,9 +217,9 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     subTitle: 'Maha Nabami (Sacred Homa & Dhunuchi Naach)',
     targetDate: DateTime(2026, 10, 20),
     tithiStart: DateTime(2026, 10, 19, 10, 52),
-    tithiEnd: DateTime(2026, 10, 20, 12, 45),
-    muhuratTitle: 'Nabami Vihita Puja & Homa',
-    muhuratWindow: '09:00 AM - 11:30 AM',
+    tithiEnd: DateTime(2026, 10, 20, 12, 51),
+    muhuratTitle: 'Nabami Vihita Puja',
+    muhuratWindow: '05:30 AM - 09:27 AM',
   ),
   PujaTithiDay(
     id: 'dashami',
@@ -227,10 +227,10 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleBn: 'বিজয়া দশমী — সিঁদুর খেলা ও বিসর্জন',
     subTitle: 'Bijoya Dashami (Sindoor Khela & Immersion)',
     targetDate: DateTime(2026, 10, 21),
-    tithiStart: DateTime(2026, 10, 20, 12, 45),
-    tithiEnd: DateTime(2026, 10, 21, 14, 30),
+    tithiStart: DateTime(2026, 10, 20, 12, 51),
+    tithiEnd: DateTime(2026, 10, 21, 14, 12),
     muhuratTitle: 'Dashami Vihita Puja & Darpan Bisarjan',
-    muhuratWindow: '08:30 AM - 10:30 AM',
+    muhuratWindow: '05:35 AM - 08:30 AM',
   ),
   PujaTithiDay(
     id: 'lakshmi_puja',
@@ -241,7 +241,7 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     tithiStart: DateTime(2026, 10, 25, 11, 55),
     tithiEnd: DateTime(2026, 10, 26, 9, 41),
     muhuratTitle: 'Nishitha Kaal Lakshmi Aradhana',
-    muhuratWindow: '11:39 PM - 12:28 AM',
+    muhuratWindow: '10:56 PM - 11:46 PM',
   ),
 ];
 
@@ -254,7 +254,7 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dateFormatted: 'Saturday, 10 October 2026',
     tithiName: 'Ashwin Krishna Amavasya ( পিতৃপক্ষ অবসান ও দেবীপক্ষ সূচনা )',
     tithiTimings:
-        'Amavasya begins: 09 Oct 11:42 PM | Amavasya ends: 10 Oct 09:18 PM',
+        'Amavasya begins: 09 Oct 09:35 PM | Amavasya ends: 10 Oct 09:19 PM',
     auspiciousMoments:
         'Dawn Tarpan at Ganga Ghats: 04:30 AM - 08:30 AM | Birendra Krishna Bhadra Mahishasura Mardini Broadcast: 04:00 AM | Chokkhudaan (Eye Painting) at Kumartuli: All Day',
     ritualSignificance:
@@ -286,10 +286,12 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dayName: 'Panchami',
     titleBengali: 'মহা পঞ্চমী — আনন্দময়ী আগমনী',
     titleEnglish: 'Maha Panchami (Grand Inaugurations)',
-    dateFormatted: 'Friday, 16 October 2026',
+    dateFormatted: 'Thursday, 15 October 2026',
     tithiName: 'Shukla Panchami',
     tithiTimings:
-        'Panchami begins: 15 Oct 04:15 AM | Panchami ends: 16 Oct 05:15 AM',
+        'Panchami begins: 15 Oct 01:13 AM | Panchami ends: 16 Oct 03:26 AM',
+    tithiTimingsTraditional:
+        'Panchami begins: 14 Oct 11:51 PM | Panchami ends: 16 Oct 01:43 AM',
     auspiciousMoments:
         'VIP & Public Inaugurations: 04:00 PM onwards | Evening Pratima Unveiling & Pandal Inaugurations: Evening',
     ritualSignificance:
@@ -322,13 +324,13 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dateFormatted: 'Saturday, 17 October 2026',
     tithiName: 'Shukla Shashthi',
     tithiTimings:
-        'Shashthi begins: 16 Oct 05:15 AM | Shashthi ends: 17 Oct 06:45 AM',
+        'Shashthi begins: 16 Oct 03:26 AM | Shashthi ends: 17 Oct 05:55 AM',
     tithiTimingsTraditional:
-        'Shashthi begins: 16 Oct 06:40 PM | Shashthi ends: 17 Oct 05:45 PM',
+        'Shashthi begins: 16 Oct 01:43 AM | Shashthi ends: 17 Oct 03:47 AM',
     auspiciousMoments:
-        'Bodhon, Amantran & Adhibas (Fri evening): Friday evening | Prabhat Kalparambha: 06:45 AM - 08:30 AM | Shashthi Vihita Puja: 09:00 AM - 11:30 AM',
+        'Bodhon, Amantran & Adhibas (Fri evening): Friday evening | Prabhat Kalparambha & Shashthi Vihita Puja (Fri 16 Oct): 05:33 AM - 08:30 AM',
     auspiciousMomentsTraditional:
-        'Para Kalparambha: 06:15 AM - 08:00 AM | Shashthi Vihita Puja: 08:30 AM - 11:00 AM | Bodhon & Adhibas: 05:45 PM - 07:15 PM',
+        'Para Kalparambha & Shashthi Vihita Puja (Fri 16 Oct): 05:38 AM - 08:30 AM | Bodhon, Amantran & Adhibas (Fri 16 Oct): 05:45 PM - 07:15 PM',
     ritualSignificance:
         'Sacred invocation of Devi Durga under the Bilva (Bel) tree. Bodhon awakens the Goddess from her divine slumber. In the evening, Adhibas is consecrated with 27 sacred auspicious items (Mangala Dravyas) amidst the resonant roar of Dhak drums and conch shells.',
     attireAndBhog:
@@ -360,13 +362,13 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dateFormatted: 'Sunday, 18 October 2026',
     tithiName: 'Shukla Saptami',
     tithiTimings:
-        'Saptami begins: 17 Oct 06:45 AM | Saptami ends: 18 Oct 08:30 AM',
+        'Saptami begins: 17 Oct 05:55 AM | Saptami ends: 18 Oct 08:30 AM',
     tithiTimingsTraditional:
-        'Saptami begins: 17 Oct 05:45 PM | Saptami ends: 18 Oct 04:48 PM',
+        'Saptami begins: 17 Oct 03:47 AM | Saptami ends: 18 Oct 05:53 AM',
     auspiciousMoments:
-        'Nabapatrika Snan (Kola Bou river bath) at dawn: 05:45 AM - 07:15 AM | Belur Math Puja begins: 5:30 AM | Saptami Vihita Puja: 08:30 AM - 11:00 AM | Maha Arati: 07:00 PM',
+        'Nabapatrika Snan (Kola Bou river bath) at dawn: 05:45 AM - 07:15 AM | Belur Math Puja begins: 5:30 AM | Saptami Vihita Puja: 05:30 AM - 08:30 AM | Maha Arati: 07:00 PM',
     auspiciousMomentsTraditional:
-        'Kola Bou Snan at Ghat: 05:15 AM - 06:15 AM | Saptami Vihita Puja: 08:00 AM - 10:30 AM | Sandhya Arati: 06:30 PM',
+        'Nabapatrika Pravesh, Sthapan & Saptami Vihita Puja (Sat 17 Oct): 07:04 AM - 09:28 AM | Saptami Adhik Puja (Sun 18 Oct): before 05:53 AM | Ardharatra Puja (Sun 18 Oct): 10:59 PM - 11:47 PM',
     ritualSignificance:
         'At dawn, nine plants representing nine manifestations of Mother Nature are tied together as Nabapatrika (symbolic Kola Bou), draped in a red-bordered yellow saree, bathed in the sacred Hooghly River, and ceremoniously installed beside Lord Ganesha. Prana Pratishtha infuses divine life into the clay idols.',
     attireAndBhog:
@@ -401,11 +403,11 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     tithiTimings:
         'Ashtami begins: 18 Oct 08:30 AM | Ashtami ends: 19 Oct 10:52 AM',
     tithiTimingsTraditional:
-        'Ashtami begins: 18 Oct 04:48 PM | Ashtami ends: 19 Oct 04:32 PM',
+        'Ashtami begins: 18 Oct 05:53 AM | Ashtami ends: 19 Oct 07:50 AM',
     auspiciousMoments:
         'Kumari Puja at Belur Math: 09:00 AM | Belur Math Sandhi Puja Muhurta: 10:28 AM – 11:16 AM (Balidan: 10:52 AM) | Maha Ashtami Pushpanjali: 09:30 AM - 10:25 AM',
     auspiciousMomentsTraditional:
-        'Traditional Para Pushpanjali: 06:30 AM - 07:15 AM | Traditional Para Sandhi Puja (Beni Madhab): 07:26 AM – 08:14 AM (Balidan: 07:50 AM) | Para Community Bhog: 12:30 PM - 02:00 PM',
+        'Traditional Para Pushpanjali: 06:30 AM - 07:05 AM | Traditional Para Sandhi Puja (Beni Madhab): 07:26 AM – 08:14 AM (Balidan: 07:50 AM) | Para Community Bhog: 12:30 PM - 02:00 PM',
     ritualSignificance:
         'The crown jewel of Durga Puja. Devotees fast until offering morning Pushpanjali. At Belur Math, a young prepubescent girl is worshipped as the living Goddess (Kumari Puja). During Sandhi Puja—the 48-minute juncture between Ashtami and Navami—Devi Chamunda is invoked with 108 blue lotuses and 108 glowing earthen diyas to slay demons Chanda and Munda.',
     attireAndBhog:
@@ -439,13 +441,13 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dateFormatted: 'Tuesday, 20 October 2026',
     tithiName: 'Shukla Nabami',
     tithiTimings:
-        'Nabami begins: 19 Oct 10:52 AM | Nabami ends: 20 Oct 12:45 PM',
+        'Nabami begins: 19 Oct 10:52 AM | Nabami ends: 20 Oct 12:51 PM',
     tithiTimingsTraditional:
-        'Nabami begins: 19 Oct 04:32 PM | Nabami ends: 20 Oct 04:50 PM',
+        'Nabami begins: 19 Oct 07:50 AM | Nabami ends: 20 Oct 09:31 AM',
     auspiciousMoments:
-        'Nabami Vihita Puja & Homa: 09:00 AM - 11:30 AM | Nabami Homa & Yajna following morning Bhog: Following morning Bhog | Evening Dhunuchi Naach: 08:00 PM - 01:00 AM',
+        'Nabami Vihita Puja: 05:30 AM - 09:27 AM | Nabami Homa & Yajna following morning Bhog: Following morning Bhog | Evening Dhunuchi Naach: 08:00 PM - 01:00 AM',
     auspiciousMomentsTraditional:
-        'Para Nabami Vihita Puja: 08:30 AM - 10:30 AM | Para Maha Homa: 11:00 AM - 12:30 PM | Dhunuchi Dance Competitions: 07:30 PM - Midnight',
+        'Para Nabami Vihita Puja: before 07:05 AM or 08:31 AM - 09:28 AM | Para Maha Homa: before Nabami ends (09:31 AM) | Dhunuchi Dance Competitions: 07:30 PM - Midnight',
     ritualSignificance:
         'Marks the triumph of Goddess Durga over the buffalo demon Mahishasura. The grand Maha Homa consecrates wood from sacred trees with ghee and bilva leaves. At night, frenetic Dhunuchi Naach erupts in pandals—dancers balancing smoking earthen pots filled with burning coconut husk and camphor in their hands and teeth to high-tempo Dhak beats.',
     attireAndBhog:
@@ -478,13 +480,13 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dateFormatted: 'Wednesday, 21 October 2026',
     tithiName: 'Shukla Dashami',
     tithiTimings:
-        'Dashami begins: 20 Oct 12:45 PM | Dashami ends: 21 Oct 02:30 PM',
+        'Dashami begins: 20 Oct 12:51 PM | Dashami ends: 21 Oct 02:12 PM',
     tithiTimingsTraditional:
-        'Dashami begins: 20 Oct 04:50 PM | Dashami ends: 21 Oct 05:30 PM',
+        'Dashami begins: 20 Oct 09:31 AM | Dashami ends: 21 Oct 10:47 AM',
     auspiciousMoments:
-        'Dashami Vihita Puja & Darpan Bisarjan: 08:30 AM - 10:30 AM | Darpan Visarjan: 10:45 AM | Sindoor Khela: 11:30 AM - 03:30 PM | Ganga Ghat Bisarjan: 04:30 PM - Midnight',
+        'Dashami Vihita Puja & Darpan Bisarjan: 05:35 AM - 08:30 AM | Vijay Muhurat: 01:16 PM - 02:02 PM | Sindoor Khela: 11:30 AM - 03:30 PM | Ganga Ghat Bisarjan: 04:30 PM - Midnight',
     auspiciousMomentsTraditional:
-        'Para Aparajita Puja: 08:00 AM - 10:00 AM | Darpan Visarjan: 10:15 AM | Sindoor Khela: 11:00 AM - 03:00 PM | Bisarjan Processions: 04:00 PM - 11:00 PM',
+        'Dashami Vihita Puja & Darpan Bisarjan: 05:40 AM - 08:31 AM | Aparajita Puja: after Bisarjan | Sindoor Khela: 11:00 AM - 03:00 PM | Bisarjan Processions: 04:00 PM - 11:00 PM',
     ritualSignificance:
         'The tearful and bittersweet farewell (Bisarjan) as Mother Durga prepares her journey back to Mount Kailash. Darpan Visarjan mirrors her departure. Married women participate in radiant Sindoor Khela, applying vermilion to Devi\'s forehead and to each other wishing long marital bliss. In the evening, solemn processions accompany the idols to the Ganga ghats. Elders are greeted with touch-feet Pranams and sweets with "Shubho Bijoya" greetings.',
     attireAndBhog:
@@ -519,7 +521,7 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     tithiTimings:
         'Purnima begins: 25 Oct 11:55 AM | Purnima ends: 26 Oct 09:41 AM',
     auspiciousMoments:
-        'Nishitha Kaal Lakshmi Aradhana: 11:39 PM - 12:28 AM | Purnima Nishitha Puja & Alpana decoration: Nishitha window | Evening Pradosh Puja: 06:30 PM - 09:00 PM',
+        'Nishitha Kaal Lakshmi Aradhana: 10:56 PM - 11:46 PM | Purnima Nishitha Puja & Alpana decoration: Nishitha window | Evening Pradosh Puja: 06:30 PM - 09:00 PM',
     ritualSignificance:
         'Observed on the full moon night following Durga Puja. Bengali courtyards and thresholds are hand-painted with intricate white rice-paste Alpana patterns depicting the sacred footsteps of Goddess Lakshmi entering the household. Families stay awake ("Ko Jago" - who is awake?) awaiting the blessing of prosperity.',
     attireAndBhog:
@@ -577,12 +579,12 @@ final List<PujaMilestoneEpoch> kPuja2026Milestones = [
   PujaMilestoneEpoch(
     id: 'panchami',
     name: 'Maha Panchami (Inaugurations)',
-    targetDateTime: DateTime(2026, 10, 16, 16, 0, 0),
+    targetDateTime: DateTime(2026, 10, 15, 16, 0, 0),
   ),
   PujaMilestoneEpoch(
     id: 'shashthi',
     name: 'Maha Shashthi (Bodhon)',
-    targetDateTime: DateTime(2026, 10, 16, 9, 0, 0),
+    targetDateTime: DateTime(2026, 10, 16, 6, 0, 0),
   ),
   PujaMilestoneEpoch(
     id: 'saptami',
@@ -607,7 +609,7 @@ final List<PujaMilestoneEpoch> kPuja2026Milestones = [
   PujaMilestoneEpoch(
     id: 'dashami',
     name: 'Vijaya Dashami (Visarjan)',
-    targetDateTime: DateTime(2026, 10, 21, 10, 0, 0),
+    targetDateTime: DateTime(2026, 10, 21, 6, 0, 0),
   ),
   PujaMilestoneEpoch(
     id: 'lakshmi_puja',
