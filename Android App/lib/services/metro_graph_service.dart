@@ -49,7 +49,8 @@ class MetroHopGuidance {
   final double directWalkMeters;
   final int directWalkMinutes;
   final TransitRecommendation recommendation;
-  final String recommendationLabel; // "Walk", "Metro Recommended", "Metro Possible"
+  final String
+      recommendationLabel; // "Walk", "Metro Recommended", "Metro Possible"
   final String headline;
   final String detailedAdvice;
   final String? boardStation;
@@ -296,7 +297,10 @@ class MetroGraphService {
     'Gitanjali': [22.4695, 88.3700],
     'Kavi Nazrul': [22.4642, 88.3805],
     'Shahid Khudiram': [22.4660, 88.3915],
-    'Kavi Subhash': [22.4711, 88.3981], // Orange Line station (OSM way/1364916357)
+    'Kavi Subhash': [
+      22.4711,
+      88.3981
+    ], // Orange Line station (OSM way/1364916357)
     'Howrah Maidan': [22.5839, 88.3340],
     'Howrah Railway Station': [22.5834, 88.3404],
     'Mahakaran': [22.5721, 88.3505],
@@ -336,7 +340,9 @@ class MetroGraphService {
           await rootBundle.loadString('assets/data/metro_graph.json');
       // Strip a UTF-8 BOM if present: json.decode rejects it, which previously
       // made the bundled graph silently fall back to in-memory data.
-      final clean = jsonString.startsWith('\uFEFF') ? jsonString.substring(1) : jsonString;
+      final clean = jsonString.startsWith('\uFEFF')
+          ? jsonString.substring(1)
+          : jsonString;
       final data = json.decode(clean) as Map<String, dynamic>;
       _parseGraphData(data);
       _isLoaded = true;
@@ -384,7 +390,8 @@ class MetroGraphService {
     ];
     _forbiddenAliases = {
       'bagbazar': 'Shyambazar or Sovabazar Sutanuti',
-      'lake town': 'City Centre or Central Park (Green Line), Jessore Road (Yellow Line) or Belgachia (Blue Line), plus a short auto ride',
+      'lake town':
+          'City Centre or Central Park (Green Line), Jessore Road (Yellow Line) or Belgachia (Blue Line), plus a short auto ride',
       'gariahat': 'Kalighat or another verified appropriate connection',
     };
   }
@@ -412,8 +419,7 @@ class MetroGraphService {
       final m = item as Map<String, dynamic>;
       return InterchangeInfo(
         station: m['station'] ?? 'Esplanade',
-        connects:
-            (m['connects'] as List?)?.cast<String>() ?? ['blue', 'green'],
+        connects: (m['connects'] as List?)?.cast<String>() ?? ['blue', 'green'],
         instructions: m['instructions'] ?? '',
       );
     }).toList();
@@ -574,7 +580,8 @@ class MetroGraphService {
   // Planning constants for the walk-vs-metro decision (documented in
   // docs/ROUTING.md). Straight-line distances, walking at 75 m/min.
   static const double kWalkMetersPerMinute = 75.0;
-  static const int kMinutesPerStop = 2; // average Kolkata Metro inter-station run
+  static const int kMinutesPerStop =
+      2; // average Kolkata Metro inter-station run
   static const int kStationOverheadMinutes =
       10; // entry queue, security check, platform wait, exit (Puja crowds)
   static const int kTransferMinutes = 6; // change platforms at an interchange
@@ -624,7 +631,9 @@ class MetroGraphService {
         break;
       }
       final neighbours = <MapEntry<String, int>>[];
-      if (idx > 0) neighbours.add(MapEntry(key(line, idx - 1), kMinutesPerStop));
+      if (idx > 0) {
+        neighbours.add(MapEntry(key(line, idx - 1), kMinutesPerStop));
+      }
       if (idx < stations.length - 1) {
         neighbours.add(MapEntry(key(line, idx + 1), kMinutesPerStop));
       }
@@ -644,8 +653,10 @@ class MetroGraphService {
         for (final other in lineKeys) {
           final j = _lines[other]!.indexOf(target);
           if (j != -1) {
-            neighbours.add(MapEntry(key(other, j),
-                (metres / kWalkMetersPerMinute).round() + kStationOverheadMinutes));
+            neighbours.add(MapEntry(
+                key(other, j),
+                (metres / kWalkMetersPerMinute).round() +
+                    kStationOverheadMinutes));
           }
         }
       }
@@ -689,12 +700,14 @@ class MetroGraphService {
       } else if (line != legLine) {
         // transfer at the same station, or a road link to another station
         if (st != lastStation) roadLinks.add('$lastStation ↔ $st');
-        legs.add(MetroLeg(
-            line: _lineDisplayName(legLine),
-            from: legStart!,
-            to: lastStation!,
-            stops: legStops,
-            direction: _calculateDirection(legLine, legStartIdx, lastIdx)));
+        if (legStops > 0) {
+          legs.add(MetroLeg(
+              line: _lineDisplayName(legLine),
+              from: legStart!,
+              to: lastStation!,
+              stops: legStops,
+              direction: _calculateDirection(legLine, legStartIdx, lastIdx)));
+        }
         if (st == lastStation) transfers.add(st);
         legLine = line;
         legStart = st;
@@ -713,12 +726,14 @@ class MetroGraphService {
       lastStation = st;
       lastIdx = idx;
     }
-    legs.add(MetroLeg(
-        line: _lineDisplayName(legLine!),
-        from: legStart!,
-        to: lastStation!,
-        stops: legStops,
-        direction: _calculateDirection(legLine, legStartIdx, lastIdx)));
+    if (legStops > 0) {
+      legs.add(MetroLeg(
+          line: _lineDisplayName(legLine!),
+          from: legStart!,
+          to: lastStation!,
+          stops: legStops,
+          direction: _calculateDirection(legLine, legStartIdx, lastIdx)));
+    }
     return MetroPath(
         stations: stationsOut,
         legs: legs,
@@ -803,15 +818,14 @@ class MetroGraphService {
     // 2. Metro path over the real network (not offered when either pandal has
     // no open station within kNoMetroRadiusMeters).
     final tooFar = fromP.isMetroTooFar || toP.isMetroTooFar;
-    final path =
-        tooFar ? null : findMetroPath(infoA.station, infoB.station);
+    final path = tooFar ? null : findMetroPath(infoA.station, infoB.station);
     if (path == null || path.stops == 0) {
       final purple = infoA.line == 'Purple Line' || infoB.line == 'Purple Line';
       final why = tooFar
           ? '${fromP.isMetroTooFar ? fromP.name : toP.name} has no Metro station within 2.5 km.'
           : purple
-          ? 'The Purple Line (Joka–Majerhat) has no rail link to the other lines yet; Majerhat to the Blue Line is a road transfer.'
-          : 'There is no metro connection between ${infoA.station} and ${infoB.station}.';
+              ? 'The Purple Line (Joka–Majerhat) has no rail link to the other lines yet; Majerhat to the Blue Line is a road transfer.'
+              : 'There is no metro connection between ${infoA.station} and ${infoB.station}.';
       return MetroHopGuidance(
         hopIndex: hopIndex,
         fromPandal: fromP,
@@ -822,39 +836,68 @@ class MetroGraphService {
         directWalkMinutes: walkMins,
         recommendation: TransitRecommendation.metroPossible,
         recommendationLabel: 'Auto / Cab',
-        headline: '🚕 Auto / Cab or Walk ($walkKm km)',
-        detailedAdvice:
-            '$why Walk (~$walkMins mins) or take an auto/cab between ${fromP.name} and ${toP.name}.',
+        headline: walkDist > 3000
+            ? '🚕 Bus / Auto / Cab ($walkKm km)'
+            : '🚕 Auto / Cab or Walk ($walkKm km)',
+        detailedAdvice: walkDist > 3000
+            ? '$why Take a bus, auto or cab between ${fromP.name} and ${toP.name} ($walkKm km).'
+            : '$why Walk (~$walkMins mins) or take an auto/cab between ${fromP.name} and ${toP.name}.',
       );
     }
 
-    final accessMins =
-        (infoA.distanceToMetroMeters / kWalkMetersPerMinute).round();
-    final egressMins =
-        (infoB.distanceToMetroMeters / kWalkMetersPerMinute).round();
-    int roadLinkMins = 0;
-    for (final link in kRoadLinks) {
-      if (path.roadLinks.any((r) => r.contains(link[0] as String) && r.contains(link[1] as String))) {
-        roadLinkMins += ((link[2] as int) / kWalkMetersPerMinute).round() + kStationOverheadMinutes;
-      }
+    // Board where the first ride starts and alight where the last one ends.
+    // If the path begins/ends with a road link (e.g. a pandal assigned to Kavi
+    // Subhash heading for the Blue Line), walk straight to that station.
+    final boardSt = path.legs.first.from;
+    final alightSt = path.legs.last.to;
+    double distTo(Pandal p, String st, PandalMetroInfo info) {
+      if (st == info.station) return info.distanceToMetroMeters;
+      final c = kStationCoordinates[st];
+      return c == null
+          ? info.distanceToMetroMeters
+          : _haversineMeters(p.lat, p.lon, c[0], c[1]);
     }
+
+    final accessM = distTo(fromP, boardSt, infoA);
+    final egressM = distTo(toP, alightSt, infoB);
+    final accessMins = (accessM / kWalkMetersPerMinute).round();
+    final egressMins = (egressM / kWalkMetersPerMinute).round();
+    int roadLinkMins = 0;
+    for (int i = 1; i < path.legs.length; i++) {
+      final a = path.legs[i - 1].to, b = path.legs[i].from;
+      if (a == b) continue;
+      final ca = kStationCoordinates[a], cb = kStationCoordinates[b];
+      final m = (ca == null || cb == null)
+          ? 1000.0
+          : _haversineMeters(ca[0], ca[1], cb[0], cb[1]);
+      roadLinkMins +=
+          (m / kWalkMetersPerMinute).round() + kStationOverheadMinutes;
+    }
+    final interchanges = <String>[
+      for (int i = 1; i < path.legs.length; i++)
+        if (path.legs[i - 1].to == path.legs[i].from)
+          path.legs[i].from
+        else
+          '${path.legs[i - 1].to} ↔ ${path.legs[i].from}'
+    ];
     final rideMins = path.stops * kMinutesPerStop +
-        path.transfers.length * kTransferMinutes +
+        interchanges.where((x) => !x.contains('↔')).length * kTransferMinutes +
         roadLinkMins;
-    final metroTotal = accessMins + kStationOverheadMinutes + rideMins + egressMins;
+    final metroTotal =
+        accessMins + kStationOverheadMinutes + rideMins + egressMins;
 
     // 3. Metro is not faster door-to-door: walk.
     if (metroTotal >= walkMins) {
       return walk(
-          'Metro would take ~$metroTotal mins door to door (~${infoA.distanceToMetroMeters.round()} m to ${infoA.station}, ${path.stops} stop${path.stops == 1 ? '' : 's'}, ~${infoB.distanceToMetroMeters.round()} m from ${infoB.station}) vs ~$walkMins mins walking directly.');
+          'Metro would take ~$metroTotal mins door to door (~${accessM.round()} m to $boardSt, ${path.stops} stop${path.stops == 1 ? '' : 's'}, ~${egressM.round()} m from $alightSt) vs ~$walkMins mins walking directly.');
     }
 
     final fare = estimateFare(path);
-    final lastMileA = infoA.distanceToMetroMeters > 0
-        ? 'Walk ~${infoA.distanceToMetroMeters.round()} m to ${infoA.station}'
-        : 'Access ${infoA.station}';
-    final lastMileB = infoB.distanceToMetroMeters > 0
-        ? 'Walk ~${infoB.distanceToMetroMeters.round()} m from ${infoB.station} to ${toP.name}'
+    final lastMileA = accessM > 0
+        ? 'Walk ~${accessM.round()} m to $boardSt'
+        : 'Access $boardSt';
+    final lastMileB = egressM > 0
+        ? 'Walk ~${egressM.round()} m from $alightSt to ${toP.name}'
         : 'Exit to ${toP.name}';
 
     // 4. Single line: Metro Recommended.
@@ -873,9 +916,9 @@ class MetroGraphService {
         headline:
             '🚇 Metro Recommended (${path.stops} stops, ~$metroTotal mins door to door)',
         detailedAdvice:
-            '$lastMileA ➔ Board ${leg.line} (${leg.direction}) ➔ Ride ${path.stops} stops to ${infoB.station} ➔ $lastMileB.',
-        boardStation: infoA.station,
-        alightStation: infoB.station,
+            '$lastMileA ➔ Board ${leg.line} (${leg.direction}) ➔ Ride ${path.stops} stops to $alightSt ➔ $lastMileB.',
+        boardStation: boardSt,
+        alightStation: alightSt,
         line: leg.line,
         direction: leg.direction,
         stationCount: path.stops,
@@ -885,7 +928,7 @@ class MetroGraphService {
     }
 
     // 5. One or more interchanges / road links: Metro Possible.
-    final via = [...path.transfers, ...path.roadLinks].join(' & ');
+    final via = interchanges.join(' & ');
     final steps = <String>[lastMileA];
     for (int i = 0; i < path.legs.length; i++) {
       final leg = path.legs[i];
@@ -911,14 +954,13 @@ class MetroGraphService {
           '🔄 Metro via $via (${path.stops} stops, ~$metroTotal mins door to door)',
       detailedAdvice:
           '${steps.join(' ➔ ')}. (Tip: if an auto/cab is easy to find, compare road traffic.)',
-      boardStation: infoA.station,
-      alightStation: infoB.station,
+      boardStation: boardSt,
+      alightStation: alightSt,
       line: path.legs.map((l) => l.line).join(' ➔ '),
       direction: 'Via $via Interchange',
       stationCount: path.stops,
       estimatedMetroMinutes: metroTotal,
-      interchangeStation:
-          path.transfers.isNotEmpty ? path.transfers.first : path.legs[1].from,
+      interchangeStation: interchanges.first,
       isInterchange: true,
       fareRupees: fare,
     );
