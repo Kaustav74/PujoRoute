@@ -1,0 +1,123 @@
+{
+  "almanac_benchmark": "Vishuddha Siddhanta / Belur Math Tradition",
+  "year": 2026,
+  "bengali_year": "1433 Bangabda",
+  "guardrail_notice": "Ritual timings strictly follow the Vishuddha Siddhanta / Belur Math almanac benchmark. Community and local para pujas following Surya Siddhanta / Gupta Press may observe slight variations; devotees are advised to check local notice boards.",
+  "milestones": [
+    {
+      "id": "mahalaya",
+      "name_en": "Mahalaya",
+      "name_bn": "মহালয়া",
+      "date": "2026-10-10",
+      "day": "Saturday",
+      "tithi": "Ashwin Krishna Amavasya",
+      "rituals": {
+        "tarpan_start": "04:30 AM",
+        "tarpan_end": "08:30 AM",
+        "chokkhudaan": "All Day (Kumartuli)",
+        "birendra_krishna_bhadra": "04:00 AM"
+      },
+      "guidance": "Dawn Tarpan at Ganga Ghats (Babughat, Bagbazar, Ahiritola). Ideal day for quiet artisan walks in Kumartuli."
+    },
+    {
+      "id": "panchami",
+      "name_en": "Maha Panchami",
+      "name_bn": "মহা পঞ্চমী",
+      "date": "2026-10-16",
+      "day": "Friday",
+      "tithi": "Shukla Panchami",
+      "rituals": {
+        "vip_preview_start": "04:00 PM",
+        "anandamoyee_arati": "07:00 PM"
+      },
+      "guidance": "Best day for crowd-free viewing of mega pandals (Sreebhumi, FD Block, Suruchi Sangha)."
+    },
+    {
+      "id": "shashthi",
+      "name_en": "Maha Shashthi",
+      "name_bn": "মহা ষষ্ঠী",
+      "date": "2026-10-17",
+      "day": "Saturday",
+      "tithi": "Shukla Shashthi",
+      "rituals": {
+        "kalparambha": "06:45 AM - 08:30 AM",
+        "devi_bodhon": "06:15 PM - 07:45 PM (Under Bel Tree)",
+        "adhibas": "Sunset (27 sacred items)"
+      },
+      "guidance": "Bodhon and formal invocation of Maa Durga. Traditional para Bodhon rituals in North and Central Kolkata."
+    },
+    {
+      "id": "saptami",
+      "name_en": "Maha Saptami",
+      "name_bn": "মহা সপ্তমী",
+      "date": "2026-10-18",
+      "day": "Sunday",
+      "tithi": "Shukla Saptami",
+      "rituals": {
+        "kola_bou_snan": "05:45 AM - 06:45 AM (Hooghly Riverbanks)",
+        "prana_pratishtha": "08:30 AM",
+        "bhog_distribution": "01:00 PM - 02:30 PM"
+      },
+      "guidance": "Dawn procession for Nabapatrika (Kola Bou) river bath at Bagbazar/Ahiritola Ghat. Heavy festive footfall."
+    },
+    {
+      "id": "ashtami",
+      "name_en": "Maha Ashtami & Kumari Puja",
+      "name_bn": "মহা অষ্টমী ও কুমারী পূজা",
+      "date": "2026-10-19",
+      "day": "Monday",
+      "tithi": "Shukla Ashtami",
+      "rituals": {
+        "pushpanjali_cutoff": "10:15 AM",
+        "kumari_puja_belur_math": "09:00 AM",
+        "sandhi_puja_start": "10:28 AM",
+        "sandhi_puja_end": "11:16 AM",
+        "sandhi_puja_duration_minutes": 48,
+        "balidan_moment": "10:52 AM",
+        "offerings": "108 lotuses and 108 earthen diyas"
+      },
+      "guidance": "Pinnacle of the festival. Strict 48-minute Sandhi Puja window (10:28 AM - 11:16 AM) at Ashtami-Navami juncture. Peak crowd density."
+    },
+    {
+      "id": "navami",
+      "name_en": "Maha Navami",
+      "name_bn": "মহা নবমী",
+      "date": "2026-10-20",
+      "day": "Tuesday",
+      "tithi": "Shukla Navami",
+      "rituals": {
+        "maha_homa": "11:30 AM - 01:00 PM",
+        "dhunuchi_naach": "08:00 PM - 02:00 AM"
+      },
+      "guidance": "Grand all-night hopping night! Metro runs late-night or 24/7 service. Energetic Dhunuchi dance and Maddox Square adda."
+    },
+    {
+      "id": "dashami",
+      "name_en": "Vijaya Dashami",
+      "name_bn": "বিজয়া দশমী",
+      "date": "2026-10-21",
+      "day": "Wednesday",
+      "tithi": "Shukla Dashami",
+      "rituals": {
+        "darpan_visarjan": "10:45 AM",
+        "sindoor_khela": "11:30 AM - 03:30 PM",
+        "ganga_visarjan": "04:30 PM - Midnight",
+        "shubho_bijoya": "Evening onwards"
+      },
+      "guidance": "Radiant Sindoor Khela at Bagbazar and Sovabazar Rajbari. Immersions along Babughat and Baje Kadamtala Ghat with sweet exchanges."
+    },
+    {
+      "id": "lakshmi_puja",
+      "name_en": "Kojagari Lakshmi Puja",
+      "name_bn": "কোজাগরী লক্ষ্মী পূজা",
+      "date": "2026-10-25",
+      "day": "Sunday",
+      "tithi": "Ashwin Purnima",
+      "rituals": {
+        "alpana_decoration": "Afternoon",
+        "nishita_puja": "06:30 PM - 09:00 PM"
+      },
+      "guidance": "Tranquil household celebrations, authentic rice-paste Alpana footsteps, Naru, Shinni, and Khichuri bhog."
+    }
+  ]
+}

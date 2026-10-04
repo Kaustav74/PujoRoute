@@ -1,0 +1,33 @@
+name: pujoroute
+description: A new Flutter project for navigating Durga Puja in Kolkata.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  geolocator: ^11.0.0
+  permission_handler: ^11.3.1
+  http: ^1.2.1
+  google_fonts: ^6.2.1
+  url_launcher: ^6.2.6
+  shared_preferences: ^2.2.2
+  flutter_tts: ^4.2.5
+  speech_to_text: ^7.4.0
+  crypto: ^3.0.3
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/data/
+    - assets/images/

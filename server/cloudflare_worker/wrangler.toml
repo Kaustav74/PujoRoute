@@ -1,0 +1,9 @@
+name = "pujoroute-gateway"
+main = "src/index.js"
+compatibility_date = "2024-09-01"
+
+[vars]
+GATEWAY_SEED = "PujoRouteSecureSalt2026!"
+
+# Set GROQ_API_KEY via Wrangler secrets:
+# npx wrangler secret put GROQ_API_KEY

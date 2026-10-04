@@ -1,0 +1,67 @@
+﻿{
+  "lines": {
+    "blue": {
+      "name": "North-South Corridor",
+      "stations": [
+        "Dakshineswar",
+        "Baranagar",
+        "Noapara",
+        "Dum Dum",
+        "Belgachia",
+        "Shyambazar",
+        "Sovabazar Sutanuti",
+        "Girish Park",
+        "Mahatma Gandhi Road",
+        "Central",
+        "Chandni Chowk",
+        "Esplanade",
+        "Park Street",
+        "Maidan",
+        "Rabindra Sadan",
+        "Netaji Bhavan",
+        "Jatin Das Park",
+        "Kalighat",
+        "Rabindra Sarobar",
+        "Mahanayak Uttam Kumar",
+        "Netaji",
+        "Masterda Surya Sen",
+        "Gitanjali",
+        "Kavi Nazrul",
+        "Shahid Khudiram",
+        "Kavi Subhash"
+      ]
+    },
+    "green": {
+      "name": "East-West Corridor",
+      "stations": [
+        "Howrah Maidan",
+        "Howrah Railway Station",
+        "Mahakaran",
+        "Esplanade",
+        "Sealdah",
+        "Phoolbagan",
+        "Salt Lake Stadium",
+        "Bengal Chemical",
+        "City Centre",
+        "Central Park",
+        "Karunamoyee",
+        "Salt Lake Sector V"
+      ]
+    }
+  },
+  "interchanges": [
+    {
+      "station": "Esplanade",
+      "connects": [
+        "blue",
+        "green"
+      ],
+      "instructions": "Follow the designated concourse to transfer between Blue and Green lines."
+    }
+  ],
+  "forbidden_aliases": {
+    "Bagbazar": "Shyambazar or Sovabazar Sutanuti",
+    "Lake Town": "Belgachia or Karunamoyee plus appropriate onward transport",
+    "Gariahat": "Kalighat or another verified appropriate connection"
+  }
+}

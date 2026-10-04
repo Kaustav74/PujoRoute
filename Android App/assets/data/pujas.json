@@ -1,0 +1,2738 @@
+[
+  {
+    "id": "930d4988-675a-4800-9564-062ce1102a4e",
+    "name": "Sovabazar Rajbarir Durga Pujo",
+    "type": "heritage",
+    "lat": 22.573994165045562,
+    "lon": 88.35975518614761,
+    "history": "Sovabazar Rajbarir Durga Pujo is a renowned heritage puja."
+  },
+  {
+    "id": "1502d3ef-6dd0-476c-90c6-a7da613785eb",
+    "name": "Baghbazar Haldar Bari er Pujo",
+    "type": "heritage",
+    "lat": 22.60368430672676,
+    "lon": 88.36716871460365,
+    "history": "Baghbazar Haldar Bari er Pujo is a renowned heritage puja."
+  },
+  {
+    "id": "31e5ff88-dc0c-4e9d-868c-4a9a7dbc0b23",
+    "name": "Hathkhola Dutta Barir Durga Pujo",
+    "type": "heritage",
+    "lat": 22.57627695890502,
+    "lon": 88.36758124842996,
+    "history": "Hathkhola Dutta Barir Durga Pujo is a renowned heritage puja."
+  },
+  {
+    "id": "51527af6-a3bf-46cd-ae11-2c626b90b14d",
+    "name": "Khelat Ghose er Durga Pujo",
+    "type": "heritage",
+    "lat": 22.585480527531058,
+    "lon": 88.35517063666961,
+    "history": "Khelat Ghose er Durga Pujo is a renowned heritage puja."
+  },
+  {
+    "id": "d035c328-588e-49aa-8a25-d7bec8992ae4",
+    "name": "Srimani Barir Durga Pujo",
+    "type": "heritage",
+    "lat": 22.572306989877898,
+    "lon": 88.36737797766429,
+    "history": "Srimani Barir Durga Pujo is a renowned heritage puja."
+  },
+  {
+    "id": "cb411a56-ef23-4b12-b2b8-03daabb8f114",
+    "name": "Rani Rashmoni er Durga Pujo",
+    "type": "heritage",
+    "lat": 22.609087877117148,
+    "lon": 88.36331164581335,
+    "history": "Rani Rashmoni er Durga Pujo is a renowned heritage puja."
+  },
+  {
+    "id": "bf027c8c-c94c-41c9-8c2f-d8839c836632",
+    "name": "RAMDULAL NIBAS er Durga Pujo",
+    "type": "heritage",
+    "lat": 22.58064854444713,
+    "lon": 88.35070381452695,
+    "history": "RAMDULAL NIBAS er Durga Pujo is a renowned heritage puja."
+  },
+  {
+    "id": "c7c01885-7524-40be-aa89-ef7cef66e048",
+    "name": "Roychoudhury Barir Durga Pujo",
+    "type": "heritage",
+    "lat": 22.604449982307152,
+    "lon": 88.35380047571327,
+    "history": "Roychoudhury Barir Durga Pujo is a renowned heritage puja."
+  },
+  {
+    "id": "280100a3-b7ef-4f57-a05d-e1a4d3c897f4",
+    "name": "Bagbazar Sarbojanin",
+    "type": "mega",
+    "lat": 22.586942207523144,
+    "lon": 88.36030810923933,
+    "history": "Bagbazar Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "d279ab01-6207-42dc-bf79-d22fe2c07e78",
+    "name": "Hatibagan Nabinpally Sarbojanin Durgotsav",
+    "type": "mega",
+    "lat": 22.617213918631126,
+    "lon": 88.36209153135492,
+    "history": "Hatibagan Nabinpally Sarbojanin Durgotsav is a renowned mega puja."
+  },
+  {
+    "id": "3c50cb3d-8cdc-4ca2-b4fc-a3cdcf19e8a3",
+    "name": "Telenga Bagan Sarbojanin Durgotsab",
+    "type": "mega",
+    "lat": 22.58110724916818,
+    "lon": 88.38730245726977,
+    "history": "Telenga Bagan Sarbojanin Durgotsab is a renowned mega puja."
+  },
+  {
+    "id": "d38c1379-5409-46a8-91b3-fcc02d1a2bc5",
+    "name": "College Square Sarbojonin Durgotsab Committee",
+    "type": "mega",
+    "lat": 22.592435253761707,
+    "lon": 88.3813644248614,
+    "history": "College Square Sarbojonin Durgotsab Committee is a renowned mega puja."
+  },
+  {
+    "id": "78b7232c-0a98-4c90-9645-7fc3b2fe3e37",
+    "name": "Manicktala Chaltabagan Lohapatty Durga Puja",
+    "type": "mega",
+    "lat": 22.595657335180807,
+    "lon": 88.3565530741978,
+    "history": "Manicktala Chaltabagan Lohapatty Durga Puja is a renowned mega puja."
+  },
+  {
+    "id": "3058a204-65bc-4bab-951e-6a5b5165e21f",
+    "name": "Tala Barowari Durgotsab",
+    "type": "mega",
+    "lat": 22.617167369915403,
+    "lon": 88.38308360913757,
+    "history": "Tala Barowari Durgotsab is a renowned mega puja."
+  },
+  {
+    "id": "e2fceb28-cba6-434e-ac20-f04ed6a856bf",
+    "name": "Lake Town Adhibasi Brinda",
+    "type": "mega",
+    "lat": 22.58234494626255,
+    "lon": 88.36460436751535,
+    "history": "Lake Town Adhibasi Brinda is a renowned mega puja."
+  },
+  {
+    "id": "9d8c1bb2-592d-45bd-ae3c-d76b4819e8aa",
+    "name": "Brindaban Matri Mandir",
+    "type": "mega",
+    "lat": 22.619320240963756,
+    "lon": 88.36237179376074,
+    "history": "Brindaban Matri Mandir is a renowned mega puja."
+  },
+  {
+    "id": "5b9ab42d-4d17-4133-824a-62e438ec3b3e",
+    "name": "Simla Byayam Samity",
+    "type": "mega",
+    "lat": 22.618054042077226,
+    "lon": 88.37898693153386,
+    "history": "Simla Byayam Samity is a renowned mega puja."
+  },
+  {
+    "id": "25ea2c38-865a-4981-bf63-4838bbf93779",
+    "name": "Ahiritola Sarbojanin Durgotsab",
+    "type": "mega",
+    "lat": 22.605007321006294,
+    "lon": 88.38442551092508,
+    "history": "Ahiritola Sarbojanin Durgotsab is a renowned mega puja."
+  },
+  {
+    "id": "3ee28b60-d63e-4def-ad33-f7533630bd0d",
+    "name": "Dum Dum Park Bharat Chakra",
+    "type": "mega",
+    "lat": 22.595206461541615,
+    "lon": 88.35609811087025,
+    "history": "Dum Dum Park Bharat Chakra is a renowned mega puja."
+  },
+  {
+    "id": "44b97f33-9153-4d40-84f7-33fd12c3c079",
+    "name": "Kumartuli Park Sarbojanin Durgotsab Committee",
+    "type": "mega",
+    "lat": 22.596801086602326,
+    "lon": 88.36349136931725,
+    "history": "Kumartuli Park Sarbojanin Durgotsab Committee is a renowned mega puja."
+  },
+  {
+    "id": "dae46432-7317-4e19-848f-f02221d33fbf",
+    "name": "Sree Bhumi Sporting Club",
+    "type": "mega",
+    "lat": 22.595939027499522,
+    "lon": 88.38311830723718,
+    "history": "Sree Bhumi Sporting Club is a renowned mega puja."
+  },
+  {
+    "id": "6b39962d-9e13-4a70-96be-a650bf89b997",
+    "name": "Md. Ali Park (Youth Association)",
+    "type": "mega",
+    "lat": 22.583614758392176,
+    "lon": 88.351722980827,
+    "history": "Md. Ali Park (Youth Association) is a renowned mega puja."
+  },
+  {
+    "id": "9ed6bf42-32f6-4084-8ea6-71162b3ca566",
+    "name": "Dum Dum Park Sarbojanin",
+    "type": "mega",
+    "lat": 22.60200791261931,
+    "lon": 88.36151097439422,
+    "history": "Dum Dum Park Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "eb5f054a-a3eb-4f4f-886f-d60400237960",
+    "name": "Sovabazar Beniatola Sarbojanin Durgotsab Samity",
+    "type": "mega",
+    "lat": 22.597229936183606,
+    "lon": 88.38637417363283,
+    "history": "Sovabazar Beniatola Sarbojanin Durgotsab Samity is a renowned mega puja."
+  },
+  {
+    "id": "e9735c73-6652-4b4b-8a9b-7921a96d81ab",
+    "name": "Deshbandhu Ladies Park",
+    "type": "mega",
+    "lat": 22.616504543397266,
+    "lon": 88.38288098475847,
+    "history": "Deshbandhu Ladies Park is a renowned mega puja."
+  },
+  {
+    "id": "579968b9-48cc-43a5-8811-27c58a7352fe",
+    "name": "Kumartuli Sarbojanin Durgotsab",
+    "type": "mega",
+    "lat": 22.588855524331656,
+    "lon": 88.36221563600508,
+    "history": "Kumartuli Sarbojanin Durgotsab is a renowned mega puja."
+  },
+  {
+    "id": "4fb115ce-56b0-4d9d-9016-55b653570985",
+    "name": "Ultadanga Yuba Brinda",
+    "type": "mega",
+    "lat": 22.61223238780967,
+    "lon": 88.37506449635056,
+    "history": "Ultadanga Yuba Brinda is a renowned mega puja."
+  },
+  {
+    "id": "f17490db-9fd6-45b0-8bc6-e2518e38769a",
+    "name": "Jagat Mukherjee park",
+    "type": "mega",
+    "lat": 22.599810175255488,
+    "lon": 88.37243194918126,
+    "history": "Jagat Mukherjee park is a renowned mega puja."
+  },
+  {
+    "id": "033473b6-88e4-41d4-b37c-916f4b725bf4",
+    "name": "Azad Hind Bag (Hedua Park Durga Puja)",
+    "type": "mega",
+    "lat": 22.605628512626136,
+    "lon": 88.35444425020476,
+    "history": "Azad Hind Bag (Hedua Park Durga Puja) is a renowned mega puja."
+  },
+  {
+    "id": "bcae1db1-2f5e-4369-a43c-8e47b6d59d50",
+    "name": "Dum Dum Park, Tarun Sangha",
+    "type": "mega",
+    "lat": 22.617285036098938,
+    "lon": 88.36238172215766,
+    "history": "Dum Dum Park, Tarun Sangha is a renowned mega puja."
+  },
+  {
+    "id": "5e6cdf12-b840-4603-8f88-5c6fe45c1dde",
+    "name": "Sikdar Bagan Sadharan Durga Puja",
+    "type": "mega",
+    "lat": 22.594647546197233,
+    "lon": 88.38700984762819,
+    "history": "Sikdar Bagan Sadharan Durga Puja is a renowned mega puja."
+  },
+  {
+    "id": "ebbb6429-7167-4f77-a19f-3e227d482463",
+    "name": "Santosh Mitra square durga puja or Lebutala park",
+    "type": "mega",
+    "lat": 22.605754927899437,
+    "lon": 88.3674816232746,
+    "history": "Santosh Mitra square durga puja or Lebutala park is a renowned mega puja."
+  },
+  {
+    "id": "fac21052-52cf-4832-8fa4-4380af25d923",
+    "name": "Kashi Bose Lane Durga Puja Committee",
+    "type": "mega",
+    "lat": 22.606166022619874,
+    "lon": 88.35377096885661,
+    "history": "Kashi Bose Lane Durga Puja Committee is a renowned mega puja."
+  },
+  {
+    "id": "b148fe78-b702-4714-a05b-9998088b113e",
+    "name": "Ahiritola Jubak Brinda",
+    "type": "mega",
+    "lat": 22.581989903967735,
+    "lon": 88.35790060859468,
+    "history": "Ahiritola Jubak Brinda is a renowned mega puja."
+  },
+  {
+    "id": "c05fbe48-68ca-4693-9ab2-54af1d6c9714",
+    "name": "Nalin Sarkar Street Sarbojanin Durgotsab",
+    "type": "mega",
+    "lat": 22.583374626996516,
+    "lon": 88.3872854290356,
+    "history": "Nalin Sarkar Street Sarbojanin Durgotsab is a renowned mega puja."
+  },
+  {
+    "id": "e2721325-aeed-407c-837e-1ef6b9061234",
+    "name": "Sovabazar Rajbari",
+    "type": "mega",
+    "lat": 22.59461302180425,
+    "lon": 88.38948903190246,
+    "history": "Sovabazar Rajbari is a renowned mega puja."
+  },
+  {
+    "id": "6cf7277a-70f7-4c3e-9a1c-25e05fd55a36",
+    "name": "Hatibagan Sarbojanin",
+    "type": "mega",
+    "lat": 22.587484288033828,
+    "lon": 88.35462245118399,
+    "history": "Hatibagan Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "09b1eb64-eaa7-47a7-a88b-d6fc82686771",
+    "name": "Tala Park Prattay",
+    "type": "mega",
+    "lat": 22.599497043803723,
+    "lon": 88.38966055337069,
+    "history": "Tala Park Prattay is a renowned mega puja."
+  },
+  {
+    "id": "bf8bd503-45e4-4e7e-8a6a-214ab1f83802",
+    "name": "Sealdah Railway Athletic Club",
+    "type": "mega",
+    "lat": 22.590030311391253,
+    "lon": 88.36703432410722,
+    "history": "Sealdah Railway Athletic Club is a renowned mega puja."
+  },
+  {
+    "id": "0b175457-29cd-4e1d-ba6b-edf10413b804",
+    "name": "Karbagan Sarbojonin Durga Puja",
+    "type": "mega",
+    "lat": 22.605322531388435,
+    "lon": 88.35908996465851,
+    "history": "Karbagan Sarbojonin Durga Puja is a renowned mega puja."
+  },
+  {
+    "id": "d2d0666b-fef2-4035-8f81-8a1ab75e0ce2",
+    "name": "Naktala Udayan sangha",
+    "type": "mega",
+    "lat": 22.501285280188593,
+    "lon": 88.35997058987623,
+    "history": "Naktala Udayan sangha is a renowned mega puja."
+  },
+  {
+    "id": "e99c01fb-e000-4561-87d7-36f4163a5c49",
+    "name": "Pally Mangal Samity Sarbojanin",
+    "type": "mega",
+    "lat": 22.531993249883474,
+    "lon": 88.36530566369761,
+    "history": "Pally Mangal Samity Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "e5e0f633-8987-4aa0-93c9-24374ed98cfd",
+    "name": "Hindusthan Club",
+    "type": "mega",
+    "lat": 22.51711736414604,
+    "lon": 88.35160360916299,
+    "history": "Hindusthan Club is a renowned mega puja."
+  },
+  {
+    "id": "07a53d68-1ec3-4f7c-a79a-18767c4100d0",
+    "name": "Trikon Park Durgotsab",
+    "type": "mega",
+    "lat": 22.516506189988657,
+    "lon": 88.34498620132908,
+    "history": "Trikon Park Durgotsab is a renowned mega puja."
+  },
+  {
+    "id": "b9db5b5e-0bb6-42d8-9d79-99ee46a2d7f0",
+    "name": "Barisha Sarbojanin",
+    "type": "mega",
+    "lat": 22.502647087980254,
+    "lon": 88.3572094103743,
+    "history": "Barisha Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "552fba32-4579-485e-bb17-607009af8fe9",
+    "name": "Badamtala Ashar Sangha",
+    "type": "mega",
+    "lat": 22.498267256366745,
+    "lon": 88.36854014478023,
+    "history": "Badamtala Ashar Sangha is a renowned mega puja."
+  },
+  {
+    "id": "43b9c473-1ff8-4ad9-aab8-064e5c74d103",
+    "name": "Maddox Square Durga puja",
+    "type": "mega",
+    "lat": 22.49665675648281,
+    "lon": 88.37499592933486,
+    "history": "Maddox Square Durga puja is a renowned mega puja."
+  },
+  {
+    "id": "8b9e97f0-6a35-4ac8-bd9b-3c78bbe51a1e",
+    "name": "Behala Club",
+    "type": "mega",
+    "lat": 22.506101765828472,
+    "lon": 88.3785551663069,
+    "history": "Behala Club is a renowned mega puja."
+  },
+  {
+    "id": "0b0e3b8f-cb06-4db8-a742-a90449547bd9",
+    "name": "Singhi park Sarbojanin Durga Puja",
+    "type": "mega",
+    "lat": 22.512937010935865,
+    "lon": 88.36586850693358,
+    "history": "Singhi park Sarbojanin Durga Puja is a renowned mega puja."
+  },
+  {
+    "id": "bebad58d-96ee-4b9a-92f0-fea82a072819",
+    "name": "Nepal Bhattacharya street Durga puja",
+    "type": "mega",
+    "lat": 22.49934109652059,
+    "lon": 88.3703307135812,
+    "history": "Nepal Bhattacharya street Durga puja is a renowned mega puja."
+  },
+  {
+    "id": "eee9e565-639e-4c93-b409-b46892dcec82",
+    "name": "Rajdanga Naba Uday Sangha",
+    "type": "mega",
+    "lat": 22.500916496116517,
+    "lon": 88.3780165337998,
+    "history": "Rajdanga Naba Uday Sangha is a renowned mega puja."
+  },
+  {
+    "id": "99fb5713-7433-453a-948c-f200f99a49ee",
+    "name": "Jodhpur park",
+    "type": "mega",
+    "lat": 22.49643589242952,
+    "lon": 88.35505050733471,
+    "history": "Jodhpur park is a renowned mega puja."
+  },
+  {
+    "id": "ef55c5c7-ddb0-443c-b7bc-805cc1b31288",
+    "name": "Suruchi Sangha",
+    "type": "mega",
+    "lat": 22.503583446630753,
+    "lon": 88.34423180121311,
+    "history": "Suruchi Sangha is a renowned mega puja."
+  },
+  {
+    "id": "859bb097-8382-456b-8c1b-85adeffc1b7f",
+    "name": "Bosepukur Talbagan",
+    "type": "mega",
+    "lat": 22.49328281957602,
+    "lon": 88.34009954866957,
+    "history": "Bosepukur Talbagan is a renowned mega puja."
+  },
+  {
+    "id": "906909be-5663-4069-aa05-7371919632f1",
+    "name": "Falguni Sangha",
+    "type": "mega",
+    "lat": 22.509968825230406,
+    "lon": 88.34420930723785,
+    "history": "Falguni Sangha is a renowned mega puja."
+  },
+  {
+    "id": "04193cea-4405-4094-a052-146919eedf87",
+    "name": "Ekdalia Evergreen club",
+    "type": "mega",
+    "lat": 22.530424322208596,
+    "lon": 88.34585159416832,
+    "history": "Ekdalia Evergreen club is a renowned mega puja."
+  },
+  {
+    "id": "e74448a3-cdad-4034-8d46-aaa1078808d4",
+    "name": "Selimpur Pally Sarbojanin",
+    "type": "mega",
+    "lat": 22.516357724400613,
+    "lon": 88.34682936190292,
+    "history": "Selimpur Pally Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "0e72fef3-d67c-4e9d-8cb7-3b0a7ee675d3",
+    "name": "Raipur club",
+    "type": "mega",
+    "lat": 22.50707375843553,
+    "lon": 88.37513521625935,
+    "history": "Raipur club is a renowned mega puja."
+  },
+  {
+    "id": "0b942c7e-8875-47ee-851f-80914cf2fb8e",
+    "name": "Samaj Sebi Sangha",
+    "type": "mega",
+    "lat": 22.520991128243203,
+    "lon": 88.34735626957904,
+    "history": "Samaj Sebi Sangha is a renowned mega puja."
+  },
+  {
+    "id": "591f8f78-9f7b-45aa-b506-559b15f2480e",
+    "name": "Santoshpur lake pally",
+    "type": "mega",
+    "lat": 22.51573573652952,
+    "lon": 88.34007166290685,
+    "history": "Santoshpur lake pally is a renowned mega puja."
+  },
+  {
+    "id": "61ab10dc-f7c5-41b8-9121-1a8fe1e5f282",
+    "name": "Deshapriya park",
+    "type": "mega",
+    "lat": 22.496486714241563,
+    "lon": 88.37964692875549,
+    "history": "Deshapriya park is a renowned mega puja."
+  },
+  {
+    "id": "06556e77-5356-4558-ae43-2b4d96419bd8",
+    "name": "Mudiali Club",
+    "type": "mega",
+    "lat": 22.5202934227242,
+    "lon": 88.35139628435797,
+    "history": "Mudiali Club is a renowned mega puja."
+  },
+  {
+    "id": "025aafb1-a551-4fb2-8817-5fbf785fdc81",
+    "name": "Tridhara Sammilani",
+    "type": "mega",
+    "lat": 22.50406832418513,
+    "lon": 88.37796313071382,
+    "history": "Tridhara Sammilani is a renowned mega puja."
+  },
+  {
+    "id": "cfe90b30-6706-4cfb-a816-bee070feee99",
+    "name": "Ballygunge Cultural Association Durga Puja",
+    "type": "mega",
+    "lat": 22.532750641874028,
+    "lon": 88.37061549221897,
+    "history": "Ballygunge Cultural Association Durga Puja is a renowned mega puja."
+  },
+  {
+    "id": "2579fa68-f3e8-41fa-ae00-8402853c7793",
+    "name": "95 pally Jodhpur park",
+    "type": "mega",
+    "lat": 22.51103924535347,
+    "lon": 88.36362396196138,
+    "history": "95 pally Jodhpur park is a renowned mega puja."
+  },
+  {
+    "id": "098f8720-db47-4a51-a351-43a4fa07bfd3",
+    "name": "Chetla Agrani Club",
+    "type": "mega",
+    "lat": 22.507838019828974,
+    "lon": 88.36036837942953,
+    "history": "Chetla Agrani Club is a renowned mega puja."
+  },
+  {
+    "id": "250027c4-b4ff-4ec9-bf80-8ea69dd41418",
+    "name": "Shiv Mandir Sarbojanin Durga Utsav Samity",
+    "type": "mega",
+    "lat": 22.533015246559927,
+    "lon": 88.36043775295488,
+    "history": "Shiv Mandir Sarbojanin Durga Utsav Samity is a renowned mega puja."
+  },
+  {
+    "id": "026c7c72-f15a-461f-b8d3-22368a99e1bf",
+    "name": "Babu bagan Club Sarbojanin Durga Puja",
+    "type": "mega",
+    "lat": 22.49845455170471,
+    "lon": 88.35505028931873,
+    "history": "Babu bagan Club Sarbojanin Durga Puja is a renowned mega puja."
+  },
+  {
+    "id": "66dd7c9f-61b7-485d-918e-b268639113af",
+    "name": "Bosepukur Sitala Mandir",
+    "type": "mega",
+    "lat": 22.500997811226856,
+    "lon": 88.34220768140138,
+    "history": "Bosepukur Sitala Mandir is a renowned mega puja."
+  },
+  {
+    "id": "a29c7f1e-409e-4b92-bbbe-904b719d03f7",
+    "name": "11 Pally Youth Association Behala",
+    "type": "mega",
+    "lat": 22.50625759763288,
+    "lon": 88.34794205215952,
+    "history": "11 Pally Youth Association Behala is a renowned mega puja."
+  },
+  {
+    "id": "ac6c77de-94e6-4d65-a72e-af61a74715d5",
+    "name": "66 Pally Sarbojanin Durgotsab",
+    "type": "mega",
+    "lat": 22.495172470385917,
+    "lon": 88.35912955340484,
+    "history": "66 Pally Sarbojanin Durgotsab is a renowned mega puja."
+  },
+  {
+    "id": "f82e6c5e-d740-46ac-99f3-04a8c5e1c709",
+    "name": "21 Pally Sarbojanin Durgotsab Samity",
+    "type": "mega",
+    "lat": 22.529376686133713,
+    "lon": 88.37013041065676,
+    "history": "21 Pally Sarbojanin Durgotsab Samity is a renowned mega puja."
+  },
+  {
+    "id": "14754cf4-9a0e-45f1-95e4-2909254a98aa",
+    "name": "Hindustan Park Sarbojanin Durgotsab Committee",
+    "type": "mega",
+    "lat": 22.519777198068226,
+    "lon": 88.35902036120032,
+    "history": "Hindustan Park Sarbojanin Durgotsab Committee is a renowned mega puja."
+  },
+  {
+    "id": "d320cba6-2370-40bd-98b1-c480a51246fc",
+    "name": "JC Block",
+    "type": "mega",
+    "lat": 22.59970296773663,
+    "lon": 88.40415169152978,
+    "history": "JC Block is a renowned mega puja."
+  },
+  {
+    "id": "d97df38a-1e97-4537-919f-54142bec4785",
+    "name": "FD Block",
+    "type": "mega",
+    "lat": 22.592024028627968,
+    "lon": 88.42709150930276,
+    "history": "FD Block is a renowned mega puja."
+  },
+  {
+    "id": "2619cce4-c101-4674-90a6-ce3f91c02b18",
+    "name": "BK Block",
+    "type": "mega",
+    "lat": 22.572647749266412,
+    "lon": 88.4237819058848,
+    "history": "BK Block is a renowned mega puja."
+  },
+  {
+    "id": "88a09d49-aeaa-4723-b261-cd80ca64b431",
+    "name": "GD Block",
+    "type": "mega",
+    "lat": 22.574840470330685,
+    "lon": 88.42104627382813,
+    "history": "GD Block is a renowned mega puja."
+  },
+  {
+    "id": "e4d4b0ad-34d5-48b4-ab2c-f078cb0bcb3c",
+    "name": "BD Block",
+    "type": "mega",
+    "lat": 22.580641502963992,
+    "lon": 88.4134608440194,
+    "history": "BD Block is a renowned mega puja."
+  },
+  {
+    "id": "34e447d8-1c1f-45b2-b1f5-f11deb31e5a2",
+    "name": "AC Block",
+    "type": "mega",
+    "lat": 22.584156730461846,
+    "lon": 88.41649288513783,
+    "history": "AC Block is a renowned mega puja."
+  },
+  {
+    "id": "84d882d3-849f-42db-987d-7ead43159347",
+    "name": "AH Block",
+    "type": "mega",
+    "lat": 22.571092254847404,
+    "lon": 88.41977185231464,
+    "history": "AH Block is a renowned mega puja."
+  },
+  {
+    "id": "a8b40748-d74d-4733-806d-5d3b90569326",
+    "name": "GC Block",
+    "type": "mega",
+    "lat": 22.598089938179594,
+    "lon": 88.41432395026207,
+    "history": "GC Block is a renowned mega puja."
+  },
+  {
+    "id": "7bd7cc55-db5e-496f-95b0-fc2cb0654be9",
+    "name": "EC Market",
+    "type": "mega",
+    "lat": 22.561550560991165,
+    "lon": 88.41918342225438,
+    "history": "EC Market is a renowned mega puja."
+  },
+  {
+    "id": "4d573329-6acc-4b57-ad05-7d191c5a1d6d",
+    "name": "BG Block",
+    "type": "mega",
+    "lat": 22.582840885519587,
+    "lon": 88.42168472286474,
+    "history": "BG Block is a renowned mega puja."
+  },
+  {
+    "id": "7f475cce-69c2-4761-b6ab-f1eddd634c53",
+    "name": "AB Block",
+    "type": "mega",
+    "lat": 22.562074765158815,
+    "lon": 88.42252377846104,
+    "history": "AB Block is a renowned mega puja."
+  },
+  {
+    "id": "15346aae-ab1a-4960-8e4b-30af809b3391",
+    "name": "IB Block",
+    "type": "mega",
+    "lat": 22.59662360436991,
+    "lon": 88.42974020475766,
+    "history": "IB Block is a renowned mega puja."
+  },
+  {
+    "id": "e0cb9918-33ff-4eba-9482-b7941ade382b",
+    "name": "BJ Block",
+    "type": "mega",
+    "lat": 22.562719441734917,
+    "lon": 88.41357614300853,
+    "history": "BJ Block is a renowned mega puja."
+  },
+  {
+    "id": "d93b29da-e729-4b45-b912-fb977687afaa",
+    "name": "FE Block",
+    "type": "mega",
+    "lat": 22.593642033152218,
+    "lon": 88.42948350317909,
+    "history": "FE Block is a renowned mega puja."
+  },
+  {
+    "id": "6dd90a49-8515-4ca2-bd6a-55023a58b553",
+    "name": "BH Block",
+    "type": "mega",
+    "lat": 22.578246944885173,
+    "lon": 88.40610884111864,
+    "history": "BH Block is a renowned mega puja."
+  },
+  {
+    "id": "c2ace2df-6cc8-45af-8f72-de09577b62bb",
+    "name": "LABONY ESTATE",
+    "type": "mega",
+    "lat": 22.572154751424176,
+    "lon": 88.40287088849966,
+    "history": "LABONY ESTATE is a renowned mega puja."
+  },
+  {
+    "id": "9c43a238-dae3-48c3-9551-1333567ffe3c",
+    "name": "AD Block",
+    "type": "mega",
+    "lat": 22.576841604955995,
+    "lon": 88.42527350522478,
+    "history": "AD Block is a renowned mega puja."
+  },
+  {
+    "id": "a4c2043a-7a7d-4c51-84c5-be71a7357b81",
+    "name": "HB Block",
+    "type": "mega",
+    "lat": 22.588563690265616,
+    "lon": 88.4293164878602,
+    "history": "HB Block is a renowned mega puja."
+  },
+  {
+    "id": "78a0337b-65f7-4103-92e8-0230c62e72ce",
+    "name": "BC Block",
+    "type": "mega",
+    "lat": 22.584000187382255,
+    "lon": 88.41798484405511,
+    "history": "BC Block is a renowned mega puja."
+  },
+  {
+    "id": "5d78dd44-d818-4992-b14a-7489b5c696dd",
+    "name": "IA Block",
+    "type": "mega",
+    "lat": 22.57113500472531,
+    "lon": 88.40968907033646,
+    "history": "IA Block is a renowned mega puja."
+  },
+  {
+    "id": "bf6bb324-7f3e-41d8-a8b0-3ff4d1264516",
+    "name": "AG Block",
+    "type": "mega",
+    "lat": 22.56174365175868,
+    "lon": 88.42622432247391,
+    "history": "AG Block is a renowned mega puja."
+  },
+  {
+    "id": "3ef047d2-0e93-4b5a-9d6d-9e2cff78ed89",
+    "name": "CD Block",
+    "type": "mega",
+    "lat": 22.59617046662186,
+    "lon": 88.40447651647213,
+    "history": "CD Block is a renowned mega puja."
+  },
+  {
+    "id": "1138d7a0-c50f-4354-a94d-ebc4b273b3bb",
+    "name": "HA Block",
+    "type": "mega",
+    "lat": 22.590424986391092,
+    "lon": 88.40087472561073,
+    "history": "HA Block is a renowned mega puja."
+  },
+  {
+    "id": "2d2c65d0-42b0-4ff0-bb8e-c9207d38070c",
+    "name": "AJ Block",
+    "type": "mega",
+    "lat": 22.595812994372857,
+    "lon": 88.40457537068343,
+    "history": "AJ Block is a renowned mega puja."
+  },
+  {
+    "id": "b4df893a-ee11-465f-8396-f660aa8a97f2",
+    "name": "BB Block",
+    "type": "mega",
+    "lat": 22.56248339770332,
+    "lon": 88.42520476526664,
+    "history": "BB Block is a renowned mega puja."
+  },
+  {
+    "id": "3610c2da-1edf-470f-a720-86f09f17084b",
+    "name": "BL Block",
+    "type": "mega",
+    "lat": 22.57851963499117,
+    "lon": 88.40177354247813,
+    "history": "BL Block is a renowned mega puja."
+  },
+  {
+    "id": "ae472498-ca71-4d0d-a125-93ea64edec9d",
+    "name": "DB Block",
+    "type": "mega",
+    "lat": 22.56841776587729,
+    "lon": 88.4267571761863,
+    "history": "DB Block is a renowned mega puja."
+  },
+  {
+    "id": "ab286e5a-fb69-41aa-96fc-7e355953a170",
+    "name": "CG Block",
+    "type": "mega",
+    "lat": 22.591264173704914,
+    "lon": 88.4021615200887,
+    "history": "CG Block is a renowned mega puja."
+  },
+  {
+    "id": "a97b4d0c-6a2f-4a50-babd-068f7fb27eee",
+    "name": "CB Block",
+    "type": "mega",
+    "lat": 22.566643675060842,
+    "lon": 88.41361555843979,
+    "history": "CB Block is a renowned mega puja."
+  },
+  {
+    "id": "b2db0863-cff3-4a47-b597-b918b94c493c",
+    "name": "AL Block",
+    "type": "mega",
+    "lat": 22.592937584459612,
+    "lon": 88.42767274567137,
+    "history": "AL Block is a renowned mega puja."
+  },
+  {
+    "id": "987482d2-99ca-41ee-bdaa-e283a59d33c5",
+    "name": "AK Block",
+    "type": "mega",
+    "lat": 22.587107382792997,
+    "lon": 88.41095511145019,
+    "history": "AK Block is a renowned mega puja."
+  },
+  {
+    "id": "706ef178-0e38-4233-a362-946ef2f7a600",
+    "name": "CJ Block",
+    "type": "mega",
+    "lat": 22.5641685310287,
+    "lon": 88.42373614219265,
+    "history": "CJ Block is a renowned mega puja."
+  },
+  {
+    "id": "fd52b843-43cd-4a32-9503-cc89b2f18d90",
+    "name": "FC Block",
+    "type": "mega",
+    "lat": 22.568760818830583,
+    "lon": 88.4181674197869,
+    "history": "FC Block is a renowned mega puja."
+  },
+  {
+    "id": "ca5eb48a-b4a2-4408-9a35-c35e9d4ac045",
+    "name": "BA Block",
+    "type": "mega",
+    "lat": 22.59224143707085,
+    "lon": 88.41555357827482,
+    "history": "BA Block is a renowned mega puja."
+  },
+  {
+    "id": "0b040365-9b3d-4a07-bcd6-d26c2d57d5fa",
+    "name": "AE Block",
+    "type": "mega",
+    "lat": 22.570604238989755,
+    "lon": 88.40403370406757,
+    "history": "AE Block is a renowned mega puja."
+  },
+  {
+    "id": "869a38cd-b559-43b2-86d3-26ff0be036d3",
+    "name": "BE Block",
+    "type": "mega",
+    "lat": 22.561808958178776,
+    "lon": 88.42696787319574,
+    "history": "BE Block is a renowned mega puja."
+  },
+  {
+    "id": "2fb05206-923d-4aef-a2b9-dcfc766f00ee",
+    "name": "EE Block",
+    "type": "mega",
+    "lat": 22.59369576058811,
+    "lon": 88.42551024413969,
+    "history": "EE Block is a renowned mega puja."
+  },
+  {
+    "id": "ff5c7126-ca53-4198-8828-7add85c735d3",
+    "name": "AA Block",
+    "type": "mega",
+    "lat": 22.596478458216566,
+    "lon": 88.40863443782696,
+    "history": "AA Block is a renowned mega puja."
+  },
+  {
+    "id": "bb56bfe2-f659-43c8-9956-f035c042c014",
+    "name": "DL Block",
+    "type": "mega",
+    "lat": 22.578249626660927,
+    "lon": 88.42399915978224,
+    "history": "DL Block is a renowned mega puja."
+  },
+  {
+    "id": "15ddac3b-e8de-4f46-964b-906aad640f8b",
+    "name": "CA Block",
+    "type": "mega",
+    "lat": 22.57305564849944,
+    "lon": 88.40545640320836,
+    "history": "CA Block is a renowned mega puja."
+  },
+  {
+    "id": "1c4706ab-b460-45bd-b380-34864dbc25e1",
+    "name": "DA Block",
+    "type": "mega",
+    "lat": 22.565471619564658,
+    "lon": 88.41917418759357,
+    "history": "DA Block is a renowned mega puja."
+  },
+  {
+    "id": "f6f5f611-2a56-4c00-80d9-2618e0b2b832",
+    "name": "CE Block",
+    "type": "mega",
+    "lat": 22.575593356187856,
+    "lon": 88.4264170260094,
+    "history": "CE Block is a renowned mega puja."
+  },
+  {
+    "id": "43e77655-07b2-4f41-9395-e51d0414ccc7",
+    "name": "Bharat Mata",
+    "type": "mega",
+    "lat": 22.58344719707353,
+    "lon": 88.36651723538786,
+    "history": "Bharat Mata is a renowned mega puja."
+  },
+  {
+    "id": "63f1a8b5-c849-4869-815d-c612fe0d13c5",
+    "name": "Gouriberia",
+    "type": "mega",
+    "lat": 22.58235142558298,
+    "lon": 88.373310328277,
+    "history": "Gouriberia is a renowned mega puja."
+  },
+  {
+    "id": "ccc29072-7616-4d63-978f-0f613259e4e8",
+    "name": "Deshapriya Park",
+    "type": "mega",
+    "lat": 22.580196554533927,
+    "lon": 88.35176035167088,
+    "history": "Deshapriya Park is a renowned mega puja."
+  },
+  {
+    "id": "1f74847e-9c46-42b2-9516-19e965c18e90",
+    "name": "Behala 29 Palli",
+    "type": "mega",
+    "lat": 22.559690992110482,
+    "lon": 88.37253606698539,
+    "history": "Behala 29 Palli is a renowned mega puja."
+  },
+  {
+    "id": "074a8aaf-96b6-41a3-a781-ef12f8656834",
+    "name": "Salt Lake CJ Block",
+    "type": "mega",
+    "lat": 22.57019268348119,
+    "lon": 88.37620631594775,
+    "history": "Salt Lake CJ Block is a renowned mega puja."
+  },
+  {
+    "id": "7b4a0718-36f3-47ca-9d65-0cb6390c83a5",
+    "name": "Pally Unnayan Samity Paschim Putiary",
+    "type": "mega",
+    "lat": 22.56618367105648,
+    "lon": 88.37535646308893,
+    "history": "Pally Unnayan Samity Paschim Putiary is a renowned mega puja."
+  },
+  {
+    "id": "f3d60d8e-61ed-40f3-8706-a5792fb642f3",
+    "name": "Adi Lake Palli",
+    "type": "mega",
+    "lat": 22.58932044697268,
+    "lon": 88.37081861580114,
+    "history": "Adi Lake Palli is a renowned mega puja."
+  },
+  {
+    "id": "90d8a7ba-0339-4219-a1c0-e2bd9d9b7b06",
+    "name": "Baghbazar Jagodharti",
+    "type": "mega",
+    "lat": 22.566729440967094,
+    "lon": 88.35498327406377,
+    "history": "Baghbazar Jagodharti is a renowned mega puja."
+  },
+  {
+    "id": "7bef7aa0-c143-46ba-91e3-5ce6e58746c0",
+    "name": "Laketown Netaji Sporting Club",
+    "type": "mega",
+    "lat": 22.588177423998307,
+    "lon": 88.36860446800998,
+    "history": "Laketown Netaji Sporting Club is a renowned mega puja."
+  },
+  {
+    "id": "82f5e14a-dc0e-481c-8d4c-049e9f28861d",
+    "name": "Behala Buroshibtala Janakalyan Sangha",
+    "type": "mega",
+    "lat": 22.55787269372517,
+    "lon": 88.36769369536259,
+    "history": "Behala Buroshibtala Janakalyan Sangha is a renowned mega puja."
+  },
+  {
+    "id": "a49d31f5-390c-4b9d-a815-7ae008b056fd",
+    "name": "64 Pally",
+    "type": "mega",
+    "lat": 22.5833765418664,
+    "lon": 88.36176005806668,
+    "history": "64 Pally is a renowned mega puja."
+  },
+  {
+    "id": "255e317c-4167-40cf-93f2-fcadbf913c89",
+    "name": "Goabagan Sarbojanin",
+    "type": "mega",
+    "lat": 22.562553591740304,
+    "lon": 88.35419703939282,
+    "history": "Goabagan Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "a043a5e5-c76a-4dce-aeec-e81ea3eba0c3",
+    "name": "Karunamayee G Block",
+    "type": "mega",
+    "lat": 22.564779920817244,
+    "lon": 88.37047475641974,
+    "history": "Karunamayee G Block is a renowned mega puja."
+  },
+  {
+    "id": "99b32955-4aff-4d70-9dab-927b63636c42",
+    "name": "Selimpur Pally",
+    "type": "mega",
+    "lat": 22.585731644049716,
+    "lon": 88.35727001980663,
+    "history": "Selimpur Pally is a renowned mega puja."
+  },
+  {
+    "id": "79323594-377c-4403-bf80-76ff82642aa6",
+    "name": "74 Pally",
+    "type": "mega",
+    "lat": 22.558545878526964,
+    "lon": 88.37519818291821,
+    "history": "74 Pally is a renowned mega puja."
+  },
+  {
+    "id": "20d10a0a-7a68-42e5-ab97-98e4947f4c65",
+    "name": "Sovabazar Beniatola",
+    "type": "mega",
+    "lat": 22.555376390204785,
+    "lon": 88.37213725563048,
+    "history": "Sovabazar Beniatola is a renowned mega puja."
+  },
+  {
+    "id": "4934e6f4-551e-43f3-9211-88e9a4c4423a",
+    "name": "CIT Sarbojanin",
+    "type": "mega",
+    "lat": 22.56107236470624,
+    "lon": 88.35814084190821,
+    "history": "CIT Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "b39ec249-46b3-439c-9080-c5e6dc0b6ab7",
+    "name": "Kabitirtha",
+    "type": "mega",
+    "lat": 22.579224001196394,
+    "lon": 88.37829493225583,
+    "history": "Kabitirtha is a renowned mega puja."
+  },
+  {
+    "id": "e2c9f85f-4841-43dc-8335-6ecd96727d64",
+    "name": "Singhi Park",
+    "type": "mega",
+    "lat": 22.569668599429033,
+    "lon": 88.37751171486482,
+    "history": "Singhi Park is a renowned mega puja."
+  },
+  {
+    "id": "65122938-2d67-4df7-b822-8e08cbdd1a11",
+    "name": "Vivekananda Sporting Club",
+    "type": "mega",
+    "lat": 22.550981763504524,
+    "lon": 88.35761628678604,
+    "history": "Vivekananda Sporting Club is a renowned mega puja."
+  },
+  {
+    "id": "b61f4899-ea02-4b62-88c3-10fdfba134cd",
+    "name": "Shibmandir Sarbojanin Durgotsab",
+    "type": "mega",
+    "lat": 22.551274547774494,
+    "lon": 88.3759518503303,
+    "history": "Shibmandir Sarbojanin Durgotsab is a renowned mega puja."
+  },
+  {
+    "id": "2310473a-5404-432b-a217-af5b2b6435bf",
+    "name": "Mitali - Kankurgachi",
+    "type": "mega",
+    "lat": 22.550944106403172,
+    "lon": 88.37550440085285,
+    "history": "Mitali - Kankurgachi is a renowned mega puja."
+  },
+  {
+    "id": "d4bec3cc-6399-4277-b18b-ebc5cc3e87c5",
+    "name": "95 Pally",
+    "type": "mega",
+    "lat": 22.551229021840346,
+    "lon": 88.37200937740944,
+    "history": "95 Pally is a renowned mega puja."
+  },
+  {
+    "id": "32cccd78-e30d-4592-a428-a2f6b2ebcbc1",
+    "name": "Padmapukur Youth Association",
+    "type": "mega",
+    "lat": 22.56092562409873,
+    "lon": 88.35231746487693,
+    "history": "Padmapukur Youth Association is a renowned mega puja."
+  },
+  {
+    "id": "1518f98a-999c-405b-985e-d0aa5cd0d0ff",
+    "name": "Santoshpur Sonar Tori Durgatsav",
+    "type": "mega",
+    "lat": 22.582686324352277,
+    "lon": 88.36757920254743,
+    "history": "Santoshpur Sonar Tori Durgatsav is a renowned mega puja."
+  },
+  {
+    "id": "33c46157-57e5-4616-b48b-8f1585c4ada9",
+    "name": "Suruchi Sangha",
+    "type": "mega",
+    "lat": 22.562305215423432,
+    "lon": 88.3605272043657,
+    "history": "Suruchi Sangha is a renowned mega puja."
+  },
+  {
+    "id": "dff2808f-0ac5-4dcc-956d-fa9f54a11996",
+    "name": "Roynagar Unnayan Samity",
+    "type": "mega",
+    "lat": 22.5792154623353,
+    "lon": 88.37869620013747,
+    "history": "Roynagar Unnayan Samity is a renowned mega puja."
+  },
+  {
+    "id": "ea67750a-90c1-46fc-8d90-a91f68696a57",
+    "name": "Kashi Bose Lane",
+    "type": "mega",
+    "lat": 22.55142993224817,
+    "lon": 88.36929835285079,
+    "history": "Kashi Bose Lane is a renowned mega puja."
+  },
+  {
+    "id": "015c5e4d-5dec-47e0-a2d9-0ea135cbc642",
+    "name": "Dum Dum Park Tarun Sangha",
+    "type": "mega",
+    "lat": 22.559872363847592,
+    "lon": 88.37478000817393,
+    "history": "Dum Dum Park Tarun Sangha is a renowned mega puja."
+  },
+  {
+    "id": "f3a4e12a-8289-4d36-a14a-24558aa11a25",
+    "name": "Greenwood Nook",
+    "type": "mega",
+    "lat": 22.582202674215562,
+    "lon": 88.3673249597263,
+    "history": "Greenwood Nook is a renowned mega puja."
+  },
+  {
+    "id": "9723229c-5660-4678-9332-e43933e9e428",
+    "name": "Falguni Sangha",
+    "type": "mega",
+    "lat": 22.55680811197508,
+    "lon": 88.3766123506594,
+    "history": "Falguni Sangha is a renowned mega puja."
+  },
+  {
+    "id": "3176b52f-a7e3-4de2-a9e0-b823d9dbc0d2",
+    "name": "Santoshpur Trikon Park",
+    "type": "mega",
+    "lat": 22.576287657023382,
+    "lon": 88.35621150205061,
+    "history": "Santoshpur Trikon Park is a renowned mega puja."
+  },
+  {
+    "id": "e4c59c91-3a74-4294-a883-7022fd349580",
+    "name": "Sitalatala Kishore Sangha",
+    "type": "mega",
+    "lat": 22.584127429943425,
+    "lon": 88.35276206092627,
+    "history": "Sitalatala Kishore Sangha is a renowned mega puja."
+  },
+  {
+    "id": "fe37212f-fede-4f7e-ba54-42618c18047a",
+    "name": "Bakul Bagan Sarbojanin",
+    "type": "mega",
+    "lat": 22.579930698923317,
+    "lon": 88.36577339339858,
+    "history": "Bakul Bagan Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "9b07b06f-9a76-4822-9ec7-2780d51560b4",
+    "name": "Dakshineswar Dolpere Adi Sabojonin Durgapuja",
+    "type": "mega",
+    "lat": 22.56309297053248,
+    "lon": 88.35299512619986,
+    "history": "Dakshineswar Dolpere Adi Sabojonin Durgapuja is a renowned mega puja."
+  },
+  {
+    "id": "692c14f0-ebef-44d6-a382-49edaf234329",
+    "name": "Barisha Player's Corner",
+    "type": "mega",
+    "lat": 22.564898850856785,
+    "lon": 88.36771634470121,
+    "history": "Barisha Player's Corner is a renowned mega puja."
+  },
+  {
+    "id": "76b9c597-6e0d-49ac-8f1f-daaf441d7c5c",
+    "name": "Adi Ballygunge",
+    "type": "mega",
+    "lat": 22.57765133173364,
+    "lon": 88.36815360103473,
+    "history": "Adi Ballygunge is a renowned mega puja."
+  },
+  {
+    "id": "c14920dd-ff67-4116-a722-77b539fbe973",
+    "name": "Samaj Sebi Sangha",
+    "type": "mega",
+    "lat": 22.555646176219653,
+    "lon": 88.35236564252169,
+    "history": "Samaj Sebi Sangha is a renowned mega puja."
+  },
+  {
+    "id": "b3707919-551e-4e9b-a953-466bfa184828",
+    "name": "Milangarh Sarbojanin",
+    "type": "mega",
+    "lat": 22.580345075599787,
+    "lon": 88.37978551051282,
+    "history": "Milangarh Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "eb23c6da-5b90-459e-9d3f-006bce5e6522",
+    "name": "Kolkata",
+    "type": "mega",
+    "lat": 22.576945396788712,
+    "lon": 88.37404783244291,
+    "history": "Kolkata is a renowned mega puja."
+  },
+  {
+    "id": "c502c111-346c-4e5d-b0a7-6ba6d496a3d5",
+    "name": "Salt Lake AE Block - Part 2",
+    "type": "mega",
+    "lat": 22.551541535411616,
+    "lon": 88.36377075552019,
+    "history": "Salt Lake AE Block - Part 2 is a renowned mega puja."
+  },
+  {
+    "id": "a832dce2-6351-49a8-b142-a9258dfc8cd3",
+    "name": "Ekush Pally Sarbojanin Durgotsab",
+    "type": "mega",
+    "lat": 22.56814899747824,
+    "lon": 88.37075294332097,
+    "history": "Ekush Pally Sarbojanin Durgotsab is a renowned mega puja."
+  },
+  {
+    "id": "a9acb3e1-4308-4ab3-b09e-ff4f6b6bf7e2",
+    "name": "Bengal United Club",
+    "type": "mega",
+    "lat": 22.586395587346168,
+    "lon": 88.36458301252475,
+    "history": "Bengal United Club is a renowned mega puja."
+  },
+  {
+    "id": "a3f94b28-44f9-4a86-a240-84e269ea44f1",
+    "name": "Barisha Yubak Brinda",
+    "type": "mega",
+    "lat": 22.586447795417783,
+    "lon": 88.35905052246723,
+    "history": "Barisha Yubak Brinda is a renowned mega puja."
+  },
+  {
+    "id": "e97e0e66-7dad-46ba-ab7f-083e11018c9a",
+    "name": "Sebak Sangha",
+    "type": "mega",
+    "lat": 22.573885794908126,
+    "lon": 88.35301413901611,
+    "history": "Sebak Sangha is a renowned mega puja."
+  },
+  {
+    "id": "b2f95d9b-90a2-4e50-a64d-27fe939b16c0",
+    "name": "Salt Lake HA Block",
+    "type": "mega",
+    "lat": 22.575281563647042,
+    "lon": 88.35851817213484,
+    "history": "Salt Lake HA Block is a renowned mega puja."
+  },
+  {
+    "id": "d921a5a4-778d-4eb5-b53c-3b557b2a91d0",
+    "name": "Haritaki Bagan",
+    "type": "mega",
+    "lat": 22.55404923284957,
+    "lon": 88.35682063435726,
+    "history": "Haritaki Bagan is a renowned mega puja."
+  },
+  {
+    "id": "998dde50-1688-455f-a0ed-ffd76b7bd3cf",
+    "name": "Barisha Sabuj Sathi Club",
+    "type": "mega",
+    "lat": 22.578587506775005,
+    "lon": 88.35738328243488,
+    "history": "Barisha Sabuj Sathi Club is a renowned mega puja."
+  },
+  {
+    "id": "423d2842-dc20-49e4-be93-0b0426b7910d",
+    "name": "Sammilita Lalabagan Sarbojanin",
+    "type": "mega",
+    "lat": 22.552437524638872,
+    "lon": 88.3690731551059,
+    "history": "Sammilita Lalabagan Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "41bd405a-124a-43b4-a065-bfc913d17684",
+    "name": "Ballygunge Cultural Association",
+    "type": "mega",
+    "lat": 22.58296521432137,
+    "lon": 88.35075124181004,
+    "history": "Ballygunge Cultural Association is a renowned mega puja."
+  },
+  {
+    "id": "2857bf6a-b7b1-48d6-8e69-0c2ddf73db4e",
+    "name": "Nalin Sarkar Street Sarbojanin Durgotsab",
+    "type": "mega",
+    "lat": 22.571428416796078,
+    "lon": 88.3681666633687,
+    "history": "Nalin Sarkar Street Sarbojanin Durgotsab is a renowned mega puja."
+  },
+  {
+    "id": "5c92944e-4e2a-4fa7-b6c2-45a14ec7d8e6",
+    "name": "Ganbani Sangha",
+    "type": "mega",
+    "lat": 22.58524738644384,
+    "lon": 88.35312843007372,
+    "history": "Ganbani Sangha is a renowned mega puja."
+  },
+  {
+    "id": "e8d9fe4b-7d3c-409f-b27f-689624327f53",
+    "name": "Pally Mangal Samity",
+    "type": "mega",
+    "lat": 22.570185469591465,
+    "lon": 88.35895696175521,
+    "history": "Pally Mangal Samity is a renowned mega puja."
+  },
+  {
+    "id": "c656c656-8ca2-4deb-9b65-7d13c4cc4e10",
+    "name": "Pragati Pally Adhibasi Brindra",
+    "type": "mega",
+    "lat": 22.569834864115844,
+    "lon": 88.37327878476283,
+    "history": "Pragati Pally Adhibasi Brindra is a renowned mega puja."
+  },
+  {
+    "id": "a7216d88-5886-4346-98be-4fafdc26e60d",
+    "name": "Barisha Tapoban",
+    "type": "mega",
+    "lat": 22.58815337104744,
+    "lon": 88.37552602182109,
+    "history": "Barisha Tapoban is a renowned mega puja."
+  },
+  {
+    "id": "74b2836a-3d28-4ba4-ad1d-ba9622c61961",
+    "name": "Surya Nagar Sarbojanin",
+    "type": "mega",
+    "lat": 22.573769469810628,
+    "lon": 88.36020054953394,
+    "history": "Surya Nagar Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "65285df5-8cef-4f96-962a-90dc81aff216",
+    "name": "Dakshin Phalguni Club",
+    "type": "mega",
+    "lat": 22.554740019049113,
+    "lon": 88.3666644305419,
+    "history": "Dakshin Phalguni Club is a renowned mega puja."
+  },
+  {
+    "id": "ce903d60-deda-43eb-81aa-c85d38fd5dca",
+    "name": "Naba Baghbazar",
+    "type": "mega",
+    "lat": 22.563770742138633,
+    "lon": 88.3754389399765,
+    "history": "Naba Baghbazar is a renowned mega puja."
+  },
+  {
+    "id": "1ac649db-8a64-437d-9ae5-0ca255820401",
+    "name": "Salt Lake CK-CL Block",
+    "type": "mega",
+    "lat": 22.55301128447116,
+    "lon": 88.3769255585977,
+    "history": "Salt Lake CK-CL Block is a renowned mega puja."
+  },
+  {
+    "id": "4e72e988-215f-4822-9151-6ebece296b62",
+    "name": "77 Palli",
+    "type": "mega",
+    "lat": 22.55191270046891,
+    "lon": 88.3797977997716,
+    "history": "77 Palli is a renowned mega puja."
+  },
+  {
+    "id": "84bde34d-a62c-45d8-ab8b-719a29dd4a11",
+    "name": "Purbachal Shakti Sangha",
+    "type": "mega",
+    "lat": 22.57654272543968,
+    "lon": 88.37677356628582,
+    "history": "Purbachal Shakti Sangha is a renowned mega puja."
+  },
+  {
+    "id": "059affc9-10d3-4322-9bd1-c596aea17644",
+    "name": "Chelta Sarbasadharaner Club",
+    "type": "mega",
+    "lat": 22.57366404374754,
+    "lon": 88.37849614816223,
+    "history": "Chelta Sarbasadharaner Club is a renowned mega puja."
+  },
+  {
+    "id": "ca009b17-7260-440e-84f0-f0a6368bc051",
+    "name": "Olabibitala Sarbojanin",
+    "type": "mega",
+    "lat": 22.57004729271867,
+    "lon": 88.36931168521168,
+    "history": "Olabibitala Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "7356e24d-5eae-485b-83de-cefb3c2b5121",
+    "name": "Sanghasree",
+    "type": "mega",
+    "lat": 22.55484924496467,
+    "lon": 88.35448487394747,
+    "history": "Sanghasree is a renowned mega puja."
+  },
+  {
+    "id": "f2952cc4-8917-4a14-81ea-45ee72662177",
+    "name": "Kamardanga Sitalatala - Howrah",
+    "type": "mega",
+    "lat": 22.584478303449277,
+    "lon": 88.36181757406725,
+    "history": "Kamardanga Sitalatala - Howrah is a renowned mega puja."
+  },
+  {
+    "id": "9536c9de-05f2-4b68-ab3d-44a5f8564a34",
+    "name": "Jogajatri Club",
+    "type": "mega",
+    "lat": 22.568779748187122,
+    "lon": 88.351710939625,
+    "history": "Jogajatri Club is a renowned mega puja."
+  },
+  {
+    "id": "6761ff17-9277-4bb2-b817-b8c906d5ef9b",
+    "name": "Prasanta Disha Sarbojanin",
+    "type": "mega",
+    "lat": 22.589433303815696,
+    "lon": 88.37161415243006,
+    "history": "Prasanta Disha Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "21669990-b632-46c8-abea-f3baf9a56007",
+    "name": "Ghas Bagan",
+    "type": "mega",
+    "lat": 22.560983930255126,
+    "lon": 88.37502471230636,
+    "history": "Ghas Bagan is a renowned mega puja."
+  },
+  {
+    "id": "7a869177-0463-40a8-b44b-9b0ab7265bac",
+    "name": "Tarun Sporting Club",
+    "type": "mega",
+    "lat": 22.561553644014158,
+    "lon": 88.37303731756954,
+    "history": "Tarun Sporting Club is a renowned mega puja."
+  },
+  {
+    "id": "936edacc-6054-4f1a-9a17-a51104001b9f",
+    "name": "Shimla Vivekananda Sporting Club",
+    "type": "mega",
+    "lat": 22.587316253780024,
+    "lon": 88.35934797170528,
+    "history": "Shimla Vivekananda Sporting Club is a renowned mega puja."
+  },
+  {
+    "id": "b2a51f8f-c24f-4f2a-8f0f-4a754a8ba1e8",
+    "name": "Kumartuli Preparation",
+    "type": "mega",
+    "lat": 22.56158513761253,
+    "lon": 88.35428383150094,
+    "history": "Kumartuli Preparation is a renowned mega puja."
+  },
+  {
+    "id": "6bdb00eb-6178-4ae2-b45b-27d14a620d26",
+    "name": "Chakraberia Sarbojanin",
+    "type": "mega",
+    "lat": 22.58752265412972,
+    "lon": 88.35485480561645,
+    "history": "Chakraberia Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "95c5cb7a-e5f9-417d-9025-8ef6a0f5e310",
+    "name": "Yuba Sangha Club",
+    "type": "mega",
+    "lat": 22.5790842023498,
+    "lon": 88.35163359912028,
+    "history": "Yuba Sangha Club is a renowned mega puja."
+  },
+  {
+    "id": "521177c0-dcff-45d8-85cb-369817f85910",
+    "name": "Lake Pally Sarbojanin",
+    "type": "mega",
+    "lat": 22.585097068316855,
+    "lon": 88.37501845133805,
+    "history": "Lake Pally Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "dd86fd65-81e5-424e-a4c3-e4ef2c336207",
+    "name": "Debdaru Fatak",
+    "type": "mega",
+    "lat": 22.561854291406693,
+    "lon": 88.3772547244523,
+    "history": "Debdaru Fatak is a renowned mega puja."
+  },
+  {
+    "id": "02610b89-6027-4e5c-bd8b-1fe38551842d",
+    "name": "Anupama Housing Complex",
+    "type": "mega",
+    "lat": 22.55214090378164,
+    "lon": 88.36741727871723,
+    "history": "Anupama Housing Complex is a renowned mega puja."
+  },
+  {
+    "id": "7c826cbf-57a0-4fc5-8bdc-6c966661b134",
+    "name": "Udayan Sangha",
+    "type": "mega",
+    "lat": 22.56871230303255,
+    "lon": 88.36640466507271,
+    "history": "Udayan Sangha is a renowned mega puja."
+  },
+  {
+    "id": "cf9491e0-b3f6-49c8-8193-bd910cd14cb3",
+    "name": "Padmapukur Baroyari",
+    "type": "mega",
+    "lat": 22.568255515406307,
+    "lon": 88.36550249022093,
+    "history": "Padmapukur Baroyari is a renowned mega puja."
+  },
+  {
+    "id": "152abf7b-628c-43d6-be0e-4026e33db8c1",
+    "name": "Jodhpur Park",
+    "type": "mega",
+    "lat": 22.559863661676427,
+    "lon": 88.35599729605325,
+    "history": "Jodhpur Park is a renowned mega puja."
+  },
+  {
+    "id": "de8482c7-7bc0-47b6-a72f-c7aee0ed351d",
+    "name": "Haridevpur Adarsha Samiti",
+    "type": "mega",
+    "lat": 22.553752815815475,
+    "lon": 88.36262801863064,
+    "history": "Haridevpur Adarsha Samiti is a renowned mega puja."
+  },
+  {
+    "id": "7c897a45-bfcb-4a91-b790-ea9d55aed7cc",
+    "name": "Hatkhola Gosain Para",
+    "type": "mega",
+    "lat": 22.56208753639384,
+    "lon": 88.37191879161605,
+    "history": "Hatkhola Gosain Para is a renowned mega puja."
+  },
+  {
+    "id": "fd33d867-9450-4602-aea6-e67e3c574308",
+    "name": "66 Palli",
+    "type": "mega",
+    "lat": 22.562219441832422,
+    "lon": 88.35247238080576,
+    "history": "66 Palli is a renowned mega puja."
+  },
+  {
+    "id": "bde31dd9-0411-402c-9fee-d591dd1e84e3",
+    "name": "Salt Lake CA Block",
+    "type": "mega",
+    "lat": 22.56398496444586,
+    "lon": 88.37950661886477,
+    "history": "Salt Lake CA Block is a renowned mega puja."
+  },
+  {
+    "id": "300db67c-36ab-471d-bef2-f6895ff9ac91",
+    "name": "United Club",
+    "type": "mega",
+    "lat": 22.550299459111436,
+    "lon": 88.37292930540961,
+    "history": "United Club is a renowned mega puja."
+  },
+  {
+    "id": "f7d647ee-953b-42a7-92ec-7439e55e3b0d",
+    "name": "Tridhara Sammilani",
+    "type": "mega",
+    "lat": 22.56809464341026,
+    "lon": 88.3794638446255,
+    "history": "Tridhara Sammilani is a renowned mega puja."
+  },
+  {
+    "id": "ef7310b8-87d7-46a5-8afc-bf1e402b3751",
+    "name": "Arupara Milan Sangha - Howrah",
+    "type": "mega",
+    "lat": 22.558402963966426,
+    "lon": 88.37532863325814,
+    "history": "Arupara Milan Sangha - Howrah is a renowned mega puja."
+  },
+  {
+    "id": "b2b1fb34-ee19-4887-8faa-116f9ab5537e",
+    "name": "Baghbazar Pally",
+    "type": "mega",
+    "lat": 22.55024125875487,
+    "lon": 88.36737540564951,
+    "history": "Baghbazar Pally is a renowned mega puja."
+  },
+  {
+    "id": "62d6ff4f-0e3b-4b71-90f0-a24f7ca8c02a",
+    "name": "Jawpur Bayam Samiti",
+    "type": "mega",
+    "lat": 22.557709983566195,
+    "lon": 88.36342896030948,
+    "history": "Jawpur Bayam Samiti is a renowned mega puja."
+  },
+  {
+    "id": "6f14a5ef-65ec-41de-8645-b35720cc9585",
+    "name": "Shyamapally Shyama Sangha",
+    "type": "mega",
+    "lat": 22.587644350999685,
+    "lon": 88.35484179875986,
+    "history": "Shyamapally Shyama Sangha is a renowned mega puja."
+  },
+  {
+    "id": "5a18ea5f-d5df-455d-af1b-a42afe99e38e",
+    "name": "Salt Lake AE Block - Part 1",
+    "type": "mega",
+    "lat": 22.565373097501855,
+    "lon": 88.37089657992654,
+    "history": "Salt Lake AE Block - Part 1 is a renowned mega puja."
+  },
+  {
+    "id": "ed5341a8-a90f-4001-8c29-9aa8f2a7b077",
+    "name": "Telengabagan",
+    "type": "mega",
+    "lat": 22.551603690459455,
+    "lon": 88.36721930149113,
+    "history": "Telengabagan is a renowned mega puja."
+  },
+  {
+    "id": "45307f87-57a0-4042-ac29-26b06fbc5b0d",
+    "name": "Salt Lake AG Block",
+    "type": "mega",
+    "lat": 22.556198254910893,
+    "lon": 88.37415670578056,
+    "history": "Salt Lake AG Block is a renowned mega puja."
+  },
+  {
+    "id": "104cf4b1-f37b-492d-99e9-090a89fdb767",
+    "name": "Dilip Smriti Sangha",
+    "type": "mega",
+    "lat": 22.576647246014268,
+    "lon": 88.36434500030333,
+    "history": "Dilip Smriti Sangha is a renowned mega puja."
+  },
+  {
+    "id": "1c932a9a-cb21-4bf3-a4e5-044fb3aefecd",
+    "name": "Santosh Mitra Square",
+    "type": "mega",
+    "lat": 22.57886178503171,
+    "lon": 88.37611467730427,
+    "history": "Santosh Mitra Square is a renowned mega puja."
+  },
+  {
+    "id": "0a5149ef-868c-4fe8-a265-90f16c173e0e",
+    "name": "37 Pally",
+    "type": "mega",
+    "lat": 22.57589766781865,
+    "lon": 88.37219381566746,
+    "history": "37 Pally is a renowned mega puja."
+  },
+  {
+    "id": "bacbc416-d3d0-44ab-9ce8-4442594d3f8d",
+    "name": "Barisha Club",
+    "type": "mega",
+    "lat": 22.58590099181521,
+    "lon": 88.36303314813198,
+    "history": "Barisha Club is a renowned mega puja."
+  },
+  {
+    "id": "58b3d7f3-fbe1-44a2-bae5-60bc17086f3e",
+    "name": "Salt Lake DL block",
+    "type": "mega",
+    "lat": 22.577487234927947,
+    "lon": 88.36942654739407,
+    "history": "Salt Lake DL block is a renowned mega puja."
+  },
+  {
+    "id": "ee5cb510-c4be-41bf-a928-194ddac80ee7",
+    "name": "Darpanarayan Tagore Street Pally Samity",
+    "type": "mega",
+    "lat": 22.55937705823845,
+    "lon": 88.36719715190821,
+    "history": "Darpanarayan Tagore Street Pally Samity is a renowned mega puja."
+  },
+  {
+    "id": "6d6b092b-1ae5-4c3f-b429-0bdda3a60e21",
+    "name": "Salt Lake BG Block",
+    "type": "mega",
+    "lat": 22.576072270463236,
+    "lon": 88.35479955435872,
+    "history": "Salt Lake BG Block is a renowned mega puja."
+  },
+  {
+    "id": "e3b29491-24bb-456f-8479-c1b7c023cd7d",
+    "name": "Sodepur Pragati Sangha (Haridevpur)",
+    "type": "mega",
+    "lat": 22.559806227219436,
+    "lon": 88.37126535336772,
+    "history": "Sodepur Pragati Sangha (Haridevpur) is a renowned mega puja."
+  },
+  {
+    "id": "2150f88b-65c5-413b-94bc-dfc5019872d7",
+    "name": "Naskarpur Sarbojanin",
+    "type": "mega",
+    "lat": 22.57977314905611,
+    "lon": 88.35411523476448,
+    "history": "Naskarpur Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "b4a25bdd-820d-44d7-90f0-17a6b3c4306a",
+    "name": "Salt Lake GD Block",
+    "type": "mega",
+    "lat": 22.572459951450085,
+    "lon": 88.36123489121728,
+    "history": "Salt Lake GD Block is a renowned mega puja."
+  },
+  {
+    "id": "192be787-1f0c-4797-b63c-46fd652fc66e",
+    "name": "Sealdah Railway Athletic Club",
+    "type": "mega",
+    "lat": 22.577461339469167,
+    "lon": 88.37541000846252,
+    "history": "Sealdah Railway Athletic Club is a renowned mega puja."
+  },
+  {
+    "id": "84576b9d-1039-46d9-9564-3ebce6160397",
+    "name": "Behala Nutan Dal",
+    "type": "mega",
+    "lat": 22.5619833657131,
+    "lon": 88.3626112416807,
+    "history": "Behala Nutan Dal is a renowned mega puja."
+  },
+  {
+    "id": "5aa978ba-89aa-4150-9d49-cbb0da66cddc",
+    "name": "Mudiali Club",
+    "type": "mega",
+    "lat": 22.55560560985935,
+    "lon": 88.35242953018165,
+    "history": "Mudiali Club is a renowned mega puja."
+  },
+  {
+    "id": "0719c4d1-1bc4-498b-86b1-3c1218914dff",
+    "name": "Poddar Nagar Park",
+    "type": "mega",
+    "lat": 22.57023326217818,
+    "lon": 88.3658311476736,
+    "history": "Poddar Nagar Park is a renowned mega puja."
+  },
+  {
+    "id": "267aa0ef-beaa-4daf-aa92-a9ed5b48b0e4",
+    "name": "Salt Lake AJ Block",
+    "type": "mega",
+    "lat": 22.55486390665048,
+    "lon": 88.37700291649057,
+    "history": "Salt Lake AJ Block is a renowned mega puja."
+  },
+  {
+    "id": "a9954a35-a4f4-45ff-9e60-76f1ecafc178",
+    "name": "Santoshpur Lake Pally",
+    "type": "mega",
+    "lat": 22.583527423447805,
+    "lon": 88.36473579830582,
+    "history": "Santoshpur Lake Pally is a renowned mega puja."
+  },
+  {
+    "id": "ee7381af-92f3-4c97-a27c-eea5610b2588",
+    "name": "Green Avenue Sarbojanin",
+    "type": "mega",
+    "lat": 22.570250851286605,
+    "lon": 88.37505851675016,
+    "history": "Green Avenue Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "4fe85a93-0193-4a94-b6c7-30704cbef83d",
+    "name": "Hari Ghosh Street Sarbojonin",
+    "type": "mega",
+    "lat": 22.575324419710604,
+    "lon": 88.37583132090512,
+    "history": "Hari Ghosh Street Sarbojonin is a renowned mega puja."
+  },
+  {
+    "id": "70eca015-1a3f-4436-9c85-b3c30bbd5897",
+    "name": "Shurir Bagan",
+    "type": "mega",
+    "lat": 22.585469121797622,
+    "lon": 88.36421666827,
+    "history": "Shurir Bagan is a renowned mega puja."
+  },
+  {
+    "id": "cd302eef-447f-4bea-a83c-f8919166621c",
+    "name": "Garia Pancha Durga",
+    "type": "mega",
+    "lat": 22.55193144372509,
+    "lon": 88.36457409526798,
+    "history": "Garia Pancha Durga is a renowned mega puja."
+  },
+  {
+    "id": "3299a3b9-fd31-4e9f-9731-b17de0e7570c",
+    "name": "Selimpur Naskarpara",
+    "type": "mega",
+    "lat": 22.56646431635309,
+    "lon": 88.3541088891842,
+    "history": "Selimpur Naskarpara is a renowned mega puja."
+  },
+  {
+    "id": "bfd1fc69-d741-410a-a881-0777d4045d2f",
+    "name": "Beadon Street Sarbojanin",
+    "type": "mega",
+    "lat": 22.56328932506688,
+    "lon": 88.37436391611143,
+    "history": "Beadon Street Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "a17429d7-45f7-42f5-b0ec-4fac59785cac",
+    "name": "Netaji Jatiya Sebadal",
+    "type": "mega",
+    "lat": 22.562206676743674,
+    "lon": 88.37165409908998,
+    "history": "Netaji Jatiya Sebadal is a renowned mega puja."
+  },
+  {
+    "id": "5ee1d7ad-1291-4512-bc4c-46e22528aabd",
+    "name": "Harish Park Puja",
+    "type": "mega",
+    "lat": 22.585132364468485,
+    "lon": 88.36471995292484,
+    "history": "Harish Park Puja is a renowned mega puja."
+  },
+  {
+    "id": "4d22ae59-9045-4538-9c87-293142c020f8",
+    "name": "Netaji Nagar Sarbojanin",
+    "type": "mega",
+    "lat": 22.567828555616035,
+    "lon": 88.352580220285,
+    "history": "Netaji Nagar Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "70c3f2ab-6274-4240-afc7-12e37a5dfde6",
+    "name": "Badamtala Ashar Sangha",
+    "type": "mega",
+    "lat": 22.582741384479473,
+    "lon": 88.35684319612912,
+    "history": "Badamtala Ashar Sangha is a renowned mega puja."
+  },
+  {
+    "id": "0231a664-246a-41a2-bec2-7940a2fee2a2",
+    "name": "Abasar Sarbojonin",
+    "type": "mega",
+    "lat": 22.560875239084417,
+    "lon": 88.37929048565724,
+    "history": "Abasar Sarbojonin is a renowned mega puja."
+  },
+  {
+    "id": "f6a27ad7-345c-4a89-9cb8-d852b6c71087",
+    "name": "Murari Pukur Bidhan Sangha",
+    "type": "mega",
+    "lat": 22.56834017884412,
+    "lon": 88.35624652012557,
+    "history": "Murari Pukur Bidhan Sangha is a renowned mega puja."
+  },
+  {
+    "id": "264ee18e-0757-46fb-8edc-6ff1ce304429",
+    "name": "Bhowanipur Swadhin Sangha",
+    "type": "mega",
+    "lat": 22.576025196853294,
+    "lon": 88.37316720075462,
+    "history": "Bhowanipur Swadhin Sangha is a renowned mega puja."
+  },
+  {
+    "id": "95d6c651-1287-47e8-a8d2-c61afeddbfc3",
+    "name": "Hindustan Park",
+    "type": "mega",
+    "lat": 22.588756559878323,
+    "lon": 88.35346099878767,
+    "history": "Hindustan Park is a renowned mega puja."
+  },
+  {
+    "id": "dbdeb6c5-f2ce-474a-b8c3-8798da3a141e",
+    "name": "Kabiraj Bagan",
+    "type": "mega",
+    "lat": 22.58904106787262,
+    "lon": 88.36174601373364,
+    "history": "Kabiraj Bagan is a renowned mega puja."
+  },
+  {
+    "id": "3e003714-c7cd-48c8-9dc5-29b1692e3682",
+    "name": "Salt Lake AD Block",
+    "type": "mega",
+    "lat": 22.55006844796285,
+    "lon": 88.36657789559021,
+    "history": "Salt Lake AD Block is a renowned mega puja."
+  },
+  {
+    "id": "d770ba00-508d-4c14-9ad9-aba4a35fea69",
+    "name": "Behala Club",
+    "type": "mega",
+    "lat": 22.559286466205435,
+    "lon": 88.36621461355851,
+    "history": "Behala Club is a renowned mega puja."
+  },
+  {
+    "id": "87baee9a-c611-436f-8ae9-88a25fe450ac",
+    "name": "Behala Youngmen's Association",
+    "type": "mega",
+    "lat": 22.584196783103454,
+    "lon": 88.37293229387792,
+    "history": "Behala Youngmen's Association is a renowned mega puja."
+  },
+  {
+    "id": "6be37191-d15b-462a-a1e6-b6958b9d1b10",
+    "name": "Ajeya Sanghati",
+    "type": "mega",
+    "lat": 22.586423735368,
+    "lon": 88.3609586041586,
+    "history": "Ajeya Sanghati is a renowned mega puja."
+  },
+  {
+    "id": "40b60dcf-09f7-44e2-ae64-9ec3186d6732",
+    "name": "Judge Bagan Recreation Club",
+    "type": "mega",
+    "lat": 22.583604517885064,
+    "lon": 88.35638080732474,
+    "history": "Judge Bagan Recreation Club is a renowned mega puja."
+  },
+  {
+    "id": "c7bb5e21-8912-4221-a9ec-3a7f6a259db2",
+    "name": "Dum Dum Park Bharat Chakra",
+    "type": "mega",
+    "lat": 22.577332994934686,
+    "lon": 88.36172977231213,
+    "history": "Dum Dum Park Bharat Chakra is a renowned mega puja."
+  },
+  {
+    "id": "0af2342a-5a18-4c3b-9b1a-dea106d6a06d",
+    "name": "Lalabagan Yubak Brinda - Nabankur Sangha",
+    "type": "mega",
+    "lat": 22.574360337573612,
+    "lon": 88.37089488860626,
+    "history": "Lalabagan Yubak Brinda - Nabankur Sangha is a renowned mega puja."
+  },
+  {
+    "id": "dd2843ec-4ab0-4aee-8a00-5f56ba8cb5d1",
+    "name": "Kendua Shanti Sangha - Patuli",
+    "type": "mega",
+    "lat": 22.57583956069061,
+    "lon": 88.37249903626768,
+    "history": "Kendua Shanti Sangha - Patuli is a renowned mega puja."
+  },
+  {
+    "id": "5d432008-59cf-42f2-b762-c6d876133e00",
+    "name": "Md. Ali Park",
+    "type": "mega",
+    "lat": 22.570903543105917,
+    "lon": 88.37050625287847,
+    "history": "Md. Ali Park is a renowned mega puja."
+  },
+  {
+    "id": "27279691-3a1c-4756-aa3f-5a8d752cc362",
+    "name": "Hatibagan Sarbojonin",
+    "type": "mega",
+    "lat": 22.569170944295358,
+    "lon": 88.36601944490951,
+    "history": "Hatibagan Sarbojonin is a renowned mega puja."
+  },
+  {
+    "id": "c0294380-6e81-41f9-bb39-679c6f39a7c6",
+    "name": "Rajdanga Naba Uday Sangha",
+    "type": "mega",
+    "lat": 22.57563996369597,
+    "lon": 88.35260113127664,
+    "history": "Rajdanga Naba Uday Sangha is a renowned mega puja."
+  },
+  {
+    "id": "e9a27d34-30f2-4757-8ab4-8ed3299bf90f",
+    "name": "Pally Saradiya Club",
+    "type": "mega",
+    "lat": 22.552253423062176,
+    "lon": 88.36515568517731,
+    "history": "Pally Saradiya Club is a renowned mega puja."
+  },
+  {
+    "id": "de8baf7a-5d63-447a-8898-a6a52d35985a",
+    "name": "Bosepukur Talbagan",
+    "type": "mega",
+    "lat": 22.583997675403452,
+    "lon": 88.36182310166518,
+    "history": "Bosepukur Talbagan is a renowned mega puja."
+  },
+  {
+    "id": "0b546e10-2691-43ee-99ef-5f36625c6b1c",
+    "name": "Pratapaditya Road Tricone Park",
+    "type": "mega",
+    "lat": 22.55374327833404,
+    "lon": 88.35647763953556,
+    "history": "Pratapaditya Road Tricone Park is a renowned mega puja."
+  },
+  {
+    "id": "83b5c03c-b171-40eb-8324-2b4c8f7b763f",
+    "name": "Laketown Nutan Palli Pradeep Sangha",
+    "type": "mega",
+    "lat": 22.558396192262343,
+    "lon": 88.35566736386463,
+    "history": "Laketown Nutan Palli Pradeep Sangha is a renowned mega puja."
+  },
+  {
+    "id": "5d4ae634-a101-4d92-b39d-ae62e2951651",
+    "name": "Swapnar Bagan",
+    "type": "mega",
+    "lat": 22.566901583587008,
+    "lon": 88.36205687126369,
+    "history": "Swapnar Bagan is a renowned mega puja."
+  },
+  {
+    "id": "486b6a7e-fee5-4aab-9a66-49e39debfb84",
+    "name": "Durga Puja of 4 Ghosh Lane",
+    "type": "mega",
+    "lat": 22.568746689100607,
+    "lon": 88.37990860729607,
+    "history": "Durga Puja of 4 Ghosh Lane is a renowned mega puja."
+  },
+  {
+    "id": "efb74069-6284-415f-bf5c-da76f2f331ac",
+    "name": "Sandhani",
+    "type": "mega",
+    "lat": 22.58031998470101,
+    "lon": 88.3628217401062,
+    "history": "Sandhani is a renowned mega puja."
+  },
+  {
+    "id": "9ed22b72-fba6-49e9-9067-23189b93d255",
+    "name": "Sangrami",
+    "type": "mega",
+    "lat": 22.551888380838378,
+    "lon": 88.37276969192143,
+    "history": "Sangrami is a renowned mega puja."
+  },
+  {
+    "id": "9bb9fbd6-aa33-4147-9876-f55979333fb4",
+    "name": "Golden Arrow Club",
+    "type": "mega",
+    "lat": 22.583730651648974,
+    "lon": 88.3527648831281,
+    "history": "Golden Arrow Club is a renowned mega puja."
+  },
+  {
+    "id": "d529303a-1bff-40bd-942e-13f848b3d28c",
+    "name": "41 Pally",
+    "type": "mega",
+    "lat": 22.558909584456842,
+    "lon": 88.35457624182237,
+    "history": "41 Pally is a renowned mega puja."
+  },
+  {
+    "id": "2784b2d4-3308-4a64-a598-55ac53f30b2e",
+    "name": "Ekdalia Evergreen Club",
+    "type": "mega",
+    "lat": 22.581844600809085,
+    "lon": 88.36906106053729,
+    "history": "Ekdalia Evergreen Club is a renowned mega puja."
+  },
+  {
+    "id": "e1667951-cc66-4b37-a729-f356e0a9beb3",
+    "name": "Behala Adarsha Pally",
+    "type": "mega",
+    "lat": 22.570622536939698,
+    "lon": 88.35485049102729,
+    "history": "Behala Adarsha Pally is a renowned mega puja."
+  },
+  {
+    "id": "1347e470-0f1f-480a-a8ac-9e1390037977",
+    "name": "Simla Byam Samity",
+    "type": "mega",
+    "lat": 22.567572976782454,
+    "lon": 88.35609093875416,
+    "history": "Simla Byam Samity is a renowned mega puja."
+  },
+  {
+    "id": "71fa7983-d0db-4bfd-b47a-5fe9faff757a",
+    "name": "Jatra Suru Sangha",
+    "type": "mega",
+    "lat": 22.568154746816308,
+    "lon": 88.37619795521614,
+    "history": "Jatra Suru Sangha is a renowned mega puja."
+  },
+  {
+    "id": "9fb63528-66c8-4b8e-b863-2a899274005c",
+    "name": "Hindustan Club",
+    "type": "mega",
+    "lat": 22.565791058214554,
+    "lon": 88.35866228770016,
+    "history": "Hindustan Club is a renowned mega puja."
+  },
+  {
+    "id": "86a8836b-0bf8-471c-8511-13f08a1ddf97",
+    "name": "Salt Lake AH Block",
+    "type": "mega",
+    "lat": 22.561493520731915,
+    "lon": 88.37655464840691,
+    "history": "Salt Lake AH Block is a renowned mega puja."
+  },
+  {
+    "id": "332a32dc-df29-437d-9992-d31aa032d00d",
+    "name": "Yuva Brinda",
+    "type": "mega",
+    "lat": 22.56868570037571,
+    "lon": 88.37818369648441,
+    "history": "Yuva Brinda is a renowned mega puja."
+  },
+  {
+    "id": "d848597a-468b-4bf0-9234-f8d724ba5898",
+    "name": "19 Pally",
+    "type": "mega",
+    "lat": 22.561584725724632,
+    "lon": 88.35056328867901,
+    "history": "19 Pally is a renowned mega puja."
+  },
+  {
+    "id": "a30aa1f9-3415-4846-a859-cca73190eef4",
+    "name": "Rupchand Mukherjee Lane Sarbojanin",
+    "type": "mega",
+    "lat": 22.57553408182209,
+    "lon": 88.35723444371526,
+    "history": "Rupchand Mukherjee Lane Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "ef3bcdad-c3fc-4cb0-baf1-138970e516b2",
+    "name": "Mukul Sangha",
+    "type": "mega",
+    "lat": 22.574009351149087,
+    "lon": 88.3623126567437,
+    "history": "Mukul Sangha is a renowned mega puja."
+  },
+  {
+    "id": "618633b9-3c46-402c-a778-4dabe99bb17b",
+    "name": "Pathuriaghata Pancher Pally",
+    "type": "mega",
+    "lat": 22.568611556508465,
+    "lon": 88.35117193330375,
+    "history": "Pathuriaghata Pancher Pally is a renowned mega puja."
+  },
+  {
+    "id": "e93a29d6-9a77-4542-9ae1-23f137a89dc9",
+    "name": "Baishnabghata Patuli Upanagari",
+    "type": "mega",
+    "lat": 22.551377835745807,
+    "lon": 88.35681230919518,
+    "history": "Baishnabghata Patuli Upanagari is a renowned mega puja."
+  },
+  {
+    "id": "7d7c1efc-5c08-43b3-9ac4-8756a8bc318f",
+    "name": "Chetla Agrani Club",
+    "type": "mega",
+    "lat": 22.57331820648589,
+    "lon": 88.37227779005337,
+    "history": "Chetla Agrani Club is a renowned mega puja."
+  },
+  {
+    "id": "846adac2-027a-4ebd-88f4-6232f5ebf6ed",
+    "name": "Rajdanga Tribarna Sangha",
+    "type": "mega",
+    "lat": 22.558281239440074,
+    "lon": 88.36770015822115,
+    "history": "Rajdanga Tribarna Sangha is a renowned mega puja."
+  },
+  {
+    "id": "54a3e0bf-1413-490a-914c-34eae7cd9d68",
+    "name": "Vivekananda Park Athletic Club",
+    "type": "mega",
+    "lat": 22.552828468945844,
+    "lon": 88.35458330296466,
+    "history": "Vivekananda Park Athletic Club is a renowned mega puja."
+  },
+  {
+    "id": "71f195c5-8ab5-4ae5-b95c-fb85f4f8b607",
+    "name": "Barisha Netaji Sangha",
+    "type": "mega",
+    "lat": 22.58954377485905,
+    "lon": 88.36019586488166,
+    "history": "Barisha Netaji Sangha is a renowned mega puja."
+  },
+  {
+    "id": "00afe9a8-2c63-4069-8c6a-89785c6e4acc",
+    "name": "Kumartuli Park",
+    "type": "mega",
+    "lat": 22.56424911448561,
+    "lon": 88.35487632677462,
+    "history": "Kumartuli Park is a renowned mega puja."
+  },
+  {
+    "id": "3e3a9888-99a2-46a5-a17e-81f6d46894c6",
+    "name": "Bosepukur Sitala Mandir",
+    "type": "mega",
+    "lat": 22.57396064069724,
+    "lon": 88.36719462897034,
+    "history": "Bosepukur Sitala Mandir is a renowned mega puja."
+  },
+  {
+    "id": "406e4de2-a537-4d42-a514-5227f613890f",
+    "name": "Acharya Prafulla Sangha - Behala",
+    "type": "mega",
+    "lat": 22.583212407829162,
+    "lon": 88.35901380407869,
+    "history": "Acharya Prafulla Sangha - Behala is a renowned mega puja."
+  },
+  {
+    "id": "d60c202e-06c1-4403-bd46-f619ddf3d88d",
+    "name": "Golfgreen Phase 2",
+    "type": "mega",
+    "lat": 22.566060440232913,
+    "lon": 88.3693109241558,
+    "history": "Golfgreen Phase 2 is a renowned mega puja."
+  },
+  {
+    "id": "de2869ec-a718-494c-8cad-4e5218fd5cac",
+    "name": "Laketown Adhibasi Brinda",
+    "type": "mega",
+    "lat": 22.587587852688195,
+    "lon": 88.3657772827685,
+    "history": "Laketown Adhibasi Brinda is a renowned mega puja."
+  },
+  {
+    "id": "728c4a3a-0984-4834-9fc0-b555cf6822a5",
+    "name": "Salt Lake IA Block",
+    "type": "mega",
+    "lat": 22.58771609698205,
+    "lon": 88.36352282844483,
+    "history": "Salt Lake IA Block is a renowned mega puja."
+  },
+  {
+    "id": "a58a7518-93a5-424a-8f57-555a0f8323e8",
+    "name": "Laketown Vivekananda Park",
+    "type": "mega",
+    "lat": 22.585374539185505,
+    "lon": 88.37934248212068,
+    "history": "Laketown Vivekananda Park is a renowned mega puja."
+  },
+  {
+    "id": "5f9bee18-0b36-4fae-8dc5-63edc8690b8e",
+    "name": "New Alipore Children's Park",
+    "type": "mega",
+    "lat": 22.589704898585182,
+    "lon": 88.37979251203042,
+    "history": "New Alipore Children's Park is a renowned mega puja."
+  },
+  {
+    "id": "406ccf2b-6c9d-4ed7-a9b7-cfc0a01004f6",
+    "name": "Garia Sabuj Dal",
+    "type": "mega",
+    "lat": 22.567504934430755,
+    "lon": 88.37569462593972,
+    "history": "Garia Sabuj Dal is a renowned mega puja."
+  },
+  {
+    "id": "6cfce6c9-9a7c-46ba-9f61-67c222a32cba",
+    "name": "Garia Sreerampur Kalyan Samity",
+    "type": "mega",
+    "lat": 22.589702771324347,
+    "lon": 88.36073915934948,
+    "history": "Garia Sreerampur Kalyan Samity is a renowned mega puja."
+  },
+  {
+    "id": "7e737e82-790c-4ace-885e-d3dcedfb2d93",
+    "name": "Goal Math",
+    "type": "mega",
+    "lat": 22.55873014410796,
+    "lon": 88.35615887587845,
+    "history": "Goal Math is a renowned mega puja."
+  },
+  {
+    "id": "e805702b-6d4e-4763-8535-975acf60be7f",
+    "name": "Jagat Mukherjee Park",
+    "type": "mega",
+    "lat": 22.56663712470441,
+    "lon": 88.37518147167432,
+    "history": "Jagat Mukherjee Park is a renowned mega puja."
+  },
+  {
+    "id": "86617a37-4993-4aa7-9365-94ec24185e1b",
+    "name": "Salt Lake BJ Block",
+    "type": "mega",
+    "lat": 22.569881287925977,
+    "lon": 88.37581032650557,
+    "history": "Salt Lake BJ Block is a renowned mega puja."
+  },
+  {
+    "id": "5485fa5c-2599-41c2-b527-ab4e6f5d2284",
+    "name": "Tala Barowari",
+    "type": "mega",
+    "lat": 22.562075864023228,
+    "lon": 88.37539975785265,
+    "history": "Tala Barowari is a renowned mega puja."
+  },
+  {
+    "id": "c50145f4-be5d-4f5f-9e6a-2340ae66a6db",
+    "name": "Golfgreen Phase 1",
+    "type": "mega",
+    "lat": 22.579599272434965,
+    "lon": 88.35080652369663,
+    "history": "Golfgreen Phase 1 is a renowned mega puja."
+  },
+  {
+    "id": "8fb9eb50-2e60-481e-b8bd-c2a6a8fcc8de",
+    "name": "Naktala Udayan Sangha",
+    "type": "mega",
+    "lat": 22.55223860048579,
+    "lon": 88.3707965668349,
+    "history": "Naktala Udayan Sangha is a renowned mega puja."
+  },
+  {
+    "id": "44f63389-0fa6-40c4-b36c-6a192b6b3fd9",
+    "name": "Lake Youth Corner",
+    "type": "mega",
+    "lat": 22.55688117535721,
+    "lon": 88.36147514208807,
+    "history": "Lake Youth Corner is a renowned mega puja."
+  },
+  {
+    "id": "67d9092d-599e-4deb-be03-94ca0c042981",
+    "name": "Dum Dum Tarun Dal",
+    "type": "mega",
+    "lat": 22.586426383836375,
+    "lon": 88.3763658246606,
+    "history": "Dum Dum Tarun Dal is a renowned mega puja."
+  },
+  {
+    "id": "51e33031-c5b3-4f9b-80bd-624429dddfbf",
+    "name": "Babubagan Club",
+    "type": "mega",
+    "lat": 22.55540480525428,
+    "lon": 88.37201673840703,
+    "history": "Babubagan Club is a renowned mega puja."
+  },
+  {
+    "id": "48fb0b9e-0f69-4fec-83d5-57c7b4650c20",
+    "name": "Chandranath Chatterjee Street",
+    "type": "mega",
+    "lat": 22.560256899912503,
+    "lon": 88.3513144511727,
+    "history": "Chandranath Chatterjee Street is a renowned mega puja."
+  },
+  {
+    "id": "69854553-9566-4785-a58d-f028d020d3db",
+    "name": "Baghbazar Sarbojonin Durgotsab & Exhibition",
+    "type": "mega",
+    "lat": 22.581982539291424,
+    "lon": 88.3552029512795,
+    "history": "Baghbazar Sarbojonin Durgotsab & Exhibition is a renowned mega puja."
+  },
+  {
+    "id": "9859705f-d49d-4f27-afab-eda7329674ec",
+    "name": "Uttar Panchanan Gram Milan",
+    "type": "mega",
+    "lat": 22.56320655289093,
+    "lon": 88.3536579795934,
+    "history": "Uttar Panchanan Gram Milan is a renowned mega puja."
+  },
+  {
+    "id": "12cdbd27-a8a8-439c-a851-c464d4d018fa",
+    "name": "Beliaghata Nabamilan",
+    "type": "mega",
+    "lat": 22.58736565578059,
+    "lon": 88.3533857178084,
+    "history": "Beliaghata Nabamilan is a renowned mega puja."
+  },
+  {
+    "id": "f1f52375-7a5a-40b3-93f6-b98f52220cbe",
+    "name": "Santoshpur Agragami",
+    "type": "mega",
+    "lat": 22.569992742429246,
+    "lon": 88.37156873599396,
+    "history": "Santoshpur Agragami is a renowned mega puja."
+  },
+  {
+    "id": "50b61d00-fb7d-4af7-99ed-24027f404ba4",
+    "name": "Sammilita Malapara",
+    "type": "mega",
+    "lat": 22.581926192885316,
+    "lon": 88.35523214585464,
+    "history": "Sammilita Malapara is a renowned mega puja."
+  },
+  {
+    "id": "5512c5c3-d563-4cc1-a8ed-c2ed605d22ef",
+    "name": "Bangur Avenue Protirodh Bahini",
+    "type": "mega",
+    "lat": 22.58034742147437,
+    "lon": 88.37537528924624,
+    "history": "Bangur Avenue Protirodh Bahini is a renowned mega puja."
+  },
+  {
+    "id": "3a2a2b3b-eefa-4beb-867c-5989bcd2420d",
+    "name": "Salt Lake Laboni",
+    "type": "mega",
+    "lat": 22.578314906419386,
+    "lon": 88.35480395964814,
+    "history": "Salt Lake Laboni is a renowned mega puja."
+  },
+  {
+    "id": "d0189365-b99e-472f-bde5-4c5a75a4db33",
+    "name": "College Square",
+    "type": "mega",
+    "lat": 22.550780748143552,
+    "lon": 88.36461539245067,
+    "history": "College Square is a renowned mega puja."
+  },
+  {
+    "id": "0dc0d4a8-bee5-4ef7-ae48-2c7e63fedd9d",
+    "name": "Bandhab Sammilani",
+    "type": "mega",
+    "lat": 22.57033149198067,
+    "lon": 88.35906480969668,
+    "history": "Bandhab Sammilani is a renowned mega puja."
+  },
+  {
+    "id": "fb7a2156-1498-4f85-8d64-672d4dbd8dd8",
+    "name": "Maddox Square",
+    "type": "mega",
+    "lat": 22.577500818427488,
+    "lon": 88.36814079282719,
+    "history": "Maddox Square is a renowned mega puja."
+  },
+  {
+    "id": "7eb200fd-0227-4963-b07d-5c6a1641c21c",
+    "name": "25 Pally",
+    "type": "mega",
+    "lat": 22.576227331669507,
+    "lon": 88.35623081463069,
+    "history": "25 Pally is a renowned mega puja."
+  },
+  {
+    "id": "839dadbf-fd61-43d9-96af-17d7440dafc7",
+    "name": "Sabeda Bagan",
+    "type": "mega",
+    "lat": 22.5577807037094,
+    "lon": 88.36731947681305,
+    "history": "Sabeda Bagan is a renowned mega puja."
+  },
+  {
+    "id": "00d49aa7-7511-4099-b47e-0f9fedf9c6d4",
+    "name": "Tala Palli",
+    "type": "mega",
+    "lat": 22.565360230764504,
+    "lon": 88.37027047747301,
+    "history": "Tala Palli is a renowned mega puja."
+  },
+  {
+    "id": "66d712f7-953b-4e7c-bea2-fbc6a72afa01",
+    "name": "Beliaghata 33 No Palli",
+    "type": "mega",
+    "lat": 22.582752890837593,
+    "lon": 88.37046676705013,
+    "history": "Beliaghata 33 No Palli is a renowned mega puja."
+  },
+  {
+    "id": "5b4f2d17-9a9d-444a-b975-39489b44f665",
+    "name": "Salt Lake FD Block",
+    "type": "mega",
+    "lat": 22.57953417034156,
+    "lon": 88.36388301444484,
+    "history": "Salt Lake FD Block is a renowned mega puja."
+  },
+  {
+    "id": "ec434bd9-fe1c-41af-a9c8-cba9bf1fc100",
+    "name": "Manoharpukur Youngs",
+    "type": "mega",
+    "lat": 22.570017249392787,
+    "lon": 88.37749909294925,
+    "history": "Manoharpukur Youngs is a renowned mega puja."
+  },
+  {
+    "id": "00e6d91c-671e-4b33-bbab-d38e369416ac",
+    "name": "Park Circus - Uddipani",
+    "type": "mega",
+    "lat": 22.566033874466957,
+    "lon": 88.36300413102677,
+    "history": "Park Circus - Uddipani is a renowned mega puja."
+  },
+  {
+    "id": "98fb0167-b6b5-403a-af29-19222ceb095b",
+    "name": "Sreebhumi Sporting Club",
+    "type": "mega",
+    "lat": 22.58187572179561,
+    "lon": 88.37096438467879,
+    "history": "Sreebhumi Sporting Club is a renowned mega puja."
+  },
+  {
+    "id": "ad709088-d102-4179-8799-26e19f4f45f3",
+    "name": "Sovabazar Sarbojanin",
+    "type": "mega",
+    "lat": 22.555186706410716,
+    "lon": 88.37374906374748,
+    "history": "Sovabazar Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "34cd8881-9247-48cb-88a9-bf7c7140cc7e",
+    "name": "Karbagan Sarbojanin",
+    "type": "mega",
+    "lat": 22.55002291040389,
+    "lon": 88.3599448327693,
+    "history": "Karbagan Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "3a76b492-e538-4c20-82a6-0e03cc1a99ac",
+    "name": "Salt Lake BE Block - Part 2",
+    "type": "mega",
+    "lat": 22.57369765433161,
+    "lon": 88.35683234294812,
+    "history": "Salt Lake BE Block - Part 2 is a renowned mega puja."
+  },
+  {
+    "id": "90cb0cda-2b32-4f9a-a36d-0f71329b70c4",
+    "name": "Nepal Bhattacharjee Street",
+    "type": "mega",
+    "lat": 22.578665590977934,
+    "lon": 88.3626428881696,
+    "history": "Nepal Bhattacharjee Street is a renowned mega puja."
+  },
+  {
+    "id": "d9f66fe6-1379-44cf-82bb-003a7b82e1bc",
+    "name": "Behala Sree Sangha",
+    "type": "mega",
+    "lat": 22.55769299608212,
+    "lon": 88.37327705880462,
+    "history": "Behala Sree Sangha is a renowned mega puja."
+  },
+  {
+    "id": "b49da1fa-b792-4ee1-83ad-a163e39f0308",
+    "name": "The Bengal Boys Training Association",
+    "type": "mega",
+    "lat": 22.567728113177214,
+    "lon": 88.35928726360213,
+    "history": "The Bengal Boys Training Association is a renowned mega puja."
+  },
+  {
+    "id": "3532e344-7e1c-4f5c-a489-45d0e1c78f31",
+    "name": "Behala Arcadia Sarbojanin",
+    "type": "mega",
+    "lat": 22.55328817011262,
+    "lon": 88.35413871832368,
+    "history": "Behala Arcadia Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "37f909b4-4b56-4762-885e-76fdf0383fb0",
+    "name": "Park Circus",
+    "type": "mega",
+    "lat": 22.57720947997571,
+    "lon": 88.36554282999522,
+    "history": "Park Circus is a renowned mega puja."
+  },
+  {
+    "id": "6d4ce91a-e4c9-458e-a49c-c6e963df4c0b",
+    "name": "Hatibagan Nabin Pally",
+    "type": "mega",
+    "lat": 22.55037049341326,
+    "lon": 88.36132976604044,
+    "history": "Hatibagan Nabin Pally is a renowned mega puja."
+  },
+  {
+    "id": "10406a48-1a0d-4581-adfd-88c172f8389e",
+    "name": "Durgabari",
+    "type": "mega",
+    "lat": 22.588816978852567,
+    "lon": 88.37705354569711,
+    "history": "Durgabari is a renowned mega puja."
+  },
+  {
+    "id": "dec260d3-e05d-43b4-aee6-5df2b271eaf6",
+    "name": "Dum Dum Park Yubak Brinda",
+    "type": "mega",
+    "lat": 22.57642757296039,
+    "lon": 88.36113413560459,
+    "history": "Dum Dum Park Yubak Brinda is a renowned mega puja."
+  },
+  {
+    "id": "4a4de6c6-00fb-4c56-afab-fdfb8110d656",
+    "name": "Joramandir",
+    "type": "mega",
+    "lat": 22.569010125908314,
+    "lon": 88.3516247837365,
+    "history": "Joramandir is a renowned mega puja."
+  },
+  {
+    "id": "ebc98686-e373-490a-b560-cb23ac3acf0a",
+    "name": "Kumartuli Sarbojanin",
+    "type": "mega",
+    "lat": 22.584198252096186,
+    "lon": 88.35204745669112,
+    "history": "Kumartuli Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "da222013-6b9c-4c41-bcd8-bf66aac00c9a",
+    "name": "Barisha Tarun Tirtha",
+    "type": "mega",
+    "lat": 22.561884058816762,
+    "lon": 88.36449746733153,
+    "history": "Barisha Tarun Tirtha is a renowned mega puja."
+  },
+  {
+    "id": "d41923d5-f33e-483e-a2ae-27f1d7478703",
+    "name": "Barisha Janakalyan Sangha",
+    "type": "mega",
+    "lat": 22.571561613188333,
+    "lon": 88.37080584858228,
+    "history": "Barisha Janakalyan Sangha is a renowned mega puja."
+  },
+  {
+    "id": "81aee143-c4b3-438d-8424-e9960329d045",
+    "name": "Azadgarh",
+    "type": "mega",
+    "lat": 22.582441119226125,
+    "lon": 88.36368180033847,
+    "history": "Azadgarh is a renowned mega puja."
+  },
+  {
+    "id": "dbb147aa-9cfa-4e98-8d99-9d185a21a044",
+    "name": "Abasarika Club",
+    "type": "mega",
+    "lat": 22.558930308151464,
+    "lon": 88.36966630506309,
+    "history": "Abasarika Club is a renowned mega puja."
+  },
+  {
+    "id": "e6682f29-3343-4a04-a1f5-c32f71cc2a8d",
+    "name": "Aikya Sammilani",
+    "type": "mega",
+    "lat": 22.55912974550167,
+    "lon": 88.36535536966862,
+    "history": "Aikya Sammilani is a renowned mega puja."
+  },
+  {
+    "id": "a744c1a9-dfc9-4f3b-99da-6ec249a4a30a",
+    "name": "Belgachia Sadharan Durgatsab",
+    "type": "mega",
+    "lat": 22.554216548949505,
+    "lon": 88.37371605563742,
+    "history": "Belgachia Sadharan Durgatsab is a renowned mega puja."
+  },
+  {
+    "id": "8d54be19-c3a2-42db-818e-7e711218f2ff",
+    "name": "Ahiritola",
+    "type": "mega",
+    "lat": 22.579736942366083,
+    "lon": 88.37910248992111,
+    "history": "Ahiritola is a renowned mega puja."
+  },
+  {
+    "id": "447d2946-92a3-4bf1-8c50-5b37828a2d54",
+    "name": "Triangular Park Sarbojanin",
+    "type": "mega",
+    "lat": 22.57440257680467,
+    "lon": 88.36476569529296,
+    "history": "Triangular Park Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "db967f5a-69f3-466d-b571-70d9368d590a",
+    "name": "Purbachal Sarbojanin",
+    "type": "mega",
+    "lat": 22.575990650496003,
+    "lon": 88.3704774869146,
+    "history": "Purbachal Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "8c842f01-3e27-45f1-8541-95cd5b40e714",
+    "name": "Motijheel Sarbojanin",
+    "type": "mega",
+    "lat": 22.560186302052287,
+    "lon": 88.36724309707415,
+    "history": "Motijheel Sarbojanin is a renowned mega puja."
+  },
+  {
+    "id": "68bfe63e-2e94-46c1-b351-9a3f4a6287b1",
+    "name": "Satadal",
+    "type": "mega",
+    "lat": 22.56047028052309,
+    "lon": 88.35580634163708,
+    "history": "Satadal is a renowned mega puja."
+  },
+  {
+    "id": "c6bb63ad-f812-4039-8eec-f3ddd99e40fd",
+    "name": "Manicktala Chaltabagan Loha Patty",
+    "type": "mega",
+    "lat": 22.571836081640132,
+    "lon": 88.36447280379045,
+    "history": "Manicktala Chaltabagan Loha Patty is a renowned mega puja."
+  },
+  {
+    "id": "651796a7-1f6b-45f9-abf7-2f4956ea3678",
+    "name": "Santoshpur Bibekananda Sangha",
+    "type": "mega",
+    "lat": 22.563264394784905,
+    "lon": 88.37832499616279,
+    "history": "Santoshpur Bibekananda Sangha is a renowned mega puja."
+  },
+  {
+    "id": "64691433-f0d0-467f-a8c2-0fdf2d977fae",
+    "name": "68 Pally",
+    "type": "mega",
+    "lat": 22.561790605519725,
+    "lon": 88.37436762880415,
+    "history": "68 Pally is a renowned mega puja."
+  },
+  {
+    "id": "a9bb8d1c-6ae4-4125-800d-9bf09de4dd30",
+    "name": "Rammohan Sammilani",
+    "type": "mega",
+    "lat": 22.561081766148313,
+    "lon": 88.3593996222682,
+    "history": "Rammohan Sammilani is a renowned mega puja."
+  },
+  {
+    "id": "4a3c976b-e859-4bdd-932f-cf9011cb27e3",
+    "name": "Naskarpara Pally Unnayan Samity - Haridevpur",
+    "type": "mega",
+    "lat": 22.580381129723296,
+    "lon": 88.37377198073982,
+    "history": "Naskarpara Pally Unnayan Samity - Haridevpur is a renowned mega puja."
+  }
+]

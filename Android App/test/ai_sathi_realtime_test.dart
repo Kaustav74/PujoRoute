@@ -1,0 +1,144 @@
+import 'dart:convert';
+import 'dart:io';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:pujoroute/services/emergency_service.dart';
+import 'package:pujoroute/services/live_feed_service.dart';
+import 'package:pujoroute/services/voice_assistant_service.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  group('Belur Math & Vishuddha Siddhanta Panjika 2026 Alignment', () {
+    test('panjika_2026.json contains accurate Belur Math Sandhi Puja and ritual timings', () {
+      final file = File('assets/data/panjika_2026.json');
+      expect(file.existsSync(), isTrue, reason: 'assets/data/panjika_2026.json must exist');
+
+      final content = file.readAsStringSync();
+      final Map<String, dynamic> data = jsonDecode(content);
+
+      expect(data['year'], equals(2026));
+      expect(data['almanac_benchmark'], contains('Vishuddha Siddhanta'));
+      expect(data['almanac_benchmark'], contains('Belur Math'));
+
+      final List milestones = data['milestones'];
+      expect(milestones.length, equals(8));
+
+      // Locate Ashtami
+      final ashtami = milestones.firstWhere((m) => m['id'] == 'ashtami');
+      expect(ashtami, isNotNull);
+
+      final rituals = ashtami['rituals'];
+      expect(rituals['sandhi_puja_start'], equals('10:28 AM'));
+      expect(rituals['sandhi_puja_end'], equals('11:16 AM'));
+      expect(rituals['balidan_moment'], equals('10:52 AM'));
+      expect(rituals['pushpanjali_cutoff'], equals('10:15 AM'));
+    });
+  });
+
+  group('Emergency Service & Bystander Intent Engine Tests', () {
+    final emergency = EmergencyService.instance;
+
+    test('isEmergencyIntent triggers accurately on Bengali and English distress terms', () {
+      expect(emergency.isEmergencyIntent('Lost my friend in the crowd!'), isTrue);
+      expect(emergency.isEmergencyIntent('Medical emergency near pandal'), isTrue);
+      expect(emergency.isEmergencyIntent('Someone fainted, need doctor'), isTrue);
+      expect(emergency.isEmergencyIntent('Amake bachan, bipod e porechi'), isTrue);
+      expect(emergency.isEmergencyIntent('Police booth kothay?'), isTrue);
+      expect(emergency.isEmergencyIntent('First aid center needed urgently'), isTrue);
+      expect(emergency.isEmergencyIntent('Chest pain, ambulance dorkar'), isTrue);
+      expect(emergency.isEmergencyIntent('pocketmaar hoyeche purse churi'), isTrue);
+
+      // Normal navigation queries must not trigger emergency
+      expect(emergency.isEmergencyIntent('Suggest 3 quiet bonedi baris near Sovabazar'), isFalse);
+      expect(emergency.isEmergencyIntent('How far is Sreebhumi from Ultadanga?'), isFalse);
+      expect(emergency.isEmergencyIntent('What is the nearest metro to Tridhara?'), isFalse);
+    });
+
+    test('findNearestHospital accurately resolves closest casualty center', () {
+      // Near South Kolkata / Bhawanipore (around SSKM Hospital 22.5385, 88.3444)
+      final hospSouth = emergency.findNearestHospital(22.5400, 88.3450);
+      expect(hospSouth.name, contains('SSKM'));
+      expect(hospSouth.phone, isNotEmpty);
+
+      // Near North Kolkata / Belgachia (around RG Kar 22.6041, 88.3752)
+      final hospNorth = emergency.findNearestHospital(22.6050, 88.3740);
+      expect(hospNorth.name, contains('R.G. Kar'));
+
+      // Near EM Bypass / Ruby (22.5135, 88.4025)
+      final hospEast = emergency.findNearestHospital(22.5135, 88.4010);
+      expect(hospEast.name, contains('Ruby'));
+    });
+
+    test('findNearestPoliceBooth resolves nearest Kolkata Police Division', () {
+      // South Division (near Ballygunge / Gariahat 22.5190, 88.3650)
+      final boothSouth = emergency.findNearestPoliceBooth(22.5200, 88.3600);
+      expect(boothSouth.division, contains('South'));
+
+      // North Division (near Shyambazar 22.6000, 88.3700)
+      final boothNorth = emergency.findNearestPoliceBooth(22.5900, 88.3650);
+      expect(boothNorth.division, contains('North'));
+    });
+
+    test('generateEmergencyGuidance produces direct helpline and casualty ward info without conversational fluff', () {
+      final text = emergency.generateEmergencyGuidance(
+        'I lost my brother in the crowd near Maddox Square',
+        22.5280,
+        88.3580,
+      );
+
+      expect(text, contains('EMERGENCY'));
+      expect(text, contains('100')); // Police
+      expect(text, contains('1090')); // Women helpline
+      expect(text, contains('Police Help Booth'));
+    });
+  });
+
+  group('Live Feed Service & Traffic Bypass Tests', () {
+    final live = LiveFeedService.instance;
+
+    test('getLiveBannerTicker returns weather and traffic advisory', () {
+      final ticker = live.getLiveBannerTicker();
+      expect(ticker, isNotEmpty);
+      expect(ticker, contains('Live'));
+      expect(ticker, contains('Metro'));
+    });
+
+    test('shouldRerouteAround accurately detects high congestion pandals', () {
+      // Sreebhumi Sporting Club is on VIP Road (Severe crowd pressure, 75m wait)
+      expect(live.shouldRerouteAround('Sreebhumi Sporting Club'), isTrue);
+
+      // Suruchi Sangha is on New Alipore (Barricaded diversion, 60m wait)
+      expect(live.shouldRerouteAround('Suruchi Sangha'), isTrue);
+
+      // Smooth flowing pandals (<60m wait) should not trigger mandatory reroute
+      expect(live.shouldRerouteAround('Ekdalia Evergreen Club'), isFalse);
+      expect(live.shouldRerouteAround('Sovabazar Rajbari'), isFalse);
+    });
+
+    test('getPandalLiveStatus provides valid wait time and status indicator', () {
+      final waitInfo = live.getPandalLiveStatus('Suruchi Sangha');
+      expect(waitInfo['wait'], inInclusiveRange(5, 120));
+      expect(waitInfo['advisory'].toString().isNotEmpty, isTrue);
+      expect(['smooth', 'moderate', 'heavy'], contains(waitInfo['status']));
+    });
+  });
+
+  group('Voice Assistant Bengali/Banglish Intent Detection Tests', () {
+    final voice = VoiceAssistantService.instance;
+
+    test('Voice assistant detects Bengali/Banglish distance and puja queries', () {
+      final intentDistance = voice.resolveVoiceIntent('ekdalia theke singhi park koto dur');
+      expect(intentDistance.type, equals(VoiceIntentType.navigation));
+      expect(intentDistance.targetPandal?.name.toLowerCase(), anyOf(contains('ekdalia'), contains('singhi')));
+
+      final intentSandhi = voice.resolveVoiceIntent('sandhi puja kokhon shuru hobe 2026');
+      expect(intentSandhi.type, equals(VoiceIntentType.calendar));
+
+      final intentEmergency = voice.resolveVoiceIntent('bipod e porechi amake bachan');
+      expect(intentEmergency.type, equals(VoiceIntentType.emergency));
+
+      final intentCircuit = voice.resolveVoiceIntent('ekta circuit banie dao');
+      expect(intentCircuit.type, equals(VoiceIntentType.circuit));
+    });
+  });
+}
