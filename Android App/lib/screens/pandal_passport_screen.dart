@@ -318,21 +318,27 @@ class _PandalPassportScreenState extends State<PandalPassportScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Row(
-                      children: [
-                        Text('🏛️', style: TextStyle(fontSize: 18)),
-                        SizedBox(width: 8),
-                        Text(
-                          'KOLKATA PUJO PASSPORT 2026',
-                          style: TextStyle(
-                            color: Color(0xFFFFD54F),
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                            letterSpacing: 1.2,
+                    const Expanded(
+                      child: Row(
+                        children: [
+                          Text('🏛️', style: TextStyle(fontSize: 18)),
+                          SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              'KOLKATA PUJO PASSPORT 2026',
+                              maxLines: 2,
+                              style: TextStyle(
+                                color: Color(0xFFFFD54F),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(

@@ -156,6 +156,8 @@ class _PujaCalendarScreenState extends State<PujaCalendarScreen> {
                       children: [
                         const Text(
                           'মা আসছেন — আনন্দময়ী দুর্গোৎসব',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: kKashWhite,
                             fontSize: 15,
@@ -168,6 +170,8 @@ class _PujaCalendarScreenState extends State<PujaCalendarScreen> {
                           remainingDuration.isNegative
                               ? '🎉 Sharodotsav is here! Shubho Durgotsav!'
                               : '⏳ $tickerText until $activeMilestoneTitle',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             fontFamily: 'monospace',
                             color: Color(0xFFFFD54F),
