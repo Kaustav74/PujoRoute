@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- flame -->
+    <path android:fillColor="#FFC107"
+        android:pathData="M54,30 C60,40 64,46 64,53 C64,59 59.5,63 54,63 C48.5,63 44,59 44,53 C44,46 48,40 54,30 Z" />
+    <path android:fillColor="#FFF3E0"
+        android:pathData="M54,44 C57,49 58,52 58,55 C58,57.8 56.2,59.5 54,59.5 C51.8,59.5 50,57.8 50,55 C50,52 51,49 54,44 Z" />
+    <!-- diya bowl -->
+    <path android:fillColor="#FF9800"
+        android:pathData="M34,64 L74,64 C72,74 64,80 54,80 C44,80 36,74 34,64 Z" />
+</vector>
