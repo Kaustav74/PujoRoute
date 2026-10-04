@@ -8,10 +8,27 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Release signing material lives OUTSIDE the repo. Resolution order:
+//   1. env PUJOROUTE_KEY_PROPERTIES (absolute path to key.properties)
+//   2. /home/box/secure/pujoroute/key.properties (build machine default)
+//   3. android/key.properties (gitignored, legacy local override)
+// key.properties must contain storeFile (absolute path), storePassword, keyAlias, keyPassword.
+// If none exists (e.g. CI), release builds fall back to the debug key; such builds
+// must NOT be uploaded to any store.
 val keystoreProperties = Properties()
-val keystorePropertiesFile = rootProject.file("key.properties")
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+val keystorePropertiesFile: File? = listOfNotNull(
+    System.getenv("PUJOROUTE_KEY_PROPERTIES")?.takeIf { it.isNotBlank() }?.let { file(it) },
+    file("/home/box/secure/pujoroute/key.properties"),
+    rootProject.file("key.properties"),
+).firstOrNull { it.isFile }
+if (keystorePropertiesFile != null) {
+    FileInputStream(keystorePropertiesFile).use { keystoreProperties.load(it) }
+}
+val releaseStoreFile: File? = keystoreProperties.getProperty("storeFile")?.let { rootProject.file(it) }
+val hasReleaseSigning = releaseStoreFile?.isFile == true &&
+    listOf("storePassword", "keyAlias", "keyPassword").all { !keystoreProperties.getProperty(it).isNullOrBlank() }
+if (!hasReleaseSigning) {
+    logger.warn("PujoRoute: release keystore not found; release build will be signed with the DEBUG key.")
 }
 
 android {
@@ -41,11 +58,13 @@ android {
     }
 
     signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties.getProperty("keyAlias")
-            keyPassword = keystoreProperties.getProperty("keyPassword")
-            storeFile = keystoreProperties.getProperty("storeFile")?.let { rootProject.file(it) }
-            storePassword = keystoreProperties.getProperty("storePassword")
+        if (hasReleaseSigning) {
+            create("release") {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = releaseStoreFile
+                storePassword = keystoreProperties.getProperty("storePassword")
+            }
         }
     }
 
@@ -57,10 +76,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // Uses android/key.properties when present (never commit it). Without it,
-            // falls back to the debug key so local `flutter build apk --release` works
-            // for testing; such builds must NOT be uploaded to any store.
-            signingConfig = if (keystorePropertiesFile.exists()) {
+            // See keystore resolution above; falls back to the debug key when absent.
+            signingConfig = if (hasReleaseSigning) {
                 signingConfigs.getByName("release")
             } else {
                 signingConfigs.getByName("debug")
