@@ -3,6 +3,7 @@
   "year": 2026,
   "bengali_year": "1433 Bangabda",
   "guardrail_notice": "Ritual timings strictly follow the Vishuddha Siddhanta / Belur Math almanac benchmark. Community and local para pujas following Surya Siddhanta / Gupta Press may observe slight variations; devotees are advised to check local notice boards.",
+  "verification_note": "Dates must match lib/data/puja_calendar_data.dart (enforced by test/puja_calendar_test.dart). Panchami corrected 2026-10-16 -> 2026-10-15 and Shashthi 2026-10-17 -> 2026-10-16 (sources cited in puja_calendar_data.dart). Ritual clock times in this file other than Sandhi Puja and Kumari Puja (Belur Math, https://media.belurmath.org/sri-sri-durga-puja-2026-programme-details-25017/) are UNVERIFIED.",
   "milestones": [
     {
       "id": "mahalaya",
@@ -23,8 +24,8 @@
       "id": "panchami",
       "name_en": "Maha Panchami",
       "name_bn": "মহা পঞ্চমী",
-      "date": "2026-10-16",
-      "day": "Friday",
+      "date": "2026-10-15",
+      "day": "Thursday",
       "tithi": "Shukla Panchami",
       "rituals": {
         "vip_preview_start": "04:00 PM",
@@ -36,8 +37,8 @@
       "id": "shashthi",
       "name_en": "Maha Shashthi",
       "name_bn": "মহা ষষ্ঠী",
-      "date": "2026-10-17",
-      "day": "Saturday",
+      "date": "2026-10-16",
+      "day": "Friday",
       "tithi": "Shukla Shashthi",
       "rituals": {
         "kalparambha": "06:45 AM - 08:30 AM",

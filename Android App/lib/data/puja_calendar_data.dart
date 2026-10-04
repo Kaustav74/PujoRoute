@@ -1,12 +1,29 @@
-// Official Durga Puja 2026 Panjika, Tithi Schedule & AI Festival Calendar
-// Based on authentic Kolkata Panjika (Vishuddha Siddhanta / Belur Math tradition).
+// Durga Puja 2026 Panjika, Tithi Schedule & AI Festival Calendar (Kolkata, IST)
+//
+// Two timing modes:
+//  * Belur Math (default): Vishuddha Siddhanta almanac, the one Belur Math follows.
+//    https://media.belurmath.org/sri-sri-durga-puja-2026-programme-details-25017/
+//  * Beni Madhab / Gupta Press (`...Traditional` fields): traditional panjika.
+//    https://benimadhabsilpanjika.com/durga-puja-2026/
+// Cross-checked against Drik Panchang for Kolkata (geoname-id=1275004):
+//    https://www.drikpanchang.com/navratri/durga-puja/durga-puja-calendar.html?geoname-id=1275004&year=2026
+//
+// Each day has ONE date field, [PujaDayTithi.startsAt]. The displayed date
+// ([PujaDayTithi.dateFormatted]), the calendar day ([PujaDayTithi.targetDate]),
+// the countdown target ([PujaDayTithi.targetDateTime]) and the header
+// milestones ([kPuja2026Milestones]) are all derived from it, so they cannot
+// disagree. The clock time in each [startsAt] is the app's countdown anchor
+// for that day (not a panjika value) unless a comment cites a source.
 
 class PujaDayTithi {
   final String id;
   final String dayName;
   final String titleBengali;
   final String titleEnglish;
-  final String dateFormatted;
+
+  /// The single source of truth for this day's date: the observance day and
+  /// the exact instant (IST) the countdown runs to.
+  final DateTime startsAt;
   final String tithiName;
   final String tithiTimings;
   final String auspiciousMoments;
@@ -20,12 +37,12 @@ class PujaDayTithi {
   final String? auspiciousMomentsTraditional;
   final String? tithiTimingsTraditional;
 
-  const PujaDayTithi({
+  PujaDayTithi({
     required this.id,
     required this.dayName,
     required this.titleBengali,
     required this.titleEnglish,
-    required this.dateFormatted,
+    required this.startsAt,
     required this.tithiName,
     required this.tithiTimings,
     required this.auspiciousMoments,
@@ -58,54 +75,15 @@ class PujaDayTithi {
     return tithiTimings;
   }
 
-  DateTime get targetDate {
-    switch (id) {
-      case 'mahalaya':
-        return DateTime(2026, 10, 10);
-      case 'panchami':
-        return DateTime(2026, 10, 15);
-      case 'shashthi':
-        return DateTime(2026, 10, 17);
-      case 'saptami':
-        return DateTime(2026, 10, 18);
-      case 'ashtami':
-        return DateTime(2026, 10, 19);
-      case 'nabami':
-        return DateTime(2026, 10, 20);
-      case 'dashami':
-        return DateTime(2026, 10, 21);
-      case 'lakshmi_puja':
-        return DateTime(2026, 10, 25);
-      default:
-        return DateTime(2026, 10, 17);
-    }
-  }
+  /// Calendar day (midnight IST) of the observance, derived from [startsAt].
+  DateTime get targetDate =>
+      DateTime(startsAt.year, startsAt.month, startsAt.day);
 
-  /// Exact Target Epoch for Durga Puja 2026 (IST)
-  DateTime get targetDateTime {
-    switch (id) {
-      case 'mahalaya':
-        return DateTime(2026, 10, 10, 6, 0, 0);
-      case 'panchami':
-        return DateTime(2026, 10, 15, 16, 0, 0);
-      case 'shashthi':
-        return DateTime(2026, 10, 16, 6, 0, 0);
-      case 'saptami':
-        return DateTime(2026, 10, 18, 6, 0, 0);
-      case 'ashtami':
-        return DateTime(2026, 10, 19, 6, 30, 0);
-      case 'sandhi_puja':
-        return DateTime(2026, 10, 19, 10, 28, 0);
-      case 'nabami':
-        return DateTime(2026, 10, 20, 11, 30, 0);
-      case 'dashami':
-        return DateTime(2026, 10, 21, 6, 0, 0);
-      case 'lakshmi_puja':
-        return DateTime(2026, 10, 25, 18, 0, 0);
-      default:
-        return DateTime(2026, 10, 16, 9, 0, 0);
-    }
-  }
+  /// Exact countdown target (IST), derived from [startsAt].
+  DateTime get targetDateTime => startsAt;
+
+  /// Displayed date, e.g. "Friday, 16 October 2026", derived from [startsAt].
+  String get dateFormatted => formatPujaDate(startsAt);
 
   /// Whole days left until [targetDateTime], using the same rule as the
   /// Panjika header ticker (see [countdownWholeDays]).
@@ -143,12 +121,24 @@ String formatCountdownTicker(DateTime target, DateTime now) {
   return "${days}d : ${hours}h : ${minutes}m : ${seconds}s";
 }
 
+const List<String> _kWeekdays = [
+  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+];
+const List<String> _kMonths = [
+  'January', 'February', 'March', 'April', 'May', 'June', 'July',
+  'August', 'September', 'October', 'November', 'December',
+];
+
+/// "Friday, 16 October 2026". Locale-independent so the text never drifts
+/// from the [DateTime] it is built from.
+String formatPujaDate(DateTime d) =>
+    '${_kWeekdays[d.weekday - 1]}, ${d.day} ${_kMonths[d.month - 1]} ${d.year}';
+
 class PujaTithiDay {
   final String id;
   final String titleEn;
   final String titleBn;
   final String subTitle;
-  final DateTime targetDate;
   final DateTime tithiStart;
   final DateTime tithiEnd;
   final String muhuratTitle;
@@ -159,12 +149,15 @@ class PujaTithiDay {
     required this.titleEn,
     required this.titleBn,
     required this.subTitle,
-    required this.targetDate,
     required this.tithiStart,
     required this.tithiEnd,
     required this.muhuratTitle,
     required this.muhuratWindow,
   });
+
+  /// Same instant as the matching [PujaDayTithi.targetDateTime], so this
+  /// list can never disagree with the Panjika screen.
+  DateTime get targetDate => getPujaDayById(id).targetDateTime;
 
   int get daysRemaining => countdownWholeDays(targetDate, DateTime.now());
 }
@@ -175,7 +168,6 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleEn: 'Mahalaya',
     titleBn: 'মহালয়া — আগমনী ও চণ্ডীপাঠ',
     subTitle: 'Mahalaya (Devi Paksha Invocation)',
-    targetDate: DateTime(2026, 10, 10),
     tithiStart: DateTime(2026, 10, 9, 21, 35),
     tithiEnd: DateTime(2026, 10, 10, 21, 19),
     muhuratTitle: 'Dawn Tarpan at Ganga Ghats',
@@ -186,7 +178,6 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleEn: 'Maha Panchami',
     titleBn: 'মহা পঞ্চমী — আনন্দময়ী আগমনী',
     subTitle: 'Maha Panchami (Grand Inaugurations)',
-    targetDate: DateTime(2026, 10, 15),
     tithiStart: DateTime(2026, 10, 15, 1, 13),
     tithiEnd: DateTime(2026, 10, 16, 3, 26),
     muhuratTitle: 'VIP & Public Inaugurations',
@@ -197,7 +188,6 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleEn: 'Maha Shashthi',
     titleBn: 'মহা ষষ্ঠী — বোধন, আমন্ত্রণ ও অধিবাস',
     subTitle: 'Maha Shashthi (Devi Bodhon & Awakening)',
-    targetDate: DateTime(2026, 10, 17),
     tithiStart: DateTime(2026, 10, 16, 3, 26),
     tithiEnd: DateTime(2026, 10, 17, 5, 55),
     muhuratTitle: 'Prabhat Kalparambha',
@@ -208,7 +198,6 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleEn: 'Maha Saptami',
     titleBn: 'মহা সপ্তমী — নবপত্রিকা স্নান ও প্রাণ প্রতিষ্ঠা',
     subTitle: 'Maha Saptami (Nabapatrika / Kola Bou Snan)',
-    targetDate: DateTime(2026, 10, 18),
     tithiStart: DateTime(2026, 10, 17, 5, 55),
     tithiEnd: DateTime(2026, 10, 18, 8, 30),
     muhuratTitle: 'Nabapatrika Pravesh & Snan (Kola Bou river bath)',
@@ -219,7 +208,6 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleEn: 'Maha Ashtami',
     titleBn: 'মহা অষ্টমী — কুমারী পূজা ও সন্ধিপূজা',
     subTitle: 'Maha Ashtami (Kumari Puja & Sandhi Puja)',
-    targetDate: DateTime(2026, 10, 19),
     tithiStart: DateTime(2026, 10, 18, 8, 30),
     tithiEnd: DateTime(2026, 10, 19, 10, 52),
     muhuratTitle: 'Belur Math Sandhi Puja Muhurta',
@@ -230,7 +218,6 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleEn: 'Maha Nabami',
     titleBn: 'মহা নবমী — নবমী হোম ও ধুনুচি নাচ',
     subTitle: 'Maha Nabami (Sacred Homa & Dhunuchi Naach)',
-    targetDate: DateTime(2026, 10, 20),
     tithiStart: DateTime(2026, 10, 19, 10, 52),
     tithiEnd: DateTime(2026, 10, 20, 12, 51),
     muhuratTitle: 'Nabami Vihita Puja',
@@ -241,7 +228,6 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleEn: 'Bijoya Dashami',
     titleBn: 'বিজয়া দশমী — সিঁদুর খেলা ও বিসর্জন',
     subTitle: 'Bijoya Dashami (Sindoor Khela & Immersion)',
-    targetDate: DateTime(2026, 10, 21),
     tithiStart: DateTime(2026, 10, 20, 12, 51),
     tithiEnd: DateTime(2026, 10, 21, 14, 12),
     muhuratTitle: 'Dashami Vihita Puja & Darpan Bisarjan',
@@ -252,7 +238,6 @@ final List<PujaTithiDay> pujaCalendar2026 = [
     titleEn: 'Kojagori Lakshmi Puja',
     titleBn: 'কোজাগরী লক্ষ্মীপূজা — ধনধান্য ও সৌভাগ্য আরাধনা',
     subTitle: 'Kojagori Lakshmi Puja (Purnima Worship)',
-    targetDate: DateTime(2026, 10, 25),
     tithiStart: DateTime(2026, 10, 25, 11, 55),
     tithiEnd: DateTime(2026, 10, 26, 9, 41),
     muhuratTitle: 'Nishitha Kaal Lakshmi Aradhana',
@@ -260,13 +245,18 @@ final List<PujaTithiDay> pujaCalendar2026 = [
   ),
 ];
 
-const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
+final List<PujaDayTithi> kDurgaPujaCalendar2026 = [
   PujaDayTithi(
     id: 'mahalaya',
     dayName: 'Mahalaya',
     titleBengali: 'মহালয়া — আগমনী ও চণ্ডীপাঠ',
     titleEnglish: 'Mahalaya (Devi Paksha Invocation)',
-    dateFormatted: 'Saturday, 10 October 2026',
+    // Date: Sat 10 Oct, Mahalaya Amavasya. Drik Panchang Kolkata:
+    // Amavasya 09 Oct 09:35 PM - 10 Oct 09:19 PM (matches tithiTimings).
+    // https://www.drikpanchang.com/shraddha/tithi/amavasya-shraddha-date-time.html?year=2026&geoname-id=1275004
+    // UNVERIFIED: 06:00 is the app's countdown anchor, not a panjika time.
+    // No Beni Madhab / Gupta Press Amavasya times found online; none shown.
+    startsAt: DateTime(2026, 10, 10, 6, 0),
     tithiName: 'Ashwin Krishna Amavasya ( পিতৃপক্ষ অবসান ও দেবীপক্ষ সূচনা )',
     tithiTimings:
         'Amavasya begins: 09 Oct 09:35 PM | Amavasya ends: 10 Oct 09:19 PM',
@@ -301,7 +291,15 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dayName: 'Panchami',
     titleBengali: 'মহা পঞ্চমী — আনন্দময়ী আগমনী',
     titleEnglish: 'Maha Panchami (Grand Inaugurations)',
-    dateFormatted: 'Thursday, 15 October 2026',
+    // Date: Thu 15 Oct (Panchami at sunrise). Drik Panchang Kolkata:
+    // Chaturthi ends 15 Oct 01:13 AM; Panchami ends 16 Oct 03:25 AM.
+    // https://www.drikpanchang.com/bengali/bengali-month-panjika.html?date=15/10/2026&geoname-id=1275004
+    // UNVERIFIED: Panchami end 03:26 AM (Vishuddha, Ei Samay) vs 03:25 AM
+    // (Drik Panchang; myastrology.in Vishuddha table). Sources disagree; left as is.
+    // Beni Madhab 14 Oct 11:51 PM - 16 Oct 01:43 AM matches
+    // https://benimadhabsilpanjika.com/durga-puja-2026/
+    // UNVERIFIED: 16:00 is the app's inauguration countdown anchor.
+    startsAt: DateTime(2026, 10, 15, 16, 0),
     tithiName: 'Shukla Panchami',
     tithiTimings:
         'Panchami begins: 15 Oct 01:13 AM | Panchami ends: 16 Oct 03:26 AM',
@@ -336,7 +334,19 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dayName: 'Maha Shashthi',
     titleBengali: 'মহা ষষ্ঠী — বোধন, আমন্ত্রণ ও অধিবাস',
     titleEnglish: 'Maha Shashthi (Devi Bodhon & Awakening)',
-    dateFormatted: 'Saturday, 17 October 2026',
+    // Date: Fri 16 Oct. Was displayed as "Saturday, 17 October 2026" while the
+    // countdown targeted 16 Oct. Both modes put Shashthi, Kalparambha and the
+    // evening Bodhon on Friday 16 Oct:
+    //  Vishuddha + traditional: https://eisamay.com/astrology/religion-and-rituals/durga-puja-2026-dates-timings-sasthi-saptami-ashtami-navami-dashami-bisudhha-siddhanta-prachin-panjika-puja-nirghonto/200533534.cms
+    //  Vishuddha: https://myastrology.in/utsab/maha-sasthi
+    //  Beni Madhab: https://benimadhabsilpanjika.com/durga-puja-2026/
+    // FLAGGED: Drik Panchang Kolkata lists 16 Oct as Shashthi / Bilva
+    // Nimantran but puts Kalparambha and Akal Bodhon on Sat 17 Oct:
+    // https://www.drikpanchang.com/navratri/durga-puja/bengal/kalparambha-date-time.html?year=2026&geoname-id=1275004
+    // UNVERIFIED: Shashthi start 03:26 AM (Ei Samay) vs 03:25 AM (Drik,
+    // myastrology.in); end 05:55 AM (Vishuddha) vs 05:54 AM (Drik). Left as is.
+    // UNVERIFIED: 06:00 is the app's countdown anchor.
+    startsAt: DateTime(2026, 10, 16, 6, 0),
     tithiName: 'Shukla Shashthi',
     tithiTimings:
         'Shashthi begins: 16 Oct 03:26 AM | Shashthi ends: 17 Oct 05:55 AM',
@@ -374,7 +384,18 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dayName: 'Maha Saptami',
     titleBengali: 'মহা সপ্তমী — নবপত্রিকা স্নান ও প্রাণ প্রতিষ্ঠা',
     titleEnglish: 'Maha Saptami (Nabapatrika / Kola Bou Snan)',
-    dateFormatted: 'Sunday, 18 October 2026',
+    // Date: Sun 18 Oct. Belur Math Saptami puja is Sunday 18 Oct (begins
+    // 5:30 AM): https://media.belurmath.org/sri-sri-durga-puja-2026-programme-details-25017/
+    // Drik Panchang Kolkata Navpatrika Puja: 18 Oct; Saptami 17 Oct 05:54 AM -
+    // 18 Oct 08:27 AM:
+    // https://www.drikpanchang.com/navratri/durga-puja/navpatrika-puja-date-time.html?year=2026&geoname-id=1275004
+    // UNVERIFIED: Saptami end 08:30 AM (Vishuddha per Hindustan Times Bangla)
+    // vs 08:29 AM (Vishuddha per Ei Samay, myastrology.in) vs 08:27 AM (Drik).
+    // Sources disagree; left as is.
+    // FLAGGED: Beni Madhab puts Nabapatrika Pravesh on Sat 17 Oct (Saptami
+    // runs 17 and 18 Oct); this card keeps the Belur Math date.
+    // UNVERIFIED: 06:00 is the app's countdown anchor.
+    startsAt: DateTime(2026, 10, 18, 6, 0),
     tithiName: 'Shukla Saptami',
     tithiTimings:
         'Saptami begins: 17 Oct 05:55 AM | Saptami ends: 18 Oct 08:30 AM',
@@ -413,7 +434,22 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dayName: 'Maha Ashtami',
     titleBengali: 'মহা অষ্টমী — কুমারী পূজা ও সন্ধিপূজা',
     titleEnglish: 'Maha Ashtami (Kumari Puja & Sandhi Puja)',
-    dateFormatted: 'Monday, 19 October 2026',
+    // Date: Mon 19 Oct. The Ashtami tithi begins the previous morning
+    // (18 Oct) but Mahashtami is observed on 19 Oct (Ashtami at sunrise):
+    // Belur Math Mahashtami Monday 19 Oct, Kumari Puja 9:00 AM, Sandhi Puja
+    // 10:28-11:16 AM: https://media.belurmath.org/sri-sri-durga-puja-2026-programme-details-25017/
+    // Drik Panchang Kolkata Durgashtami 19 Oct; Ashtami 18 Oct 08:27 AM -
+    // 19 Oct 10:51 AM:
+    // https://www.drikpanchang.com/navratri/durga-puja/mahashtami-date-time.html?year=2026&geoname-id=1275004
+    // UNVERIFIED: start 08:30 AM (Hindustan Times Bangla, Vishuddha) vs
+    // 08:29 AM (Ei Samay, myastrology.in) vs 08:27 AM (Drik); end 10:52 AM
+    // (Vishuddha) vs 10:51 AM (Drik). Left as is.
+    // Beni Madhab 18 Oct 05:53 AM - 19 Oct 07:50 AM, Sandhi 07:26-08:14 AM
+    // matches https://benimadhabsilpanjika.com/durga-puja-2026/ ; Gupta Press
+    // gives 05:52:10 AM - 07:49:15 AM, Sandhi 07:25:15-08:13:15 AM
+    // (Hindustan Times Bangla). Left as is.
+    // UNVERIFIED: 06:30 is the app's Pushpanjali countdown anchor.
+    startsAt: DateTime(2026, 10, 19, 6, 30),
     tithiName: 'Shukla Ashtami',
     tithiTimings:
         'Ashtami begins: 18 Oct 08:30 AM | Ashtami ends: 19 Oct 10:52 AM',
@@ -453,7 +489,16 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dayName: 'Maha Nabami',
     titleBengali: 'মহা নবমী — নবমী হোম ও ধুনুচি নাচ',
     titleEnglish: 'Maha Nabami (Sacred Homa & Dhunuchi Naach)',
-    dateFormatted: 'Tuesday, 20 October 2026',
+    // Date: Tue 20 Oct. Belur Math Mahanavami Tuesday 20 Oct:
+    // https://media.belurmath.org/sri-sri-durga-puja-2026-programme-details-25017/
+    // Drik Panchang Kolkata Bengal Maha Navami 20 Oct; Navami 19 Oct 10:51 AM
+    // - 20 Oct 12:50 PM:
+    // https://www.drikpanchang.com/navratri/durga-puja/bengal/maha-navami-date-time.html?year=2026&geoname-id=1275004
+    // UNVERIFIED: 10:52 AM / 12:51 PM (Vishuddha: Ei Samay, myastrology.in)
+    // vs 10:51 AM / 12:50 PM (Drik). Left as is.
+    // UNVERIFIED: 11:30 is the app's Maha Homa countdown anchor; Belur Math
+    // only says Homa is "after Bhogarati".
+    startsAt: DateTime(2026, 10, 20, 11, 30),
     tithiName: 'Shukla Nabami',
     tithiTimings:
         'Nabami begins: 19 Oct 10:52 AM | Nabami ends: 20 Oct 12:51 PM',
@@ -492,7 +537,14 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dayName: 'Bijoya Dashami',
     titleBengali: 'বিজয়া দশমী — সিঁদুর খেলা ও বিসর্জন',
     titleEnglish: 'Bijoya Dashami (Sindoor Khela & Immersion)',
-    dateFormatted: 'Wednesday, 21 October 2026',
+    // Date: Wed 21 Oct. Drik Panchang Kolkata Bengal Durga Visarjan 21 Oct;
+    // Dashami 20 Oct 12:50 PM - 21 Oct 02:11 PM:
+    // https://www.drikpanchang.com/navratri/durga-puja/bengal/durga-visarjan-date-time.html?year=2026&geoname-id=1275004
+    // UNVERIFIED: 12:51 PM / 02:12 PM (Vishuddha: Ei Samay, myastrology.in)
+    // vs 12:50 PM / 02:11 PM (Drik). Left as is. Belur Math's 2026 page
+    // does not list Dashami.
+    // UNVERIFIED: 06:00 is the app's countdown anchor.
+    startsAt: DateTime(2026, 10, 21, 6, 0),
     tithiName: 'Shukla Dashami',
     tithiTimings:
         'Dashami begins: 20 Oct 12:51 PM | Dashami ends: 21 Oct 02:12 PM',
@@ -531,7 +583,12 @@ const List<PujaDayTithi> kDurgaPujaCalendar2026 = [
     dayName: 'Kojagori Lakshmi Puja',
     titleBengali: 'কোজাগরী লক্ষ্মীপূজা — ধনধান্য ও সৌভাগ্য আরাধনা',
     titleEnglish: 'Kojagori Lakshmi Puja (Purnima Worship)',
-    dateFormatted: 'Sunday, 25 October 2026',
+    // Date: Sun 25 Oct. Drik Panchang Kolkata Kojagara Puja 25 Oct, Nishita
+    // 10:56-11:46 PM, Purnima 25 Oct 11:55 AM - 26 Oct 09:41 AM (all match):
+    // https://www.drikpanchang.com/festivals/kojagara/kojagara-puja-date-time.html?year=2026&geoname-id=1275004
+    // No Belur Math / Beni Madhab Lakshmi Puja times found online.
+    // UNVERIFIED: 18:00 is the app's countdown anchor.
+    startsAt: DateTime(2026, 10, 25, 18, 0),
     tithiName: 'Ashwin Shukla Purnima (Kojagari Purnima)',
     tithiTimings:
         'Purnima begins: 25 Oct 11:55 AM | Purnima ends: 26 Oct 09:41 AM',
@@ -567,8 +624,8 @@ PujaDayTithi getPujaDayById(String id) {
 }
 
 int getDaysUntilDurgaPuja2026(DateTime now) {
-  // Target: Maha Sasthi (17 Oct 2026)
-  final sasthi = DateTime(2026, 10, 17);
+  // Target: Maha Shashthi, from the same field as its displayed date.
+  final sasthi = getPujaDayById('shashthi').targetDate;
   final diff = sasthi.difference(now).inDays;
   return diff > 0 ? diff : 0;
 }
@@ -585,53 +642,43 @@ class PujaMilestoneEpoch {
   });
 }
 
+/// Sandhi Puja start (Belur Math / Vishuddha Siddhanta), Monday 19 Oct 2026:
+/// https://media.belurmath.org/sri-sri-durga-puja-2026-programme-details-25017/
+/// Drik Panchang Kolkata gives 10:27-11:15 AM (one minute earlier):
+/// https://www.drikpanchang.com/navratri/shardiya-navratri-sandhipuja.html?year=2026&geoname-id=1275004
+/// FLAGGED: the header countdown always uses the Belur Math time; Beni Madhab
+/// Sandhi Puja is 07:26-08:14 AM on the same day.
+final DateTime kSandhiPuja2026Start = DateTime(2026, 10, 19, 10, 28);
+
+const Map<String, String> _kMilestoneNames = {
+  'mahalaya': 'Mahalaya (Devi Invocation)',
+  'panchami': 'Maha Panchami (Inaugurations)',
+  'shashthi': 'Maha Shashthi (Bodhon)',
+  'saptami': 'Maha Saptami (Nabapatrika)',
+  'ashtami': 'Maha Ashtami (Pushpanjali)',
+  'nabami': 'Maha Nabami (Maha Homa)',
+  'dashami': 'Vijaya Dashami (Visarjan)',
+  'lakshmi_puja': 'Kojagari Lakshmi Puja',
+};
+
+/// Header-ticker milestones. Every day's target is read from
+/// [kDurgaPujaCalendar2026] (its [PujaDayTithi.startsAt]); Sandhi Puja is
+/// inserted after Ashtami. Sorted by time.
 final List<PujaMilestoneEpoch> kPuja2026Milestones = [
-  PujaMilestoneEpoch(
-    id: 'mahalaya',
-    name: 'Mahalaya (Devi Invocation)',
-    targetDateTime: DateTime(2026, 10, 10, 6, 0, 0),
-  ),
-  PujaMilestoneEpoch(
-    id: 'panchami',
-    name: 'Maha Panchami (Inaugurations)',
-    targetDateTime: DateTime(2026, 10, 15, 16, 0, 0),
-  ),
-  PujaMilestoneEpoch(
-    id: 'shashthi',
-    name: 'Maha Shashthi (Bodhon)',
-    targetDateTime: DateTime(2026, 10, 16, 6, 0, 0),
-  ),
-  PujaMilestoneEpoch(
-    id: 'saptami',
-    name: 'Maha Saptami (Nabapatrika)',
-    targetDateTime: DateTime(2026, 10, 18, 6, 0, 0),
-  ),
-  PujaMilestoneEpoch(
-    id: 'ashtami',
-    name: 'Maha Ashtami (Pushpanjali)',
-    targetDateTime: DateTime(2026, 10, 19, 6, 30, 0),
-  ),
-  PujaMilestoneEpoch(
-    id: 'sandhi_puja',
-    name: 'Auspicious Sandhi Puja',
-    targetDateTime: DateTime(2026, 10, 19, 10, 28, 0),
-  ),
-  PujaMilestoneEpoch(
-    id: 'nabami',
-    name: 'Maha Nabami (Maha Homa)',
-    targetDateTime: DateTime(2026, 10, 20, 11, 30, 0),
-  ),
-  PujaMilestoneEpoch(
-    id: 'dashami',
-    name: 'Vijaya Dashami (Visarjan)',
-    targetDateTime: DateTime(2026, 10, 21, 6, 0, 0),
-  ),
-  PujaMilestoneEpoch(
-    id: 'lakshmi_puja',
-    name: 'Kojagari Lakshmi Puja',
-    targetDateTime: DateTime(2026, 10, 25, 18, 0, 0),
-  ),
-];
+  for (final day in kDurgaPujaCalendar2026) ...[
+    PujaMilestoneEpoch(
+      id: day.id,
+      name: _kMilestoneNames[day.id] ?? day.dayName,
+      targetDateTime: day.targetDateTime,
+    ),
+    if (day.id == 'ashtami')
+      PujaMilestoneEpoch(
+        id: 'sandhi_puja',
+        name: 'Auspicious Sandhi Puja',
+        targetDateTime: kSandhiPuja2026Start,
+      ),
+  ],
+]..sort((a, b) => a.targetDateTime.compareTo(b.targetDateTime));
 
 PujaMilestoneEpoch getNextActiveMilestone(DateTime now) {
   for (final m in kPuja2026Milestones) {
