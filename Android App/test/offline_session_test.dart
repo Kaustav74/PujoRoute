@@ -14,6 +14,7 @@ void main() {
       'pujo_chat_messages': '[{"role":"user"}]',
       'pujo_proxy_gateway_url': 'https://my-freellmapi-server.onrender.com/v1/chat/completions',
       'pujo_client_installation_id': 'usr_1',
+      'pujo_session_id': 'pujo_1700000000000_deadbeef',
     });
     await SessionService.instance.init();
     final prefs = await SharedPreferences.getInstance();
@@ -24,5 +25,6 @@ void main() {
     expect(prefs.containsKey('pujo_chat_messages'), isFalse);
     expect(prefs.containsKey('pujo_proxy_gateway_url'), isFalse);
     expect(prefs.containsKey('pujo_client_installation_id'), isFalse);
+    expect(prefs.containsKey('pujo_session_id'), isFalse);
   });
 }

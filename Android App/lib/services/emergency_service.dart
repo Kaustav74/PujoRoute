@@ -16,7 +16,7 @@ class HospitalCasualty {
     required this.lat,
     required this.lon,
     required this.address,
-    this.notes = '24x7 Emergency & Trauma Care Active',
+    this.notes = '',
   });
 }
 
@@ -263,12 +263,12 @@ class EmergencyService {
     }
 
     return "🚨 IMMEDIATE EMERGENCY ASSISTANCE & FIRST AID\n\n"
-        "Nearest 24x7 Hospital Casualty Ward:\n"
+        "Nearest listed hospital:\n"
         "🏥 ${hospital.name}\n"
         "• Distance: ~${distHosp > 1000 ? (distHosp / 1000).toStringAsFixed(1) : distHosp}${distHosp > 1000 ? 'km' : 'm'} from current location\n"
         "• Address: ${hospital.address}\n"
         "• Emergency Hotline: ${hospital.phone}\n"
-        "• Facility Status: ${hospital.notes}\n\n"
+        "• Call ahead to confirm emergency services are available.\n\n"
         "Closest Kolkata Police Booth:\n"
         "👮 ${police.division}\n"
         "• Landmark: ${police.landmark} (~${distPolice > 1000 ? (distPolice / 1000).toStringAsFixed(1) : distPolice}${distPolice > 1000 ? 'km' : 'm'})\n"

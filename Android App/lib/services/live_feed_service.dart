@@ -33,7 +33,7 @@ class LiveFeedService {
 
   LiveFeedService._internal();
 
-  // Curated live Kolkata Police and festival transit advisories
+  // Static, bundled advisories compiled before release (not live data)
   static const List<RoadRestriction> kActiveRoadRestrictions = [
     RoadRestriction(
       road: 'Rashbehari Avenue',
@@ -90,7 +90,8 @@ class LiveFeedService {
     ),
   ];
 
-  /// Evaluates whether a pandal should be omitted when "Reroute around heavy traffic" is enabled
+  /// Whether a pandal is on the offline list of usually congested spots
+  /// (used by the "Avoid known congestion spots" switch). Not live data.
   bool shouldRerouteAround(String pandalName) {
     final pLower = pandalName.trim().toLowerCase();
     // Guard: an empty/very short name used to match every alert via contains().

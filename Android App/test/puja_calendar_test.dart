@@ -84,9 +84,42 @@ void main() {
       final shashthi = getPujaDayById('shashthi');
       final ashtami = getPujaDayById('ashtami');
 
-      expect(mahalaya.getDaysRemaining(fakeNow), equals(9)); // Oct 10 - Oct 1 = 9 days
-      expect(shashthi.getDaysRemaining(fakeNow), equals(16)); // Oct 17 - Oct 1 = 16 days
-      expect(ashtami.getDaysRemaining(fakeNow), equals(18)); // Oct 19 - Oct 1 = 18 days
+      // Counted to each tithi's exact start (targetDateTime), floor(hours / 24).
+      expect(mahalaya.getDaysRemaining(fakeNow), equals(9)); // to 10 Oct 06:00
+      expect(shashthi.getDaysRemaining(fakeNow), equals(15)); // to 16 Oct 06:00
+      expect(ashtami.getDaysRemaining(fakeNow), equals(18)); // to 19 Oct 06:30
+    });
+
+    test('Panjika header ticker and days-remaining card always agree', () {
+      // Regression: header showed "14d 03h" while the card said 13 days.
+      final mahalaya = getPujaDayById('mahalaya');
+      final screenshotNow = DateTime(2026, 9, 26, 3, 0);
+      expect(formatCountdownTicker(mahalaya.targetDateTime, screenshotNow),
+          startsWith('14d : 03h'));
+      expect(mahalaya.getDaysRemaining(screenshotNow), equals(14));
+
+      // Sweep every tithi across the season in 37-minute steps.
+      for (final day in kDurgaPujaCalendar2026) {
+        var now = DateTime(2026, 9, 20);
+        while (now.isBefore(DateTime(2026, 10, 27))) {
+          final header = formatCountdownTicker(day.targetDateTime, now);
+          final headerDays = int.parse(header.split('d').first);
+          expect(day.getDaysRemaining(now), equals(headerDays),
+              reason: '${day.id} at $now: header "$header"');
+          now = now.add(const Duration(minutes: 37));
+        }
+      }
+    });
+
+    test('Days-remaining boundaries and card state', () {
+      final ashtami = getPujaDayById('ashtami'); // starts 19 Oct 06:30
+      expect(ashtami.getDaysRemaining(DateTime(2026, 10, 18, 6, 30)), equals(1));
+      expect(ashtami.getDaysRemaining(DateTime(2026, 10, 18, 6, 31)), equals(0));
+      expect(ashtami.countdownState(DateTime(2026, 10, 19, 6, 29)), equals(1));
+      expect(ashtami.countdownState(DateTime(2026, 10, 19, 6, 30)), equals(0));
+      expect(ashtami.countdownState(DateTime(2026, 10, 19, 23, 59)), equals(0));
+      expect(ashtami.countdownState(DateTime(2026, 10, 20)), equals(-1));
+      expect(ashtami.getDaysRemaining(DateTime(2026, 10, 20)), equals(0));
     });
   });
 }

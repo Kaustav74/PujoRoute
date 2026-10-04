@@ -19,6 +19,23 @@ void main() {
       '_buildLineReportBtn',
       'reportCrowdStatus',
       'getCrowdReport',
+      // Route Planner: "fast lines" filtered on a field that is 'fast' for every pandal
+      'Fast Lines',
+      'Fast Queue',
+      'Low Wait',
+      // Route Planner: static congestion list presented as live traffic rerouting
+      'Reroute Around Heavy Traffic',
+      'Traffic bypass active',
+      'police road closures',
+      'police vehicular road closures',
+      '>60m',
+      // SOS message: never claim a hospital's status
+      'Facility Status',
+      '24x7 Emergency & Trauma Care Active',
+      'Nearest 24x7 Hospital',
+      // Unused per-install session ID
+      'get sessionId',
+      '_secureRandomHex',
     ];
     final hits = <String>[];
     for (final f in Directory('lib').listSync(recursive: true).whereType<File>()) {
@@ -29,5 +46,10 @@ void main() {
       }
     }
     expect(hits, isEmpty);
+  });
+
+  test('unreachable heritage profile / hopper navigation screens stay deleted', () {
+    expect(File('lib/screens/heritage_profile_screen.dart').existsSync(), isFalse);
+    expect(File('lib/screens/hopper_navigation_screen.dart').existsSync(), isFalse);
   });
 }

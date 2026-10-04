@@ -23,6 +23,8 @@ void main() {
       // Key left behind by the removed local-only crowd-report UI in older builds
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('pujo_crowd_sreebhumi_sporting', 'slow');
+      // Unused per-install session ID written by older builds
+      await prefs.setString('pujo_session_id', 'pujo_1700000000000_deadbeef');
 
       // Verify data was populated
       expect(session.bookmarkedIds, contains('sreebhumi_sporting'));
@@ -44,6 +46,7 @@ void main() {
       expect(session.isCircuitActive, isFalse);
       expect(session.activeCircuitIds, isEmpty);
       expect(prefs.getKeys().where((k) => k.startsWith('pujo_crowd_')), isEmpty);
+      expect(prefs.containsKey('pujo_session_id'), isFalse);
       expect(session.lastLat, isNull);
       expect(session.lastLon, isNull);
     });
