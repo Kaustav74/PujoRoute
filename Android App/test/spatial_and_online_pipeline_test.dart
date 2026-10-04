@@ -3,6 +3,7 @@ import 'package:pujoroute/data/pujas_data.dart';
 import 'package:pujoroute/data/puja_calendar_data.dart';
 import 'package:pujoroute/services/spatial_facility_service.dart';
 import 'package:pujoroute/screens/circuit_studio_screen.dart';
+import 'package:pujoroute/services/metro_graph_service.dart';
 
 void main() {
   group('SpatialFacilityService Proximity & Fallback Tests', () {
@@ -91,11 +92,17 @@ void main() {
       final names = kKolkataMetroCoordinates.map((m) => m.name.toLowerCase()).toList();
 
       expect(names.contains('kalighat'), isTrue);
-      expect(names.contains('shovabazar sutanuti'), isTrue);
+      expect(names.contains('sovabazar sutanuti'), isTrue);
       expect(names.contains('esplanade'), isTrue);
       expect(names.contains('sealdah'), isTrue);
       expect(names.contains('karunamoyee'), isTrue);
       expect(names.contains('salt lake sector v'), isTrue);
+      // Single source of truth: same stations and coordinates as the metro graph.
+      expect(kKolkataMetroCoordinates.length, MetroGraphService.kStationCoordinates.length);
+      for (final m in kKolkataMetroCoordinates) {
+        expect(MetroGraphService.kStationCoordinates[m.name], [m.lat, m.lon], reason: m.name);
+        expect(m.line, isNotEmpty, reason: m.name);
+      }
     });
   });
 }

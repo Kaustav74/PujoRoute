@@ -7,7 +7,11 @@ Sources (relative to the repo root):
   Android App/lib/services/emergency_service.dart -> emergency.json
   Android App/lib/services/metro_graph_service.dart -> metro.json (+ station/line/gate per pandal)
 
-Usage:  python3 wear/tools/generate_assets.py
+Usage:  python3 wear/tools/generate_assets.py [pandals] [metro] [emergency] [calendar]
+With no arguments every asset is regenerated. NOTE: calendar.json has been
+maintained by hand since the phone calendar data was restructured (PR #5);
+build_calendar() no longer matches it, so regenerate only the assets you need,
+e.g.  python3 wear/tools/generate_assets.py pandals metro
 Only the Python 3 standard library is needed.
 """
 import json
@@ -227,7 +231,8 @@ def build_pandals(metro):
 
 # --------------------------------------------------------------------------
 LINE_LISTS = [("Blue", "kBlueLineStations"), ("Green", "kGreenLineStations"),
-              ("Purple", "kPurpleLineStations"), ("Orange", "kOrangeLineStations")]
+              ("Purple", "kPurpleLineStations"), ("Orange", "kOrangeLineStations"),
+              ("Yellow", "kYellowLineStations")]
 
 
 def build_metro():
@@ -311,17 +316,27 @@ def build_emergency():
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
+    wanted = set(sys.argv[1:]) or {"calendar", "pandals", "emergency", "metro"}
     metro = build_metro()
-    data = {"calendar.json": build_calendar(), "pandals.json": build_pandals(metro),
-            "emergency.json": build_emergency(), "metro.json": {"lines": metro["lines"]}}
-    for name, obj in data.items():
-        (OUT / name).write_text(json.dumps(obj, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    cal, pan, em = data["calendar.json"], data["pandals.json"], data["emergency.json"]
-    print(f"calendar.json: {len(cal['days'])} days")
-    print(f"pandals.json: {len(pan)} pandals")
-    print(f"emergency.json: {len(em['helplines'])} helplines, {len(em['hospitals'])} hospitals, {len(em['police'])} police")
-    if len(cal["days"]) < 8 or len(pan) < 100 or len(em["helplines"]) < 5:
-        sys.exit("Sanity check failed: unexpectedly small output")
+    builders = {"calendar": build_calendar, "pandals": lambda: build_pandals(metro),
+                "emergency": build_emergency, "metro": lambda: {"lines": metro["lines"]}}
+    for key in sorted(wanted):
+        obj = builders[key]()
+        (OUT / f"{key}.json").write_text(json.dumps(obj, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        if key == "calendar":
+            print(f"calendar.json: {len(obj['days'])} days")
+            ok = len(obj["days"]) >= 8
+        elif key == "pandals":
+            print(f"pandals.json: {len(obj)} pandals")
+            ok = len(obj) >= 100
+        elif key == "emergency":
+            print(f"emergency.json: {len(obj['helplines'])} helplines, {len(obj['hospitals'])} hospitals, {len(obj['police'])} police")
+            ok = len(obj["helplines"]) >= 5
+        else:
+            print(f"metro.json: {len(obj['lines'])} lines, {sum(len(l['stations']) for l in obj['lines'])} station entries")
+            ok = len(obj["lines"]) >= 4
+        if not ok:
+            sys.exit(f"Sanity check failed: unexpectedly small {key}.json")
 
 
 if __name__ == "__main__":

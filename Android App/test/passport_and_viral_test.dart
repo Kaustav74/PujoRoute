@@ -13,12 +13,23 @@ void main() {
   });
 
   group('Hyper-Local Street Utility & Pandal Metadata Tests', () {
-    test('All 504 pandals have detailedMetroGate with gate number or road orientation', () {
+    test('All 504 pandals have detailedMetroGate naming the station and its line', () {
       expect(kAllKolkataPujas.length, equals(504));
 
       for (var p in kAllKolkataPujas) {
         expect(p.detailedMetroGate, isNotEmpty);
-        expect(p.detailedMetroGate.contains('Gate'), isTrue);
+        // Stations opened in 2025 have no verified gate numbers, so the text
+        // names the station and line instead of inventing a gate.
+        expect(p.detailedMetroGate, contains('Line'), reason: p.id);
+      }
+
+      // Regression (audit 2026-10): substring rules used to show Howrah Maidan
+      // pandals as "Maidan (Blue Line)" and Central Park as "Central (Blue Line)".
+      for (var p in kAllKolkataPujas.where((p) => p.metroStation == 'Howrah Maidan')) {
+        expect(p.detailedMetroGate, startsWith('Howrah Maidan (Green Line)'), reason: p.id);
+      }
+      for (var p in kAllKolkataPujas.where((p) => p.metroStation == 'Central Park')) {
+        expect(p.detailedMetroGate, startsWith('Central Park (Green Line)'), reason: p.id);
       }
 
       // Check specific famous stations

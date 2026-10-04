@@ -407,6 +407,7 @@ private fun lineColor(name: String) = when {
     name.startsWith("Green") -> Color(0xFF2E7D32)
     name.startsWith("Purple") -> Color(0xFF6A1B9A)
     name.startsWith("Orange") -> Color(0xFFE65100)
+    name.startsWith("Yellow") -> Color(0xFFF9A825)
     else -> Color.DarkGray
 }
 
