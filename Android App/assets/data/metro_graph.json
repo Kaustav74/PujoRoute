@@ -67,7 +67,20 @@
         "Satyajit Ray",
         "Jyotirindra Nandi",
         "Kavi Sukanta",
-        "Hemanta Mukhopadhyay"
+        "Hemanta Mukhopadhyay",
+        "VIP Bazar",
+        "Ritwik Ghatak",
+        "Barun Sengupta",
+        "Beleghata"
+      ]
+    },
+    "yellow": {
+      "name": "Yellow Line",
+      "stations": [
+        "Noapara",
+        "Dum Dum Cantonment",
+        "Jessore Road",
+        "Jai Hind Bimanbandar"
       ]
     }
   },
@@ -87,6 +100,14 @@
         "orange"
       ],
       "instructions": "Direct concourse interchange at Kavi Subhash (New Garia) connecting Blue Line and Orange Line (EM Bypass)."
+    },
+    {
+      "station": "Noapara",
+      "connects": [
+        "blue",
+        "yellow"
+      ],
+      "instructions": "Noapara serves both Blue Line and Yellow Line (towards Jai Hind Bimanbandar / Airport); change platforms within the station."
     },
     {
       "station": "Majerhat",

@@ -172,13 +172,26 @@ class MetroGraphService {
     'Majerhat',
   ];
 
-  // Line 6: Orange Line (Kavi Subhash - Hemanta Mukhopadhyay / Ruby)
+  // Line 6: Orange Line (Kavi Subhash - Beleghata; extended 22 Aug 2025).
+  // Beleghata - IT Centre (Sector V) is NOT open yet (trial runs from Oct 2026).
   static const List<String> kOrangeLineStations = [
     'Kavi Subhash',
     'Satyajit Ray',
     'Jyotirindra Nandi',
     'Kavi Sukanta',
     'Hemanta Mukhopadhyay',
+    'VIP Bazar',
+    'Ritwik Ghatak',
+    'Barun Sengupta',
+    'Beleghata',
+  ];
+
+  // Line 4: Yellow Line (Noapara - Jai Hind Bimanbandar / Airport; opened 22 Aug 2025)
+  static const List<String> kYellowLineStations = [
+    'Noapara',
+    'Dum Dum Cantonment',
+    'Jessore Road',
+    'Jai Hind Bimanbandar',
   ];
 
   static const Map<String, String> kCanonicalAliases = {
@@ -206,57 +219,70 @@ class MetroGraphService {
     'briji': 'Shahid Khudiram',
     'new garia': 'Kavi Subhash',
     'howrah': 'Howrah Railway Station',
+    'howrah station': 'Howrah Railway Station',
+    'jai hind': 'Jai Hind Bimanbandar',
+    'airport': 'Jai Hind Bimanbandar',
+    'metropolitan': 'Beleghata',
   };
 
+  /// Station coordinates from OpenStreetMap (station nodes, osm_base 2026-10-04),
+  /// operational status per Wikipedia "List of Kolkata Metro stations" (Oct 2026).
   static const Map<String, List<double>> kStationCoordinates = {
-    'Dakshineswar': [22.6536, 88.3582],
-    'Baranagar': [22.6394, 88.3683],
-    'Noapara': [22.6397, 88.394],
-    'Dum Dum': [22.6217, 88.3934],
-    'Belgachia': [22.6067, 88.3820],
-    'Shyambazar': [22.6025, 88.3719],
-    'Sovabazar Sutanuti': [22.5975, 88.3688],
-    'Girish Park': [22.5866, 88.3639],
-    'Mahatma Gandhi Road': [22.5796, 88.3598],
-    'Central': [22.5694, 88.3586],
-    'Chandni Chowk': [22.5661, 88.3556],
-    'Esplanade': [22.5647, 88.3524],
-    'Park Street': [22.5516, 88.3516],
-    'Maidan': [22.5451, 88.3475],
-    'Rabindra Sadan': [22.5375, 88.3444],
-    'Netaji Bhavan': [22.5312, 88.3441],
-    'Jatin Das Park': [22.5222, 88.3448],
-    'Kalighat': [22.5178, 88.3468],
-    'Rabindra Sarobar': [22.5085, 88.3467],
-    'Mahanayak Uttam Kumar': [22.4988, 88.3458],
-    'Netaji': [22.481, 88.346],
-    'Masterda Surya Sen': [22.4735, 88.3609],
-    'Gitanjali': [22.4694, 88.37],
+    'Dakshineswar': [22.6540, 88.3637],
+    'Baranagar': [22.6531, 88.3806],
+    'Noapara': [22.6398, 88.3941],
+    'Dum Dum': [22.6211, 88.3929],
+    'Belgachia': [22.6059, 88.3864],
+    'Shyambazar': [22.6013, 88.3725],
+    'Sovabazar Sutanuti': [22.5959, 88.3652],
+    'Girish Park': [22.5871, 88.3629],
+    'Mahatma Gandhi Road': [22.5809, 88.3613],
+    'Central': [22.5725, 88.3587],
+    'Chandni Chowk': [22.5670, 88.3542],
+    'Esplanade': [22.5636, 88.3512],
+    'Park Street': [22.5552, 88.3501],
+    'Maidan': [22.5495, 88.3488],
+    'Rabindra Sadan': [22.5415, 88.3474],
+    'Netaji Bhavan': [22.5332, 88.3459],
+    'Jatin Das Park': [22.5241, 88.3465],
+    'Kalighat': [22.5169, 88.3458],
+    'Rabindra Sarobar': [22.5072, 88.3455],
+    'Mahanayak Uttam Kumar': [22.4948, 88.3451],
+    'Netaji': [22.4810, 88.3460],
+    'Masterda Surya Sen': [22.4734, 88.3609],
+    'Gitanjali': [22.4695, 88.3700],
     'Kavi Nazrul': [22.4642, 88.3805],
-    'Shahid Khudiram': [22.4662, 88.3915],
-    'Kavi Subhash': [22.4723, 88.3983],
-    'Howrah Maidan': [22.5855, 88.3283],
-    'Howrah Railway Station': [22.5840, 88.3415],
-    'Mahakaran': [22.5732, 88.3496],
-    'Sealdah': [22.5670, 88.3712],
-    'Phoolbagan': [22.5714, 88.3912],
-    'Salt Lake Stadium': [22.5707, 88.4063],
-    'Bengal Chemical': [22.5772, 88.4076],
-    'City Centre': [22.5878, 88.4116],
-    'Central Park': [22.5888, 88.4208],
-    'Karunamoyee': [22.5855, 88.4162],
-    'Salt Lake Sector V': [22.5804, 88.4357],
-    'Majerhat': [22.5186, 88.3228],
-    'Taratala': [22.5074, 88.3188],
-    'Behala Bazar': [22.4988, 88.3180],
-    'Behala Chowrasta': [22.4905, 88.3142],
-    'Sakher Bazar': [22.4819, 88.3115],
-    'Thakurpukur': [22.4632, 88.3078],
-    'Joka': [22.4520, 88.3040],
-    'Hemanta Mukhopadhyay': [22.5148, 88.4015],
-    'Kavi Sukanta': [22.5053, 88.401],
-    'Jyotirindra Nandi': [22.4959, 88.3987],
-    'Satyajit Ray': [22.4700, 88.3970],
+    'Shahid Khudiram': [22.4660, 88.3915],
+    'Kavi Subhash': [22.4722, 88.3980],
+    'Howrah Maidan': [22.5839, 88.3340],
+    'Howrah Railway Station': [22.5834, 88.3404],
+    'Mahakaran': [22.5721, 88.3505],
+    'Sealdah': [22.5666, 88.3698],
+    'Phoolbagan': [22.5721, 88.3902],
+    'Salt Lake Stadium': [22.5731, 88.4031],
+    'Bengal Chemical': [22.5801, 88.4013],
+    'City Centre': [22.5871, 88.4079],
+    'Central Park': [22.5905, 88.4156],
+    'Karunamoyee': [22.5864, 88.4215],
+    'Salt Lake Sector V': [22.5809, 88.4291],
+    'Joka': [22.4523, 88.3018],
+    'Thakurpukur': [22.4644, 88.3075],
+    'Sakher Bazar': [22.4748, 88.3100],
+    'Behala Chowrasta': [22.4873, 88.3134],
+    'Behala Bazar': [22.4988, 88.3174],
+    'Taratala': [22.5077, 88.3204],
+    'Majerhat': [22.5191, 88.3237],
+    'Satyajit Ray': [22.4847, 88.3926],
+    'Jyotirindra Nandi': [22.4956, 88.3984],
+    'Kavi Sukanta': [22.5053, 88.4010],
+    'Hemanta Mukhopadhyay': [22.5148, 88.4014],
+    'VIP Bazar': [22.5247, 88.3962],
+    'Ritwik Ghatak': [22.5330, 88.3964],
+    'Barun Sengupta': [22.5438, 88.3993],
+    'Beleghata': [22.5507, 88.4040],
+    'Dum Dum Cantonment': [22.6376, 88.4122],
+    'Jessore Road': [22.6393, 88.4298],
+    'Jai Hind Bimanbandar': [22.6473, 88.4373],
   };
 
   /// Initialize and load static topology graph
@@ -285,6 +311,7 @@ class MetroGraphService {
       'green': List.from(kGreenLineStations),
       'purple': List.from(kPurpleLineStations),
       'orange': List.from(kOrangeLineStations),
+      'yellow': List.from(kYellowLineStations),
     };
     _interchanges = [
       const InterchangeInfo(
@@ -298,6 +325,12 @@ class MetroGraphService {
         connects: ['blue', 'orange'],
         instructions:
             'Direct concourse interchange at Kavi Subhash (New Garia) connecting Blue Line and Orange Line (EM Bypass).',
+      ),
+      const InterchangeInfo(
+        station: 'Noapara',
+        connects: ['blue', 'yellow'],
+        instructions:
+            'Noapara serves both Blue Line and Yellow Line (towards Jai Hind Bimanbandar / Airport); change platforms within the station.',
       ),
       const InterchangeInfo(
         station: 'Majerhat',
@@ -326,6 +359,9 @@ class MetroGraphService {
     }
     if (!_lines.containsKey('orange')) {
       _lines['orange'] = List.from(kOrangeLineStations);
+    }
+    if (!_lines.containsKey('yellow')) {
+      _lines['yellow'] = List.from(kYellowLineStations);
     }
 
     final interchangesList = data['interchanges'] as List? ?? [];
@@ -411,6 +447,10 @@ class MetroGraphService {
     if (_lines['orange']?.any((s) => s.toLowerCase() == canonicalLower) ==
         true) {
       return 'Orange Line';
+    }
+    if (_lines['yellow']?.any((s) => s.toLowerCase() == canonicalLower) ==
+        true) {
+      return 'Yellow Line';
     }
     return null;
   }
@@ -771,6 +811,7 @@ class MetroGraphService {
     if (lower.contains('green')) return kGreenLineStations;
     if (lower.contains('purple')) return kPurpleLineStations;
     if (lower.contains('orange')) return kOrangeLineStations;
+    if (lower.contains('yellow')) return kYellowLineStations;
     return kBlueLineStations;
   }
 
@@ -809,8 +850,13 @@ class MetroGraphService {
     }
     if (lower.contains('orange')) {
       return isForward
-          ? 'Northbound (towards Hemanta Mukhopadhyay / Ruby)'
+          ? 'Northbound (towards Beleghata)'
           : 'Southbound (towards Kavi Subhash)';
+    }
+    if (lower.contains('yellow')) {
+      return isForward
+          ? 'Eastbound (towards Jai Hind Bimanbandar / Airport)'
+          : 'Westbound (towards Noapara)';
     }
     return 'Inbound Service';
   }

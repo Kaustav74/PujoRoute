@@ -112,21 +112,23 @@ void main() {
   group('Kolkata Metro Guide & Circuit Routing Logic Tests', () {
     final metroGraph = MetroGraphService.instance;
 
-    test('Panchanantala to Badamtala recommends Walk, NOT 1-stop metro', () {
-      final panchanantala = kAllKolkataPujas.firstWhere(
-          (p) => p.name.toLowerCase().contains('panchanantala'));
-      final badamtala = kAllKolkataPujas.firstWhere(
-          (p) => p.name.toLowerCase().contains('badamtala'));
-
-      expect(panchanantala.metroStation.toLowerCase(), contains('jatin das park'));
-      expect(badamtala.metroStation.toLowerCase(), contains('kalighat'));
+    test('1-stop hop under 1.8 km (Jatin Das Park -> Kalighat) recommends Walk, NOT metro', () {
+      // Fixtures instead of dataset rows: the audit moved Badamtala Ashar Sangha
+      // to its OpenStreetMap location, which changed the real-data distance.
+      final a = Pandal.create(
+          id: 'fixture_jdp', name: 'Fixture near Jatin Das Park', zone: 'South',
+          lat: 22.5262, lng: 88.3466, metroStation: 'Jatin Das Park');
+      final b = Pandal.create(
+          id: 'fixture_kalighat', name: 'Fixture near Kalighat', zone: 'South',
+          lat: 22.5110, lng: 88.3440, metroStation: 'Kalighat');
 
       final guidance = metroGraph.buildMetroHopGuidance(
         hopIndex: 1,
-        fromP: panchanantala,
-        toP: badamtala,
+        fromP: a,
+        toP: b,
       );
 
+      expect(guidance.directWalkMeters, inExclusiveRange(1300, 1800));
       expect(guidance.recommendation, equals(TransitRecommendation.walk));
       expect(guidance.headline.toLowerCase(), contains('walk'));
       expect(guidance.detailedAdvice.toLowerCase(), contains('longer than walking'));
