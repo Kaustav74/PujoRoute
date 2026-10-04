@@ -17,7 +17,7 @@
 - The **map background needs internet**. Tiles load from OpenStreetMap, whose servers see the phone's IP address and the app's user agent.
 - Location is used **only while the app is open** and never leaves the phone. The exception is when the user taps Directions: Google Maps then receives the start point.
 - All saved data (bookmarks, visited pandals, emergency contact) stays on the device, and "Delete My Data" wipes it.
-- Privacy policy: `docs/privacy-policy.html`, to be published at https://kaustav74.github.io/PujoRoute/privacy-policy.html (GitHub Pages → branch `main`, folder `/docs`). Fill in the TODO developer name, email and date first.
+- Privacy policy: `docs/privacy-policy.html`, to be published at https://kaustav74.github.io/PujoRoute/privacy-policy.html (GitHub Pages → branch `main`, folder `/docs`). Developer: Kaustav Nath, contact: kaustav423@gmail.com.
 
 **Do NOT claim:** "100% offline" (the map needs internet), "AI" (removed), "encrypted storage", "live crowd data", "live weather/news", "voice assistant", or a Yellow line.
 
