@@ -17,9 +17,9 @@ void main() {
 
       expect(megaCount, equals(483));
       expect(heritageCount, equals(21));
-      expect(southCount, equals(286)); // Phase 3: Ultadanga Sangrami moved to North
-      expect(northCount, equals(139));
-      expect(saltLakeCount, equals(42));
+      expect(southCount, equals(285)); // Phase 3: Ultadanga Sangrami, Salkia Sanskriti -> North
+      expect(northCount, equals(141)); // + Salkia Santi Sangha (was Salt Lake)
+      expect(saltLakeCount, equals(41));
       expect(centralCount, equals(37));
     });
 

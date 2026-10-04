@@ -588,8 +588,10 @@ class MetroGraphService {
 
   /// Shortest metro path between two stations over the real line topology.
   /// Transfers are only possible at stations that appear on both lines
-  /// (Esplanade, Kavi Subhash, Noapara). Majerhat (Purple) has NO rail link to
-  /// the Blue Line, so Purple Line stations are unreachable from other lines.
+  /// (Esplanade, Noapara). Kavi Subhash is Orange-only while its Blue Line
+  /// platforms are closed; Blue <-> Orange goes via kRoadLinks. Majerhat
+  /// (Purple) has NO rail link to the Blue Line, so Purple Line stations are
+  /// unreachable from other lines.
   MetroPath? findMetroPath(String fromStation, String toStation) {
     if (!_isLoaded) _loadFallbackData();
     final from = getCanonicalStation(fromStation);

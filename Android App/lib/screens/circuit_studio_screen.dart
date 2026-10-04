@@ -306,6 +306,16 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     Navigator.pop(context, true);
   }
 
+  /// Lead sentence for the Metro guide when no hop is a Metro ride, so a
+  /// "0 Metro" circuit is explained rather than looking broken.
+  String _noMetroExplanation(MetroGuideSummary summary) {
+    if (summary.metroRecommendedCount > 0 || summary.hops.isEmpty) return '';
+    final why = summary.walkCount == summary.hops.length
+        ? 'every hop in this circuit is a short walk.'
+        : 'for each longer hop, walking (or an auto / cab) is quicker than the full Metro trip.';
+    return 'No Metro ride between pandals: $why Circuits are built from pandals close to each other, so most need no Metro; use it to reach the first pandal or to travel between areas. ';
+  }
+
   MetroStationLocation _getNearestMetroForPandal(Pandal p) {
     // Resolve the pandal's assigned station exactly (alias-aware). The old
     // substring scan matched 'Central Park' to 'Central' and 'Howrah Maidan'
@@ -1588,7 +1598,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        '${summary.hops.isNotEmpty && summary.walkCount == summary.hops.length ? 'Every hop in this circuit is walkable, so no Metro ride is suggested between pandals. ' : ''}How this guide decides: hops under 1.3 km are walks; for longer hops it compares walking with the full Metro trip (walk to the station + ~10 mins for entry, security and platform wait + ride + walk from the station) and suggests the Metro only when that is faster. Evening queues at busy stations during Puja can be longer.',
+                        '${_noMetroExplanation(summary)}How this guide decides: hops under 1.3 km are walks; for longer hops it compares walking with the full Metro trip (walk to the station + ~10 mins for entry, security and platform wait + ride + walk from the station) and suggests the Metro only when that is faster. Evening queues at busy stations during Puja can be longer.',
                         style: TextStyle(
                             color: Colors.white70, fontSize: 11, height: 1.35),
                       ),
