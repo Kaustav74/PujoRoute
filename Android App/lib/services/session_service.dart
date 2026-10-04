@@ -31,6 +31,8 @@ class SessionService {
     'pujo_proxy_gateway_url',
     'pujo_client_installation_id',
   ];
+  // Per-pandal keys written by the removed local-only crowd line-report UI (purged on init)
+  static const String _kLegacyCrowdPrefix = 'pujo_crowd_';
   static const String _kLegacyEncPrefix = 'enc_v1:';
   static const String _kEmergencyPhone = 'pujo_emergency_phone';
   static const String _kEmergencyName = 'pujo_emergency_name';
@@ -100,10 +102,11 @@ class SessionService {
     _lastLat = _prefs.getDouble(_kLastLat);
     _lastLon = _prefs.getDouble(_kLastLon);
 
-    // 6. Remove data left behind by the removed online AI features
+    // 6. Remove data left behind by removed features (online AI chat, crowd reports)
     for (final k in _kLegacyKeys) {
       await _prefs.remove(k);
     }
+    await _purgeLegacyCrowdReports();
 
     // 7. Emergency Profile (plain on-device storage; app sandbox, backups disabled).
     // Values written by older builds were XOR-obfuscated with a hardcoded key;
@@ -116,6 +119,13 @@ class SessionService {
     _autoSpeak = _prefs.getBool(_kAutoSpeak) ?? true;
 
     _isInitialized = true;
+  }
+
+  Future<void> _purgeLegacyCrowdReports() async {
+    final stale = _prefs.getKeys().where((k) => k.startsWith(_kLegacyCrowdPrefix)).toList();
+    for (final k in stale) {
+      await _prefs.remove(k);
+    }
   }
 
   Future<String> _readPlainOrDiscardLegacy(String key) async {
@@ -169,10 +179,7 @@ class SessionService {
     for (final k in _kLegacyKeys) {
       await _prefs.remove(k);
     }
-    for (final k in _prefs.getKeys().where((k) => k.startsWith('pujo_crowd_')).toList()) {
-      await _prefs.remove(k);
-    }
-    _crowdReports.clear();
+    await _purgeLegacyCrowdReports();
     await _prefs.remove(_kEmergencyPhone);
     await _prefs.remove(_kEmergencyName);
     await _prefs.remove(_kBloodGroup);
@@ -254,17 +261,6 @@ class SessionService {
     }
     await _prefs.setStringList(_kVisitedIds, _visitedIds.toList());
     return nowVisited;
-  }
-
-  // ==========================================
-  // CROWDSOURCED LINE REPORTING (1-Tap)
-  // ==========================================
-  final Map<String, String> _crowdReports = {};
-  String? getCrowdReport(String pandalId) => _crowdReports[pandalId] ?? _prefs.getString('pujo_crowd_$pandalId');
-
-  Future<void> reportCrowdStatus(String pandalId, String status) async {
-    _crowdReports[pandalId] = status;
-    await _prefs.setString('pujo_crowd_$pandalId', status);
   }
 
   // ==========================================

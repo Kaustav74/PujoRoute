@@ -230,6 +230,10 @@ void main() {
         (w) => w is Text && w.data != null && names.contains(w.data));
     await tester.tap(card.first, warnIfMissed: false);
     await _settle(tester, frames: 20);
+    // Removed fake "live" UI must not come back.
+    expect(find.textContaining('GATE STATUS'), findsNothing);
+    expect(find.textContaining('CROWD SPEED'), findsNothing);
+    expect(find.textContaining('LIVE LINE CHECK-IN'), findsNothing);
     await _shot(tester, '03_pandal_detail');
   });
 
@@ -267,6 +271,7 @@ void main() {
     await _pumpApp(tester);
     await tester.tap(find.byTooltip('Offline Emergency Pass'));
     await _settle(tester, frames: 10);
+    expect(find.textContaining('Session:'), findsNothing);
     await _shot(tester, '08_offline_emergency_pass');
   });
 }
