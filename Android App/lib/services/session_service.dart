@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Fully offline, on-device session state (SharedPreferences only).
@@ -15,7 +14,6 @@ class SessionService {
   bool _isInitialized = false;
 
   // Keys
-  static const String _kSessionId = 'pujo_session_id';
   static const String _kCircuitIds = 'pujo_circuit_ids';
   static const String _kCircuitActive = 'pujo_circuit_active';
   static const String _kBookmarkedIds = 'pujo_bookmarked_ids';
@@ -25,8 +23,10 @@ class SessionService {
   static const String _kFilterHeritage = 'pujo_filter_heritage';
   static const String _kLastLat = 'pujo_last_lat';
   static const String _kLastLon = 'pujo_last_lon';
-  // Legacy keys from the removed online AI chat / gateway features (purged on init)
+  // Legacy keys from removed features (online AI chat / gateway, and the
+  // unused per-install session ID). Purged on init and by Delete My Data.
   static const List<String> _kLegacyKeys = [
+    'pujo_session_id',
     'pujo_chat_messages',
     'pujo_proxy_gateway_url',
     'pujo_client_installation_id',
@@ -40,7 +40,6 @@ class SessionService {
   static const String _kAutoSpeak = 'pujo_auto_speak';
 
   // In-Memory State
-  String _sessionId = '';
   List<String> _activeCircuitIds = [];
   bool _isCircuitActive = false;
   final Set<String> _bookmarkedIds = {};
@@ -57,7 +56,6 @@ class SessionService {
 
   // Getters
   bool get isInitialized => _isInitialized;
-  String get sessionId => _sessionId;
   List<String> get activeCircuitIds => List.unmodifiable(_activeCircuitIds);
   bool get isCircuitActive => _isCircuitActive;
   Set<String> get bookmarkedIds => Set.unmodifiable(_bookmarkedIds);
@@ -77,14 +75,6 @@ class SessionService {
     if (_isInitialized) return;
     _prefs = await SharedPreferences.getInstance();
 
-    // 1. Session ID (generate if first launch)
-    String? storedId = _prefs.getString(_kSessionId);
-    if (storedId == null || storedId.isEmpty) {
-      storedId = 'pujo_${DateTime.now().millisecondsSinceEpoch}_${_secureRandomHex()}';
-      await _prefs.setString(_kSessionId, storedId);
-    }
-    _sessionId = storedId;
-
     // 2. Active Hopping Circuit
     _activeCircuitIds = _prefs.getStringList(_kCircuitIds) ?? [];
     _isCircuitActive = _prefs.getBool(_kCircuitActive) ?? false;
@@ -102,7 +92,7 @@ class SessionService {
     _lastLat = _prefs.getDouble(_kLastLat);
     _lastLon = _prefs.getDouble(_kLastLon);
 
-    // 6. Remove data left behind by removed features (online AI chat, crowd reports)
+    // 6. Remove data left behind by removed features (online AI chat, session ID, crowd reports)
     for (final k in _kLegacyKeys) {
       await _prefs.remove(k);
     }
@@ -146,13 +136,6 @@ class SessionService {
   // ENTERPRISE USER PRIVACY & SECURITY
   // ==========================================
 
-  /// Unguessable identifier suffix (CSPRNG) so session IDs cannot be enumerated.
-  static String _secureRandomHex([int bytes = 16]) {
-    final rng = Random.secure();
-    return List<String>.generate(
-        bytes, (_) => rng.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
-  }
-
   /// Secure Data Shredder: Purges all stored session history, GPS history,
   /// bookmarks, chat logs, and emergency medical profiles with random overwrites.
   Future<void> secureShredUserData() async {
@@ -171,7 +154,6 @@ class SessionService {
     await _prefs.setString(_kEmergencyName, 'REDACTED');
     await _prefs.setString(_kBloodGroup, '');
 
-    await _prefs.remove(_kSessionId);
     await _prefs.remove(_kCircuitIds);
     await _prefs.remove(_kCircuitActive);
     await _prefs.remove(_kBookmarkedIds);
@@ -188,9 +170,6 @@ class SessionService {
     await _prefs.remove(_kSelectedZone);
     await _prefs.remove(_kFilterMega);
     await _prefs.remove(_kFilterHeritage);
-
-    _sessionId = 'pujo_anon_${DateTime.now().millisecondsSinceEpoch}_${_secureRandomHex()}';
-    await _prefs.setString(_kSessionId, _sessionId);
   }
 
   // ==========================================

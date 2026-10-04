@@ -65,19 +65,12 @@ class _PujaCalendarScreenState extends State<PujaCalendarScreen> {
     super.dispose();
   }
 
-  String _formatMonospaceTicker(Duration diff) {
-    if (diff.isNegative) return "00d : 00h : 00m : 00s";
-    final days = diff.inDays.toString().padLeft(2, '0');
-    final hours = (diff.inHours % 24).toString().padLeft(2, '0');
-    final minutes = (diff.inMinutes % 60).toString().padLeft(2, '0');
-    final seconds = (diff.inSeconds % 60).toString().padLeft(2, '0');
-    return "${days}d : ${hours}h : ${minutes}m : ${seconds}s";
-  }
-
   @override
   Widget build(BuildContext context) {
     final selectedDay = getPujaDayById(_selectedDayId);
-    final daysRemaining = selectedDay.daysRemaining;
+    // Same instant and same rule as the header ticker, so both agree.
+    final int countdownState = selectedDay.countdownState(_now);
+    final int daysLeft = selectedDay.getDaysRemaining(_now);
 
     // Dynamic Target Epoch Determination
     DateTime activeTargetTime = selectedDay.targetDateTime;
@@ -90,7 +83,7 @@ class _PujaCalendarScreenState extends State<PujaCalendarScreen> {
       }
     }
     final Duration remainingDuration = activeTargetTime.difference(_now);
-    final String tickerText = _formatMonospaceTicker(remainingDuration);
+    final String tickerText = formatCountdownTicker(activeTargetTime, _now);
 
     // Resolve recommended pandal objects from ID list
     final recommendedPandals = kAllKolkataPujas
@@ -405,9 +398,9 @@ class _PujaCalendarScreenState extends State<PujaCalendarScreen> {
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: daysRemaining > 0
+                      colors: countdownState > 0
                           ? [const Color(0xFF2C1914), const Color(0xFF1E1428)]
-                          : (daysRemaining == 0
+                          : (countdownState == 0
                               ? [
                                   const Color(0xFF132C19),
                                   const Color(0xFF12241C)
@@ -421,9 +414,9 @@ class _PujaCalendarScreenState extends State<PujaCalendarScreen> {
                     ),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: daysRemaining > 0
+                      color: countdownState > 0
                           ? kMarigoldAmber.withValues(alpha: 0.3)
-                          : (daysRemaining == 0
+                          : (countdownState == 0
                               ? Colors.greenAccent.withValues(alpha: 0.3)
                               : Colors.white12),
                       width: 1.0,
@@ -441,23 +434,23 @@ class _PujaCalendarScreenState extends State<PujaCalendarScreen> {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: (daysRemaining > 0
+                          color: (countdownState > 0
                                   ? kMarigoldAmber
-                                  : (daysRemaining == 0
+                                  : (countdownState == 0
                                       ? Colors.greenAccent
                                       : Colors.white38))
                               .withValues(alpha: 0.15),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          daysRemaining > 0
+                          countdownState > 0
                               ? Icons.hourglass_top_rounded
-                              : (daysRemaining == 0
+                              : (countdownState == 0
                                   ? Icons.celebration_rounded
                                   : Icons.check_circle_outline),
-                          color: daysRemaining > 0
+                          color: countdownState > 0
                               ? kMarigoldAmber
-                              : (daysRemaining == 0
+                              : (countdownState == 0
                                   ? Colors.greenAccent
                                   : Colors.white70),
                           size: 24,
@@ -469,17 +462,21 @@ class _PujaCalendarScreenState extends State<PujaCalendarScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              daysRemaining > 0
-                                  ? '${selectedDay.daysRemaining} DAYS REMAINING'
-                                  : (daysRemaining == 0
+                              countdownState > 0
+                                  ? (daysLeft == 0
+                                      ? 'STARTS IN UNDER 24 HOURS'
+                                      : (daysLeft == 1
+                                          ? '1 DAY REMAINING'
+                                          : '$daysLeft DAYS REMAINING'))
+                                  : (countdownState == 0
                                       ? 'CELEBRATING TODAY'
                                       : 'TITHI CONCLUDED'),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                color: daysRemaining > 0
+                                color: countdownState > 0
                                     ? kMarigoldAmber
-                                    : (daysRemaining == 0
+                                    : (countdownState == 0
                                         ? Colors.greenAccent
                                         : Colors.white70),
                                 fontWeight: FontWeight.bold,
@@ -489,9 +486,9 @@ class _PujaCalendarScreenState extends State<PujaCalendarScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              daysRemaining > 0
+                              countdownState > 0
                                   ? '${selectedDay.dayName} • ${selectedDay.dateFormatted}'
-                                  : (daysRemaining == 0
+                                  : (countdownState == 0
                                       ? 'Maa Durga is here — enjoy the divine celebrations!'
                                       : 'Concluded on ${selectedDay.dateFormatted}'),
                               maxLines: 1,

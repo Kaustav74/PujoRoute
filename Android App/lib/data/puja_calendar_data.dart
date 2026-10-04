@@ -107,20 +107,40 @@ class PujaDayTithi {
     }
   }
 
-  // Harmonized remaining-days calculation matching the header ticker
-  int get daysRemaining {
-    final now = DateTime.now();
-    final difference = targetDate.difference(now);
-    return difference.inDays >= 0 ? difference.inDays : 0;
-  }
+  /// Whole days left until [targetDateTime], using the same rule as the
+  /// Panjika header ticker (see [countdownWholeDays]).
+  int get daysRemaining => getDaysRemaining();
 
-  int getDaysRemaining([DateTime? now]) {
-    final current = now ?? DateTime.now();
-    final todayMidnight = DateTime(current.year, current.month, current.day);
-    final targetMidnight =
-        DateTime(targetDate.year, targetDate.month, targetDate.day);
-    return targetMidnight.difference(todayMidnight).inDays;
+  int getDaysRemaining([DateTime? now]) =>
+      countdownWholeDays(targetDateTime, now ?? DateTime.now());
+
+  /// 1 = upcoming, 0 = under way (started and its calendar date has not
+  /// ended yet), -1 = concluded.
+  int countdownState(DateTime now) {
+    if (targetDateTime.isAfter(now)) return 1;
+    final endOfDay =
+        DateTime(targetDate.year, targetDate.month, targetDate.day + 1);
+    return now.isBefore(endOfDay) ? 0 : -1;
   }
+}
+
+/// Single countdown rule for the Panjika screen, shared by the header ticker
+/// and the "days remaining" card so they always agree: whole days are the
+/// floor of the remaining hours / 24, measured to the exact start time.
+int countdownWholeDays(DateTime target, DateTime now) {
+  final diff = target.difference(now);
+  return diff.isNegative ? 0 : diff.inDays;
+}
+
+/// Header ticker text, e.g. "14d : 03h : 00m : 00s".
+String formatCountdownTicker(DateTime target, DateTime now) {
+  final diff = target.difference(now);
+  if (diff.isNegative) return "00d : 00h : 00m : 00s";
+  final days = countdownWholeDays(target, now).toString().padLeft(2, '0');
+  final hours = (diff.inHours % 24).toString().padLeft(2, '0');
+  final minutes = (diff.inMinutes % 60).toString().padLeft(2, '0');
+  final seconds = (diff.inSeconds % 60).toString().padLeft(2, '0');
+  return "${days}d : ${hours}h : ${minutes}m : ${seconds}s";
 }
 
 class PujaTithiDay {
@@ -146,12 +166,7 @@ class PujaTithiDay {
     required this.muhuratWindow,
   });
 
-  // Harmonized remaining-days calculation matching the header ticker
-  int get daysRemaining {
-    final now = DateTime.now();
-    final difference = targetDate.difference(now);
-    return difference.inDays >= 0 ? difference.inDays : 0;
-  }
+  int get daysRemaining => countdownWholeDays(targetDate, DateTime.now());
 }
 
 final List<PujaTithiDay> pujaCalendar2026 = [

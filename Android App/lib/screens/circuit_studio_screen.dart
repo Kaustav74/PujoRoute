@@ -110,11 +110,11 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
       'All'; // 'All', 'North', 'South', 'Salt Lake', 'Central'
   int _targetStopCount = 8; // 3 to 15 stops
   String _circuitStyle =
-      'mega'; // 'mega', 'heritage', 'fast', 'nearest', 'bookmarked'
+      'mega'; // 'mega', 'heritage', 'nearest', 'bookmarked'
   bool _optimizeByMetro =
       false; // Transit optimization via Kolkata Metro corridors
   bool _rerouteHeavyTraffic =
-      false; // Reroute around severe police restrictions and crowd surges
+      false; // Skip pandals on the bundled offline list of usually congested spots
   bool _excludeVisitedStamps =
       true; // Exclude completed / passport-stamped pandals from route generation
 
@@ -208,7 +208,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
       }
     }
 
-    // Heavy Traffic & Road Restriction Filter
+    // Offline list of usually congested spots (static, bundled; not live data)
     if (_rerouteHeavyTraffic) {
       final filtered = pool
           .where((p) => !LiveFeedService.instance.shouldRerouteAround(p.name))
@@ -226,11 +226,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
       }
     } else if (_circuitStyle == 'mega') {
       pool = pool.where((p) => p.category == 'mega').toList();
-    } else if (_circuitStyle == 'fast') {
-      pool = pool.where((p) => p.crowdStatus == 'fast').toList();
-      if (pool.isEmpty) {
-        pool = List.from(kAllKolkataPujas);
-      }
     } else if (_circuitStyle == 'bookmarked') {
       final bIds = SessionService.instance.bookmarkedIds;
       final bookmarkedPool = pool.where((p) => bIds.contains(p.id)).toList();
@@ -310,7 +305,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
 
     String styleDesc = 'Mega Thematic';
     if (_circuitStyle == 'heritage') styleDesc = 'Historic Bonedi Bari';
-    if (_circuitStyle == 'fast') styleDesc = 'Fast Queue / Low Wait';
     if (_circuitStyle == 'nearest') styleDesc = 'Shortest Walk';
     if (_circuitStyle == 'bookmarked') styleDesc = 'Bookmarked Favorites';
 
@@ -318,7 +312,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
         '✅ Route ready: ${finalRoute.length} $styleDesc stops in $_selectedZone Kolkata. Total walk: ${totalKm.toStringAsFixed(1)} km (~$totalMins mins). 2-Opt path optimization active.';
     if (_rerouteHeavyTraffic) {
       narrative +=
-          ' 🛡️ Traffic bypass active (avoiding police road closures and >60m queues).';
+          ' Skipping pandals on our offline list of usually congested spots.';
     }
     if (_optimizeByMetro && finalRoute.isNotEmpty) {
       narrative +=
@@ -2456,7 +2450,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                             'id': 'heritage',
                             'label': '🏛️ Heritage Bonedi Bari'
                           },
-                          {'id': 'fast', 'label': '🟢 Fast Lines'},
                           {'id': 'nearest', 'label': '📍 Shortest Walk'},
                           {'id': 'bookmarked', 'label': '⭐ My Bookmarks'},
                         ].map((s) {
@@ -2553,7 +2546,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                       ),
                       const SizedBox(height: 10),
 
-                      // Live Traffic & Restriction Bypass
+                      // Avoid known congestion spots (offline list)
                       Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
@@ -2581,14 +2574,14 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Reroute Around Heavy Traffic',
+                                    'Avoid known congestion spots',
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 12),
                                   ),
                                   Text(
-                                    'Bypasses police vehicular road closures & >60m pandal surges',
+                                    'Skips pandals on our offline list of usually congested areas',
                                     style: TextStyle(
                                         color: Colors.white54, fontSize: 10),
                                   ),
