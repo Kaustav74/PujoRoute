@@ -20,65 +20,25 @@ class MetroStationLocation {
   const MetroStationLocation(this.name, this.lat, this.lon, this.line);
 }
 
-const List<MetroStationLocation> kKolkataMetroCoordinates = [
-  // Blue Line (North-South)
-  MetroStationLocation('Dakshineswar', 22.6536, 88.3582, 'Blue Line'),
-  MetroStationLocation('Baranagar', 22.6394, 88.3683, 'Blue Line'),
-  MetroStationLocation('Noapara', 22.6247, 88.3842, 'Blue Line'),
-  MetroStationLocation('Dum Dum', 22.6217, 88.3934, 'Blue Line'),
-  MetroStationLocation('Belgachia', 22.6067, 88.3820, 'Blue Line'),
-  MetroStationLocation('Belgachhia', 22.6067, 88.3820, 'Blue Line'),
-  MetroStationLocation('Shyambazar', 22.6025, 88.3719, 'Blue Line'),
-  MetroStationLocation('Shovabazar Sutanuti', 22.5975, 88.3688, 'Blue Line'),
-  MetroStationLocation('Shobhabazar Sutanuti', 22.5975, 88.3688, 'Blue Line'),
-  MetroStationLocation('Girish Park', 22.5866, 88.3639, 'Blue Line'),
-  MetroStationLocation('Mahatma Gandhi Road', 22.5796, 88.3598, 'Blue Line'),
-  MetroStationLocation('Central', 22.5694, 88.3586, 'Blue Line'),
-  MetroStationLocation('Chandni Chowk', 22.5661, 88.3556, 'Blue Line'),
-  MetroStationLocation(
-      'Esplanade', 22.5647, 88.3524, 'Blue & Green Interconnect'),
-  MetroStationLocation('Park Street', 22.5516, 88.3516, 'Blue Line'),
-  MetroStationLocation('Maidan', 22.5451, 88.3475, 'Blue Line'),
-  MetroStationLocation('Rabindra Sadan', 22.5375, 88.3444, 'Blue Line'),
-  MetroStationLocation('Netaji Bhavan', 22.5312, 88.3441, 'Blue Line'),
-  MetroStationLocation('Jatin Das Park', 22.5222, 88.3448, 'Blue Line'),
-  MetroStationLocation('Kalighat', 22.5178, 88.3468, 'Blue Line'),
-  MetroStationLocation('Rabindra Sarobar', 22.5085, 88.3467, 'Blue Line'),
-  MetroStationLocation('Mahanayak Uttam Kumar', 22.4988, 88.3458, 'Blue Line'),
-  MetroStationLocation('Netaji', 22.4892, 88.3452, 'Blue Line'),
-  MetroStationLocation('Masterda Surya Sen', 22.4776, 88.3442, 'Blue Line'),
-  MetroStationLocation('Gitanjali', 22.4697, 88.3436, 'Blue Line'),
-  MetroStationLocation('Kavi Nazrul', 22.4578, 88.3430, 'Blue Line'),
-  MetroStationLocation('Shahid Khudiram', 22.4485, 88.3432, 'Blue Line'),
-  MetroStationLocation('Kavi Subhash', 22.4414, 88.3976, 'Blue & Orange Line'),
-
-  // Green Line (East-West)
-  MetroStationLocation('Howrah Maidan', 22.5855, 88.3283, 'Green Line'),
-  MetroStationLocation(
-      'Howrah Railway Station', 22.5840, 88.3415, 'Green Line'),
-  MetroStationLocation('Sealdah', 22.5670, 88.3712, 'Green Line'),
-  MetroStationLocation('Phoolbagan', 22.5714, 88.3912, 'Green Line'),
-  MetroStationLocation('Salt Lake Stadium', 22.5707, 88.4063, 'Green Line'),
-  MetroStationLocation('Bengal Chemical', 22.5772, 88.4076, 'Green Line'),
-  MetroStationLocation('City Centre', 22.5878, 88.4116, 'Green Line'),
-  MetroStationLocation('Central Park', 22.5888, 88.4208, 'Green Line'),
-  MetroStationLocation('Karunamoyee', 22.5855, 88.4162, 'Green Line'),
-  MetroStationLocation('Karunamayee', 22.5855, 88.4162, 'Green Line'),
-  MetroStationLocation('Salt Lake Sector V', 22.5804, 88.4357, 'Green Line'),
-  MetroStationLocation('Salt Lake Sector-V', 22.5804, 88.4357, 'Green Line'),
-
-  // Purple Line
-  MetroStationLocation('Majerhat', 22.5186, 88.3228, 'Purple Line'),
-  MetroStationLocation('Taratala', 22.5074, 88.3188, 'Purple Line'),
-  MetroStationLocation('Behala Bazar', 22.4988, 88.3180, 'Purple Line'),
-  MetroStationLocation('Behala Chowrasta', 22.4905, 88.3142, 'Purple Line'),
-  MetroStationLocation('Sakher Bazar', 22.4819, 88.3115, 'Purple Line'),
-  MetroStationLocation('Thakurpukur', 22.4632, 88.3078, 'Purple Line'),
-
-  // Orange Line
-  MetroStationLocation('Hemanta Mukhopadhyay', 22.5133, 88.4005, 'Orange Line'),
-  MetroStationLocation('Kavi Sukanta', 22.5020, 88.3980, 'Orange Line'),
+/// Station locations for map links, derived from the single audited source
+/// (MetroGraphService.kStationCoordinates, OpenStreetMap station nodes).
+/// This used to be a separate hand-typed table with several stations 1-3 km off
+/// (e.g. Kavi Subhash, Shahid Khudiram, Kavi Nazrul) and missing stations.
+final List<MetroStationLocation> kKolkataMetroCoordinates = [
+  for (final e in MetroGraphService.kStationCoordinates.entries)
+    MetroStationLocation(e.key, e.value[0], e.value[1], _lineLabel(e.key)),
 ];
+
+String _lineLabel(String station) {
+  final lines = <String>[
+    if (MetroGraphService.kBlueLineStations.contains(station)) 'Blue Line',
+    if (MetroGraphService.kGreenLineStations.contains(station)) 'Green Line',
+    if (MetroGraphService.kPurpleLineStations.contains(station)) 'Purple Line',
+    if (MetroGraphService.kOrangeLineStations.contains(station)) 'Orange Line',
+    if (MetroGraphService.kYellowLineStations.contains(station)) 'Yellow Line',
+  ];
+  return lines.join(' / ');
+}
 
 class CircuitStudioScreen extends StatefulWidget {
   final double userLat;
@@ -354,11 +314,14 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
   }
 
   MetroStationLocation _getNearestMetroForPandal(Pandal p) {
-    final cleaned = p.metroStation.trim().toLowerCase();
-    for (final m in kKolkataMetroCoordinates) {
-      if (cleaned.contains(m.name.toLowerCase()) ||
-          m.name.toLowerCase().contains(cleaned)) {
-        return m;
+    // Resolve the pandal's assigned station exactly (alias-aware). The old
+    // substring scan matched 'Central Park' to 'Central' and 'Howrah Maidan'
+    // to 'Maidan'.
+    final canonical =
+        MetroGraphService.instance.getCanonicalStation(p.metroStation);
+    if (canonical != null) {
+      for (final m in kKolkataMetroCoordinates) {
+        if (m.name == canonical) return m;
       }
     }
     MetroStationLocation nearest = kKolkataMetroCoordinates.first;
