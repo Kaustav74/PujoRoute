@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PujoRoute – Privacy Policy</title>
+<style>
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;max-width:760px;margin:0 auto;padding:24px 18px 60px;line-height:1.6;color:#222;background:#fff}
+  h1{font-size:1.8em;margin-bottom:.2em}
+  h2{font-size:1.25em;margin-top:1.8em;border-bottom:1px solid #eee;padding-bottom:.2em}
+  .meta{color:#666;font-size:.95em}
+  table{border-collapse:collapse;width:100%;margin:.8em 0}
+  th,td{border:1px solid #ddd;padding:8px;text-align:left;vertical-align:top;font-size:.95em}
+  th{background:#f6f6f6}
+  .todo{background:#fff3cd;padding:0 4px;border-radius:3px}
+  code{background:#f4f4f4;padding:1px 4px;border-radius:3px}
+</style>
+</head>
+<body>
+<h1>PujoRoute – Privacy Policy</h1>
+<p class="meta">Apps: PujoRoute for Android phones (package <code>com.pujoroute.app</code>) and PujoRoute for Galaxy Watch (Wear OS, package <code>com.pujoroute.wear</code>)<br>
+Developer: Kaustav Nath<br>
+Contact: <a href="mailto:kaustav423@gmail.com">kaustav423@gmail.com</a><br>
+Effective date: 5 October 2026</p>
+
+<h2>Summary</h2>
+<p>This policy covers both PujoRoute apps: the phone app and the Galaxy Watch (Wear OS) app. Sections 1–4 describe the phone app; section 5 describes the watch app. Sections 6–9 apply to both.</p>
+<ul>
+  <li>PujoRoute has <strong>no user accounts, no analytics, no advertising and no tracking SDKs</strong>, and the developer runs no server for it.</li>
+  <li>Pandal data, the route planner, the 2026 calendar, the metro guide and emergency numbers are bundled in the app and <strong>work offline</strong>.</li>
+  <li>Everything you save (bookmarks, visited pandals, emergency contact) stays <strong>only on your phone or watch</strong>.</li>
+  <li>The watch app uses <strong>no network at all</strong>. On the phone, the only network use is (1) downloading map images from OpenStreetMap and (2) links you choose to open, such as Google Maps directions or WhatsApp sharing.</li>
+</ul>
+
+<h2>1. Location</h2>
+<p>The app asks for the Android permissions <code>ACCESS_FINE_LOCATION</code> and <code>ACCESS_COARSE_LOCATION</code> so it can show where you are on the map, sort and suggest nearby pandals, and start a route from your position.</p>
+<ul>
+  <li><strong>Foreground only.</strong> Location is read only while the app is open (“while using the app” permission). The app does <strong>not</strong> request background location (<code>ACCESS_BACKGROUND_LOCATION</code>) and runs no background location service.</li>
+  <li><strong>Stays on your device.</strong> The app does not send your location to the developer or to any server. It saves only your last map position on the phone so the map reopens in the same place.</li>
+  <li><strong>When you tap Directions</strong>, your current coordinates may be put into the Google Maps link as the starting point, so Google receives them (see section 3). That happens only when you tap it.</li>
+  <li>Location is optional. If you deny it, the map starts at central Kolkata and all other features still work.</li>
+</ul>
+
+<h2>2. Map tiles (OpenStreetMap)</h2>
+<p>The map background is loaded live over the internet from OpenStreetMap’s tile servers (<code>tile.openstreetmap.org</code>). As with any web request, those servers receive your <strong>IP address</strong>, the app’s <strong>user agent</strong> (which names the app, <code>com.pujoroute.app</code>) and which map tiles were requested. That shows the general area you are viewing, not your GPS position. The OpenStreetMap Foundation handles this data under its own policy: <a href="https://osmfoundation.org/wiki/Privacy_Policy">osmfoundation.org/wiki/Privacy_Policy</a>.</p>
+<p>Without internet the map shows placeholder tiles and the rest of the app keeps working.</p>
+
+<h2>3. Google Maps and other external apps</h2>
+<p>Tapping <strong>Directions</strong> or opening a route in Google Maps opens a Google Maps web link in Google Maps or your browser. The link contains the pandal locations and, for directions, may include your current position as the start point. From then on, Google’s privacy policy applies: <a href="https://policies.google.com/privacy">policies.google.com/privacy</a>. Nothing is sent to Google unless you tap one of these buttons.</p>
+<p>If you choose to <strong>share</strong> your route or Pandal Passport, the app opens WhatsApp (or <code>wa.me</code>) with a pre-filled message you can review before sending. Shared routes list the pandals and do not include your current location.</p>
+
+<h2>4. Data stored on your device</h2>
+<p>The app saves the following in its private storage on your phone. It is never uploaded.</p>
+<table>
+<tr><th>Data</th><th>Purpose</th></tr>
+<tr><td>Bookmarked pandals</td><td>Your favourites list</td></tr>
+<tr><td>Visited pandals (Pandal Passport stamps)</td><td>Progress, badges, and skipping already-visited pandals when planning</td></tr>
+<tr><td>Saved route/circuit and filter choices (zone, style)</td><td>Restore your plan when you reopen the app</td></tr>
+<tr><td>Crowd notes you tap for a pandal</td><td>Shown back to you only. They are not shared with anyone.</td></tr>
+<tr><td>Emergency contact name, phone number and blood group (optional)</td><td>Shown in the emergency section so you can find them quickly</td></tr>
+<tr><td>Last map position</td><td>Reopen the map where you left it</td></tr>
+<tr><td>A random install identifier</td><td>Used only inside the app. It is never transmitted.</td></tr>
+</table>
+<p>This data is kept in Android’s app-private storage and is not separately encrypted. You can erase all of it with <strong>Delete My Data</strong> in the app, or by clearing the app’s storage or uninstalling it.</p>
+
+<h2>5. PujoRoute for Galaxy Watch (Wear OS, package <code>com.pujoroute.wear</code>)</h2>
+<ul>
+  <li><strong>Fully offline.</strong> The watch app does not request the internet permission and never connects to the internet. It has no analytics, no advertising, no tracking and no account.</li>
+  <li><strong>Location.</strong> The watch app asks for <code>ACCESS_FINE_LOCATION</code> and <code>ACCESS_COARSE_LOCATION</code>. Location is read only while one of its screens is open, to sort nearby pandals and to show a compass arrow and distance to a pandal. It is never sent anywhere and is not saved.</li>
+  <li><strong>Data stored on the watch.</strong> Bookmarks, Pandal Passport stamps and route progress are stored only on the watch, in the app’s private storage. They are not uploaded or synced and are deleted when you uninstall the watch app.</li>
+  <li><strong>Emergency numbers.</strong> Tapping an emergency number opens the watch’s phone dialer with the number filled in. The app does not place calls by itself.</li>
+</ul>
+
+<h2>6. What we do not do</h2>
+<ul>
+  <li>No analytics, crash reporting, advertising or tracking SDKs.</li>
+  <li>No sale or sharing of personal data with third parties.</li>
+  <li>No access to contacts, microphone, camera, Bluetooth or files.</li>
+</ul>
+
+<h2>7. Children</h2>
+<p>The app is a general-audience festival guide. It collects no personal data from anyone, including children.</p>
+
+<h2>8. Changes</h2>
+<p>If this policy changes, the updated version will be published at this address with a new effective date.</p>
+
+<h2>9. Contact</h2>
+<p>Questions: <a href="mailto:kaustav423@gmail.com">kaustav423@gmail.com</a></p>
+</body>
+</html>

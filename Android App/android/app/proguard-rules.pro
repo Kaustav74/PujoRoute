@@ -30,12 +30,9 @@
 }
 
 # 5. Preserve Plugin Native Implementations
--keep class com.tundralabs.fluttertts.** { *; }
--keep class com.csdcorp.speech_to_text.** { *; }
 -keep class com.baseflow.geolocator.** { *; }
 -keep class dev.flutter.plugins.sharedpreferences.** { *; }
 -keep class io.flutter.plugins.urllauncher.** { *; }
--keep class io.flutter.plugins.pathprovider.** { *; }
 
 # 6. Ignore harmless warnings for optional third-party components
 -dontwarn javax.annotation.**

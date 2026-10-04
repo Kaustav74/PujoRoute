@@ -257,8 +257,9 @@ class EmergencyService {
           "Official Kolkata Emergency Numbers:\n"
           "• Kolkata Police Emergency: 112 / 100\n"
           "• Traffic Helpline: 1073\n"
-          "• Women Helpline: 1091 / 1090\n"
-          "• Medical Ambulance: 102 / 108";
+          "• Women Helpline: 1091\n"
+          "• Medical Ambulance: 102 / 108\n"
+          "• Fire Brigade: 101";
     }
 
     return "🚨 IMMEDIATE EMERGENCY ASSISTANCE & FIRST AID\n\n"
@@ -275,8 +276,9 @@ class EmergencyService {
         "Official Kolkata Emergency Helplines:\n"
         "• Kolkata Police Emergency: 112 / 100\n"
         "• Traffic Helpline: 1073\n"
-        "• Women Helpline: 1091 / 1090\n"
+        "• Women Helpline: 1091\n"
         "• Medical Ambulance: 102 / 108\n"
-        "• Kolkata Metro Helpline: 139";
+        "• Fire Brigade: 101\n"
+        "• Rail / Metro Helpline (RailMadad): 139";
   }
 }

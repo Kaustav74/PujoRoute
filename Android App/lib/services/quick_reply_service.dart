@@ -1,4 +1,4 @@
-/// Local Offline Quick Reply Response Store for AI Sathi (Durga Puja 2026).
+/// Local Offline Quick Reply Response Store (Durga Puja 2026).
 /// Operates 100% offline with 0 network calls and consumes 0 AI surge tokens.
 class QuickReplyItem {
   final String id;

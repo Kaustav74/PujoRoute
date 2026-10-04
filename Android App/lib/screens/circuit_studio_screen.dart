@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../utils/external_links.dart';
 import '../data/pujas_data.dart';
 import '../data/puja_calendar_data.dart';
 import '../services/session_service.dart';
@@ -314,7 +315,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     if (_circuitStyle == 'bookmarked') styleDesc = 'Bookmarked Favorites';
 
     String narrative =
-        '✨ AI Auto-Circuit Generated: Curated ${finalRoute.length} $styleDesc stops in $_selectedZone Kolkata. Total walk: ${totalKm.toStringAsFixed(1)} km (~$totalMins mins). 2-Opt path optimization active.';
+        '✅ Route ready: ${finalRoute.length} $styleDesc stops in $_selectedZone Kolkata. Total walk: ${totalKm.toStringAsFixed(1)} km (~$totalMins mins). 2-Opt path optimization active.';
     if (_rerouteHeavyTraffic) {
       narrative +=
           ' 🛡️ Traffic bypass active (avoiding police road closures and >60m queues).';
@@ -487,8 +488,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     // Single leg: launch directly
     if (legs.length == 1) {
       final url = Uri.parse(legs.first.key);
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.externalApplication);
+      if (await openExternalLink(context, url)) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -561,15 +561,12 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
       });
     }
 
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    }
+    if (!mounted) return;
+    await openExternalLink(context, url);
   }
 
   void _shareCircuitToWhatsApp() async {
     if (_circuitStops.isEmpty) return;
-
-    final bool hasUserLoc = widget.userLat != 0.0 && widget.userLon != 0.0;
 
     // Clean invalid coordinates first
     final cleanStops = _circuitStops.where((p) {
@@ -580,10 +577,8 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
 
     // Build ordered list of all coordinate points
     final List<String> allPoints = [];
-    if (hasUserLoc) {
-      allPoints.add(
-          '${widget.userLat.toStringAsFixed(6)},${widget.userLon.toStringAsFixed(6)}');
-    }
+    // Privacy: the shared message must not leak the sender's live GPS
+    // position, so shared routes start at the first pandal.
     for (final p in cleanStops) {
       allPoints.add('${p.lat.toStringAsFixed(6)},${p.lon.toStringAsFixed(6)}');
     }
@@ -1136,7 +1131,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'Regenerate AI Circuit',
+                              'Regenerate Route',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 17,
@@ -1308,7 +1303,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                       },
                       icon: const Icon(Icons.auto_awesome, size: 18),
                       label: Text(
-                        'Regenerate AI Circuit ($_selectedNewTotalStops Stops)',
+                        'Regenerate Route ($_selectedNewTotalStops Stops)',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -1447,7 +1442,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
 
     final String namesList = newlyAdded.map((p) => p.name).join(', ');
     final String narrative =
-        '✨ Regenerated AI Circuit with ${finalRoute.length} stops including: $namesList. '
+        '✅ Route regenerated: ${finalRoute.length} stops including: $namesList. '
         'Total walk: ${totalKm.toStringAsFixed(1)} km (~$totalMins mins). ${routingResult.diagnostics}';
 
     setState(() {
@@ -2109,6 +2104,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
               color: Colors.white, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
+        titleSpacing: 0,
         title: Row(
           children: [
             Container(
@@ -2121,24 +2117,31 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                   const Icon(Icons.auto_awesome, color: Colors.white, size: 18),
             ),
             const SizedBox(width: 10),
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'AI Circuit Studio',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18),
-                ),
-                Text(
-                  'Automated Hopping Route Optimizer',
-                  style: TextStyle(
-                      color: kMarigoldAmber,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600),
-                ),
-              ],
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'Circuit Studio',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+                    ),
+                  ),
+                  Text(
+                    'Automated Hopping Route Optimizer',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: kMarigoldAmber,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -2634,12 +2637,15 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                                 children: [
                                   Row(
                                     children: [
-                                      const Text(
-                                        'Exclude Passport Stamped',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12),
+                                      const Flexible(
+                                        child: Text(
+                                          'Exclude Passport Stamped',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12),
+                                        ),
                                       ),
                                       const SizedBox(width: 6),
                                       Container(
@@ -2706,7 +2712,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                           label: Text(
                             _isGenerating
                                 ? 'Optimizing Route...'
-                                : '⚡ Generate AI Auto-Circuit',
+                                : '⚡ Generate Route',
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 14),
                           ),
@@ -2805,14 +2811,17 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'ROUTE SEQUENCE (DRAG TO REORDER):',
-                      style: TextStyle(
-                          color: Colors.white70,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 11,
-                          letterSpacing: 1),
+                    const Expanded(
+                      child: Text(
+                        'ROUTE SEQUENCE (DRAG TO REORDER):',
+                        style: TextStyle(
+                            color: Colors.white70,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11,
+                            letterSpacing: 1),
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF26263A),
@@ -3363,10 +3372,7 @@ class _CircuitLegsSheet extends StatelessWidget {
                               ),
                               onPressed: () async {
                                 final url = Uri.parse(leg.key);
-                                if (await canLaunchUrl(url)) {
-                                  await launchUrl(url,
-                                      mode: LaunchMode.externalApplication);
-                                }
+                                await openExternalLink(context, url);
                               },
                               icon:
                                   const Icon(Icons.navigation_rounded, size: 16),
@@ -3430,9 +3436,8 @@ class _CircuitLegsSheet extends StatelessWidget {
                     Navigator.pop(context);
                     for (int i = 0; i < legs.length; i++) {
                       final url = Uri.parse(legs[i].key);
-                      if (await canLaunchUrl(url)) {
-                        await launchUrl(url,
-                            mode: LaunchMode.externalApplication);
+                      if (!context.mounted) return;
+                      if (await openExternalLink(context, url)) {
                         if (i < legs.length - 1) {
                           await Future.delayed(const Duration(seconds: 2));
                         }

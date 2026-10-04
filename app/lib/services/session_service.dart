@@ -85,8 +85,7 @@ class SessionService {
     // 1. Session ID (generate if first launch)
     String? storedId = _prefs.getString(_kSessionId);
     if (storedId == null || storedId.isEmpty) {
-      final random = Random();
-      storedId = 'pujo_${DateTime.now().millisecondsSinceEpoch}_${random.nextInt(8999) + 1000}';
+      storedId = 'pujo_${DateTime.now().millisecondsSinceEpoch}_${_secureRandomHex()}';
       await _prefs.setString(_kSessionId, storedId);
     }
     _sessionId = storedId;
@@ -136,7 +135,7 @@ class SessionService {
     // 10. Persistent Client Installation UUID for Gateway Throttling
     String? storedUuid = _prefs.getString(_kClientInstallationId);
     if (storedUuid == null || storedUuid.isEmpty) {
-      storedUuid = 'usr_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(899999) + 100000}';
+      storedUuid = 'usr_${DateTime.now().millisecondsSinceEpoch}_${_secureRandomHex()}';
       await _prefs.setString(_kClientInstallationId, storedUuid);
     }
     _clientInstallationId = storedUuid;
@@ -152,6 +151,13 @@ class SessionService {
   // ==========================================
   // ENTERPRISE USER PRIVACY & SECURITY
   // ==========================================
+
+  /// Unguessable identifier suffix (CSPRNG) so session IDs cannot be enumerated.
+  static String _secureRandomHex([int bytes = 16]) {
+    final rng = Random.secure();
+    return List<String>.generate(
+        bytes, (_) => rng.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
+  }
 
   /// Secure token provider delegated to SecurityService
   static String getSecureApiKey() {
@@ -190,8 +196,7 @@ class SessionService {
     await _prefs.remove(_kLastLat);
     await _prefs.remove(_kLastLon);
 
-    final random = Random();
-    _sessionId = 'pujo_anon_${DateTime.now().millisecondsSinceEpoch}_${random.nextInt(8999) + 1000}';
+    _sessionId = 'pujo_anon_${DateTime.now().millisecondsSinceEpoch}_${_secureRandomHex()}';
     await _prefs.setString(_kSessionId, _sessionId);
     _triggerBackgroundSync();
   }

@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'security_service.dart';
+
+/// Fully offline, on-device session state (SharedPreferences only).
+/// Nothing in this class talks to the network.
 
 class SessionService {
   static final SessionService _instance = SessionService._internal();
@@ -25,17 +25,20 @@ class SessionService {
   static const String _kFilterHeritage = 'pujo_filter_heritage';
   static const String _kLastLat = 'pujo_last_lat';
   static const String _kLastLon = 'pujo_last_lon';
-  static const String _kChatMessages = 'pujo_chat_messages';
+  // Legacy keys from the removed online AI chat / gateway features (purged on init)
+  static const List<String> _kLegacyKeys = [
+    'pujo_chat_messages',
+    'pujo_proxy_gateway_url',
+    'pujo_client_installation_id',
+  ];
+  static const String _kLegacyEncPrefix = 'enc_v1:';
   static const String _kEmergencyPhone = 'pujo_emergency_phone';
   static const String _kEmergencyName = 'pujo_emergency_name';
   static const String _kBloodGroup = 'pujo_blood_group';
   static const String _kAutoSpeak = 'pujo_auto_speak';
-  static const String _kProxyGatewayUrl = 'pujo_proxy_gateway_url';
-  static const String _kClientInstallationId = 'pujo_client_installation_id';
 
   // In-Memory State
   String _sessionId = '';
-  String _clientInstallationId = '';
   List<String> _activeCircuitIds = [];
   bool _isCircuitActive = false;
   final Set<String> _bookmarkedIds = {};
@@ -45,17 +48,14 @@ class SessionService {
   bool _filterHeritage = true;
   double? _lastLat;
   double? _lastLon;
-  List<Map<String, dynamic>> _chatMessages = [];
   String _emergencyPhone = '';
   String _emergencyName = '';
   String _bloodGroup = '';
   bool _autoSpeak = true;
-  String _proxyGatewayUrl = 'https://my-freellmapi-server.onrender.com/v1/chat/completions';
 
   // Getters
   bool get isInitialized => _isInitialized;
   String get sessionId => _sessionId;
-  String get clientInstallationId => _clientInstallationId;
   List<String> get activeCircuitIds => List.unmodifiable(_activeCircuitIds);
   bool get isCircuitActive => _isCircuitActive;
   Set<String> get bookmarkedIds => Set.unmodifiable(_bookmarkedIds);
@@ -65,17 +65,10 @@ class SessionService {
   bool get filterHeritage => _filterHeritage;
   double? get lastLat => _lastLat;
   double? get lastLon => _lastLon;
-  List<Map<String, dynamic>> get chatMessages => List.unmodifiable(_chatMessages);
   bool get isAutoSpeakEnabled => _autoSpeak;
   String get emergencyPhone => _emergencyPhone;
   String get emergencyName => _emergencyName;
   String get bloodGroup => _bloodGroup;
-  String get proxyGatewayUrl => _proxyGatewayUrl;
-
-  Future<void> setProxyGatewayUrl(String url) async {
-    _proxyGatewayUrl = url;
-    await _prefs.setString(_kProxyGatewayUrl, url);
-  }
 
   /// Initialize and load all session values from local persistent storage
   Future<void> init() async {
@@ -85,8 +78,7 @@ class SessionService {
     // 1. Session ID (generate if first launch)
     String? storedId = _prefs.getString(_kSessionId);
     if (storedId == null || storedId.isEmpty) {
-      final random = Random();
-      storedId = 'pujo_${DateTime.now().millisecondsSinceEpoch}_${random.nextInt(8999) + 1000}';
+      storedId = 'pujo_${DateTime.now().millisecondsSinceEpoch}_${_secureRandomHex()}';
       await _prefs.setString(_kSessionId, storedId);
     }
     _sessionId = storedId;
@@ -108,39 +100,31 @@ class SessionService {
     _lastLat = _prefs.getDouble(_kLastLat);
     _lastLon = _prefs.getDouble(_kLastLon);
 
-    // 6. AI Chat Messages
-    final chatJson = _prefs.getString(_kChatMessages);
-    if (chatJson != null && chatJson.isNotEmpty) {
-      try {
-        final decoded = json.decode(chatJson) as List<dynamic>;
-        _chatMessages = decoded.map((m) => Map<String, dynamic>.from(m as Map)).toList();
-      } catch (_) {
-        _chatMessages = [];
-      }
+    // 6. Remove data left behind by the removed online AI features
+    for (final k in _kLegacyKeys) {
+      await _prefs.remove(k);
     }
 
-    // 7. Emergency Profile (Loaded from Encrypted Storage)
-    final encPhone = _prefs.getString(_kEmergencyPhone) ?? '';
-    final encName = _prefs.getString(_kEmergencyName) ?? '';
-    final encBlood = _prefs.getString(_kBloodGroup) ?? '';
-    _emergencyPhone = SecurityService.instance.decryptSensitive(encPhone);
-    _emergencyName = SecurityService.instance.decryptSensitive(encName);
-    _bloodGroup = SecurityService.instance.decryptSensitive(encBlood);
+    // 7. Emergency Profile (plain on-device storage; app sandbox, backups disabled).
+    // Values written by older builds were XOR-obfuscated with a hardcoded key;
+    // that offered no real protection, so they are discarded and must be re-entered.
+    _emergencyPhone = await _readPlainOrDiscardLegacy(_kEmergencyPhone);
+    _emergencyName = await _readPlainOrDiscardLegacy(_kEmergencyName);
+    _bloodGroup = await _readPlainOrDiscardLegacy(_kBloodGroup);
 
     // 8. Voice Assistant Preferences
     _autoSpeak = _prefs.getBool(_kAutoSpeak) ?? true;
 
-    _proxyGatewayUrl = _prefs.getString(_kProxyGatewayUrl) ?? 'https://my-freellmapi-server.onrender.com/v1/chat/completions';
-
-    // 10. Persistent Client Installation UUID for Gateway Throttling
-    String? storedUuid = _prefs.getString(_kClientInstallationId);
-    if (storedUuid == null || storedUuid.isEmpty) {
-      storedUuid = 'usr_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(899999) + 100000}';
-      await _prefs.setString(_kClientInstallationId, storedUuid);
-    }
-    _clientInstallationId = storedUuid;
-
     _isInitialized = true;
+  }
+
+  Future<String> _readPlainOrDiscardLegacy(String key) async {
+    final v = _prefs.getString(key) ?? '';
+    if (v.startsWith(_kLegacyEncPrefix)) {
+      await _prefs.remove(key);
+      return '';
+    }
+    return v;
   }
 
   Future<void> setAutoSpeakEnabled(bool enabled) async {
@@ -152,17 +136,11 @@ class SessionService {
   // ENTERPRISE USER PRIVACY & SECURITY
   // ==========================================
 
-  /// Secure token provider delegated to SecurityService
-  /// Secure token provider delegated to SecurityService
-  static String getSecureApiKey() {
-    const envKey = String.fromEnvironment('GROQ_API_KEY');
-    if (envKey.isNotEmpty) return envKey;
-    return SecurityService.instance.getObfuscatedClientToken();
-  }
-
-  /// Secure token provider for Gemini
-  static String getGeminiApiKey() {
-    return const String.fromEnvironment('GEMINI_API_KEY');
+  /// Unguessable identifier suffix (CSPRNG) so session IDs cannot be enumerated.
+  static String _secureRandomHex([int bytes = 16]) {
+    final rng = Random.secure();
+    return List<String>.generate(
+        bytes, (_) => rng.nextInt(256).toRadixString(16).padLeft(2, '0')).join();
   }
 
   /// Secure Data Shredder: Purges all stored session history, GPS history,
@@ -172,7 +150,6 @@ class SessionService {
     _isCircuitActive = false;
     _bookmarkedIds.clear();
     _visitedIds.clear();
-    _chatMessages.clear();
     _emergencyPhone = '';
     _emergencyName = '';
     _bloodGroup = '';
@@ -183,24 +160,30 @@ class SessionService {
     await _prefs.setString(_kEmergencyPhone, '0000000000');
     await _prefs.setString(_kEmergencyName, 'REDACTED');
     await _prefs.setString(_kBloodGroup, '');
-    await _prefs.setString(_kChatMessages, '[]');
 
     await _prefs.remove(_kSessionId);
     await _prefs.remove(_kCircuitIds);
     await _prefs.remove(_kCircuitActive);
     await _prefs.remove(_kBookmarkedIds);
     await _prefs.remove(_kVisitedIds);
-    await _prefs.remove(_kChatMessages);
+    for (final k in _kLegacyKeys) {
+      await _prefs.remove(k);
+    }
+    for (final k in _prefs.getKeys().where((k) => k.startsWith('pujo_crowd_')).toList()) {
+      await _prefs.remove(k);
+    }
+    _crowdReports.clear();
     await _prefs.remove(_kEmergencyPhone);
     await _prefs.remove(_kEmergencyName);
     await _prefs.remove(_kBloodGroup);
     await _prefs.remove(_kLastLat);
     await _prefs.remove(_kLastLon);
+    await _prefs.remove(_kSelectedZone);
+    await _prefs.remove(_kFilterMega);
+    await _prefs.remove(_kFilterHeritage);
 
-    final random = Random();
-    _sessionId = 'pujo_anon_${DateTime.now().millisecondsSinceEpoch}_${random.nextInt(8999) + 1000}';
+    _sessionId = 'pujo_anon_${DateTime.now().millisecondsSinceEpoch}_${_secureRandomHex()}';
     await _prefs.setString(_kSessionId, _sessionId);
-    _triggerBackgroundSync();
   }
 
   // ==========================================
@@ -211,7 +194,6 @@ class SessionService {
     _isCircuitActive = isActive;
     await _prefs.setStringList(_kCircuitIds, _activeCircuitIds);
     await _prefs.setBool(_kCircuitActive, _isCircuitActive);
-    _triggerBackgroundSync();
   }
 
   Future<void> clearCircuit() async {
@@ -219,7 +201,6 @@ class SessionService {
     _isCircuitActive = false;
     await _prefs.remove(_kCircuitIds);
     await _prefs.setBool(_kCircuitActive, false);
-    _triggerBackgroundSync();
   }
 
   bool isInCircuit(String pandalId) => _activeCircuitIds.contains(pandalId);
@@ -236,7 +217,6 @@ class SessionService {
     _isCircuitActive = _activeCircuitIds.isNotEmpty;
     await _prefs.setStringList(_kCircuitIds, _activeCircuitIds);
     await _prefs.setBool(_kCircuitActive, _isCircuitActive);
-    _triggerBackgroundSync();
     return inCircuit;
   }
 
@@ -255,7 +235,6 @@ class SessionService {
       nowBookmarked = true;
     }
     await _prefs.setStringList(_kBookmarkedIds, _bookmarkedIds.toList());
-    _triggerBackgroundSync();
     return nowBookmarked;
   }
 
@@ -274,7 +253,6 @@ class SessionService {
       nowVisited = true;
     }
     await _prefs.setStringList(_kVisitedIds, _visitedIds.toList());
-    _triggerBackgroundSync();
     return nowVisited;
   }
 
@@ -287,7 +265,6 @@ class SessionService {
   Future<void> reportCrowdStatus(String pandalId, String status) async {
     _crowdReports[pandalId] = status;
     await _prefs.setString('pujo_crowd_$pandalId', status);
-    _triggerBackgroundSync();
   }
 
   // ==========================================
@@ -313,73 +290,14 @@ class SessionService {
   }
 
   // ==========================================
-  // AI CHAT HISTORY
-  // ==========================================
-  Future<void> saveChatMessages(List<Map<String, dynamic>> messages) async {
-    _chatMessages = List.from(messages);
-    final serializable = messages.map((m) {
-      final copy = Map<String, dynamic>.from(m);
-      if (copy.containsKey('route')) {
-        final routeList = copy['route'];
-        if (routeList is List) {
-          copy['route_ids'] = routeList.map((p) {
-            try {
-              return (p as dynamic).id;
-            } catch (_) {
-              return '';
-            }
-          }).where((id) => (id as String).isNotEmpty).toList();
-        }
-        copy.remove('route');
-      }
-      return copy;
-    }).toList();
-
-    final trimmed = serializable.length > 30 ? serializable.sublist(serializable.length - 30) : serializable;
-    await _prefs.setString(_kChatMessages, json.encode(trimmed));
-  }
-
-  Future<void> clearChatHistory() async {
-    _chatMessages.clear();
-    await _prefs.remove(_kChatMessages);
-  }
-
-  // ==========================================
-  // EMERGENCY PROFILE (ENCRYPTED STORAGE)
+  // EMERGENCY PROFILE (ON-DEVICE STORAGE)
   // ==========================================
   Future<void> saveEmergencyProfile({required String phone, required String name, required String blood}) async {
     _emergencyPhone = phone;
     _emergencyName = name;
     _bloodGroup = blood;
-    final encPhone = SecurityService.instance.encryptSensitive(phone);
-    final encName = SecurityService.instance.encryptSensitive(name);
-    final encBlood = SecurityService.instance.encryptSensitive(blood);
-    await _prefs.setString(_kEmergencyPhone, encPhone);
-    await _prefs.setString(_kEmergencyName, encName);
-    await _prefs.setString(_kBloodGroup, encBlood);
-  }
-
-  // ==========================================
-  // CLOUD BACKEND SYNC (LIGHTWEIGHT & SAFE HTTPS)
-  // ==========================================
-  void _triggerBackgroundSync() {
-    Future.microtask(() async {
-      try {
-        final url = Uri.parse('https://sync.pujoroute.app/api/session/sync');
-        await http.post(
-          url,
-          headers: {'Content-Type': 'application/json'},
-          body: json.encode({
-            'session_id': _sessionId,
-            'circuit_ids': _activeCircuitIds,
-            'bookmarked_ids': _bookmarkedIds.toList(),
-            'visited_ids': _visitedIds.toList(),
-            'is_circuit_active': _isCircuitActive,
-          }),
-        ).timeout(const Duration(seconds: 3));
-      } catch (_) {
-        // Network errors are silently ignored as local storage is primary
-      }
-    });
+    await _prefs.setString(_kEmergencyPhone, phone);
+    await _prefs.setString(_kEmergencyName, name);
+    await _prefs.setString(_kBloodGroup, blood);
   }
 }
