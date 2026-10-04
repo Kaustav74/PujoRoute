@@ -1,6 +1,0 @@
--r requirements.txt
-pytest==9.1.1
-httpx==0.28.1
-pip-audit
-# Only needed for the offline data-enrichment script (enrich_pujas_with_groq.py)
-groq

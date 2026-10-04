@@ -119,7 +119,7 @@ class _PujaCalendarScreenState extends State<PujaCalendarScreen> {
               ),
             ),
             Text(
-              'Durga Puja 2026 AI Calendar & Tithis',
+              'Durga Puja 2026 Calendar & Tithis',
               style: TextStyle(
                   fontSize: 11,
                   color: Color(0xFFFFD54F),
@@ -651,7 +651,7 @@ class _PujaCalendarScreenState extends State<PujaCalendarScreen> {
 
                 // Card 3: Crowd Forecast & Best Visiting Strategy
                 _buildSectionCard(
-                  title: 'AI Crowd Advisory & Optimal Visiting Hours',
+                  title: 'Crowd Advisory & Optimal Visiting Hours',
                   icon: Icons.groups,
                   accentColor: _getCrowdColor(selectedDay.crowdLevel),
                   child: Column(
@@ -815,7 +815,7 @@ class _PujaCalendarScreenState extends State<PujaCalendarScreen> {
 
                 // Card 6: AI Pro Hopping Tips
                 _buildSectionCard(
-                  title: 'AI Survival Pro-Tips',
+                  title: 'Survival Pro-Tips',
                   icon: Icons.tips_and_updates,
                   accentColor: const Color(0xFF64B5F6),
                   child: Column(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'screens/map_screen.dart';
 import 'services/session_service.dart';
 
@@ -33,7 +32,7 @@ class PujoRouteApp extends StatelessWidget {
           elevation: 0,
           centerTitle: false,
         ),
-        textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme),
+        textTheme: ThemeData.dark().textTheme.apply(fontFamily: 'Outfit'),
         useMaterial3: true,
       ),
       home: const MapScreen(),

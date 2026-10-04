@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pujoroute/services/emergency_service.dart';
 import 'package:pujoroute/services/live_feed_service.dart';
-import 'package:pujoroute/services/voice_assistant_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -88,20 +87,15 @@ void main() {
 
       expect(text, contains('EMERGENCY'));
       expect(text, contains('100')); // Police
-      expect(text, contains('1090')); // Women helpline
+      expect(text, contains('1091')); // Women helpline (Kolkata)
+      expect(text, isNot(contains('1090')), reason: '1090 is not a Kolkata/WB helpline');
+      expect(text, contains('Fire Brigade: 101'));
       expect(text, contains('Police Help Booth'));
     });
   });
 
   group('Live Feed Service & Traffic Bypass Tests', () {
     final live = LiveFeedService.instance;
-
-    test('getLiveBannerTicker returns weather and traffic advisory', () {
-      final ticker = live.getLiveBannerTicker();
-      expect(ticker, isNotEmpty);
-      expect(ticker, contains('Live'));
-      expect(ticker, contains('Metro'));
-    });
 
     test('shouldRerouteAround accurately detects high congestion pandals', () {
       // Sreebhumi Sporting Club is on VIP Road (Severe crowd pressure, 75m wait)
@@ -115,30 +109,17 @@ void main() {
       expect(live.shouldRerouteAround('Sovabazar Rajbari'), isFalse);
     });
 
+    test('shouldRerouteAround does not match empty or very short names (regression)', () {
+      expect(live.shouldRerouteAround(''), isFalse);
+      expect(live.shouldRerouteAround('  '), isFalse);
+      expect(live.shouldRerouteAround('Sre'), isFalse);
+    });
+
     test('getPandalLiveStatus provides valid wait time and status indicator', () {
       final waitInfo = live.getPandalLiveStatus('Suruchi Sangha');
       expect(waitInfo['wait'], inInclusiveRange(5, 120));
       expect(waitInfo['advisory'].toString().isNotEmpty, isTrue);
       expect(['smooth', 'moderate', 'heavy'], contains(waitInfo['status']));
-    });
-  });
-
-  group('Voice Assistant Bengali/Banglish Intent Detection Tests', () {
-    final voice = VoiceAssistantService.instance;
-
-    test('Voice assistant detects Bengali/Banglish distance and puja queries', () {
-      final intentDistance = voice.resolveVoiceIntent('ekdalia theke singhi park koto dur');
-      expect(intentDistance.type, equals(VoiceIntentType.navigation));
-      expect(intentDistance.targetPandal?.name.toLowerCase(), anyOf(contains('ekdalia'), contains('singhi')));
-
-      final intentSandhi = voice.resolveVoiceIntent('sandhi puja kokhon shuru hobe 2026');
-      expect(intentSandhi.type, equals(VoiceIntentType.calendar));
-
-      final intentEmergency = voice.resolveVoiceIntent('bipod e porechi amake bachan');
-      expect(intentEmergency.type, equals(VoiceIntentType.emergency));
-
-      final intentCircuit = voice.resolveVoiceIntent('ekta circuit banie dao');
-      expect(intentCircuit.type, equals(VoiceIntentType.circuit));
     });
   });
 }

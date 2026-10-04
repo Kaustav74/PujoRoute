@@ -57,7 +57,14 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            // Uses android/key.properties when present (never commit it). Without it,
+            // falls back to the debug key so local `flutter build apk --release` works
+            // for testing; such builds must NOT be uploaded to any store.
+            signingConfig = if (keystorePropertiesFile.exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }
