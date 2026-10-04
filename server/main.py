@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import json
 import math
 import random
@@ -13,10 +13,10 @@ app = FastAPI(title="PujoRoute API V2")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=[o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "*").split(",") if o.strip()],
+    allow_credentials=False,  # never combine credentials with wildcard origins
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
 )
 
 # Load dataset
@@ -40,15 +40,15 @@ def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     return R * c
 
 class ChatRequest(BaseModel):
-    query: str
-    lat: float
-    lon: float
+    query: str = Field(..., min_length=1, max_length=1000)
+    lat: float = Field(..., ge=-90, le=90)
+    lon: float = Field(..., ge=-180, le=180)
 
 class SessionSyncRequest(BaseModel):
-    session_id: str
-    circuit_ids: List[str] = []
-    bookmarked_ids: List[str] = []
-    visited_ids: List[str] = []
+    session_id: str = Field(..., min_length=8, max_length=128, pattern=r"^[A-Za-z0-9_\-]+$")
+    circuit_ids: List[str] = Field(default_factory=list, max_length=600)
+    bookmarked_ids: List[str] = Field(default_factory=list, max_length=600)
+    visited_ids: List[str] = Field(default_factory=list, max_length=600)
     is_circuit_active: bool = False
 
 SESSIONS_DB = {}
@@ -114,7 +114,7 @@ def get_session(session_id: str):
     return {"status": "not_found", "session_id": session_id, "message": "Session not found"}
 
 @app.get("/api/pujas/nearby")
-def get_nearby_pujas(lat: float = Query(...), lon: float = Query(...), radius_m: float = Query(35000)):
+def get_nearby_pujas(lat: float = Query(..., ge=-90, le=90), lon: float = Query(..., ge=-180, le=180), radius_m: float = Query(35000, gt=0, le=200000)):
     # Fallback to Kolkata center if 0,0 provided
     if lat == 0.0 and lon == 0.0:
         lat, lon = 22.5726, 88.3639
@@ -378,4 +378,4 @@ User Query: {req.query}
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host=os.environ.get("HOST", "127.0.0.1"), port=int(os.environ.get("PORT", "8000")), proxy_headers=True)

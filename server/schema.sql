@@ -41,3 +41,21 @@ create table public.facilities (
 -- Create indexes for spatial queries
 create index pujas_location_idx on public.pujas using gist (location);
 create index facilities_location_idx on public.facilities using gist (location);
+
+-- ---------------------------------------------------------------------------
+-- Row Level Security (REQUIRED when exposing tables via the Supabase anon key)
+-- Without RLS, anyone holding the public anon key can insert/update/delete rows.
+-- Public data is read-only; crowd reports may be inserted but never edited.
+-- ---------------------------------------------------------------------------
+alter table public.pujas         enable row level security;
+alter table public.puja_timings  enable row level security;
+alter table public.crowd_reports enable row level security;
+alter table public.facilities    enable row level security;
+
+create policy "Public read pujas"        on public.pujas         for select using (true);
+create policy "Public read puja_timings" on public.puja_timings  for select using (true);
+create policy "Public read facilities"   on public.facilities    for select using (true);
+create policy "Public read crowd"        on public.crowd_reports for select using (true);
+create policy "Anon insert crowd"        on public.crowd_reports for insert with check (true);
+-- Writes to pujas / puja_timings / facilities are only possible with the
+-- service_role key (server-side), which bypasses RLS. Never ship it in the app.

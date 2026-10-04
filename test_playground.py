@@ -1,10 +1,11 @@
+import os
 import urllib.request
 import json
 
 url = "https://my-freellmapi-server.onrender.com/v1/chat/completions"
 headers = {
     "Content-Type": "application/json",
-    "Authorization": "Bearer freellmapi-aee0bcf8947be1ae92447fee0175f33e3277b275372f2931"
+    "Authorization": f"Bearer {os.environ.get('FREELLMAPI_API_KEY', '')}"
 }
 payload = {
     "model": "auto",

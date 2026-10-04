@@ -19,8 +19,40 @@ const clientUsageMap = new Map(); // Track client UUID usage
 
 const inMemoryCache = new Map(); // Fallback in-memory cache when KV binding is not present
 
-// Internal secret matching the Android app's SecurityService salt
-const GATEWAY_SEED = "PujoRouteSecureSalt2026!";
+// Request size limits (defence against abuse of the upstream LLM quota)
+const MAX_BODY_BYTES = 32 * 1024;
+const MAX_QUERY_CHARS = 1000;
+const MAX_SYSTEM_PROMPT_CHARS = 8000;
+
+// NOTE: GATEWAY_SEED must be provided as a Wrangler secret
+// (`npx wrangler secret put GATEWAY_SEED`). There is intentionally no
+// hardcoded fallback: a seed committed to source control is public.
+
+function jsonResponse(env, body, status = 200, extraHeaders = {}) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      "X-Content-Type-Options": "nosniff",
+      "Cache-Control": "no-store",
+      "Access-Control-Allow-Origin": (env && env.ALLOWED_ORIGIN) || "*",
+      ...extraHeaders,
+    },
+  });
+}
+
+// Constant-time string comparison to avoid timing side channels on signatures
+function timingSafeEqual(a, b) {
+  if (typeof a !== "string" || typeof b !== "string" || a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
+
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
 
 function checkClientHourlyLimit(clientUuid, now) {
   let usage = clientUsageMap.get(clientUuid);
@@ -60,8 +92,9 @@ export default {
     if (request.method === "OPTIONS") {
       return new Response(null, {
         headers: {
-          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Origin": env.ALLOWED_ORIGIN || "*",
           "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+          "Access-Control-Max-Age": "86400",
           "Access-Control-Allow-Headers": "Content-Type, X-PujoRoute-Signature, X-PujoRoute-Timestamp, X-Client-UUID, X-App-Platform",
         },
       });
@@ -84,7 +117,8 @@ export default {
     const now = Date.now();
 
     // 2. IP Rate Limiting (15 req/min)
-    const clientIp = request.headers.get("cf-connecting-ip") || request.headers.get("x-forwarded-for") || "127.0.0.1";
+    // cf-connecting-ip is set by Cloudflare and cannot be spoofed by clients (unlike x-forwarded-for)
+    const clientIp = request.headers.get("cf-connecting-ip") || "unknown";
     let ipData = rateLimitMap.get(clientIp);
 
     if (!ipData || now - ipData.windowStart > RATE_LIMIT_WINDOW_MS) {
@@ -120,10 +154,21 @@ export default {
       });
     }
 
-    const rawBody = await request.text();
-    const expectedSignature = await computeHmacSha256(`${timestamp}:${rawBody}`, env.GATEWAY_SEED || GATEWAY_SEED);
+    if (!env.GATEWAY_SEED) {
+      return jsonResponse(env, { error: "Server configuration error." }, 500);
+    }
 
-    if (signature !== expectedSignature) {
+    const contentLength = parseInt(request.headers.get("content-length") || "0", 10);
+    if (contentLength > MAX_BODY_BYTES) {
+      return jsonResponse(env, { error: "Payload too large." }, 413);
+    }
+    const rawBody = await request.text();
+    if (rawBody.length > MAX_BODY_BYTES) {
+      return jsonResponse(env, { error: "Payload too large." }, 413);
+    }
+    const expectedSignature = await computeHmacSha256(`${timestamp}:${rawBody}`, env.GATEWAY_SEED);
+
+    if (!timingSafeEqual(signature, expectedSignature)) {
       return new Response(JSON.stringify({ error: "Forbidden: Invalid cryptographic app signature." }), {
         status: 403,
         headers: { "Content-Type": "application/json" },
@@ -145,21 +190,26 @@ export default {
 
     const groqKey = env.GROQ_API_KEY;
     if (!groqKey) {
-      return new Response(JSON.stringify({ error: "Server Configuration Error: GROQ_API_KEY not set in environment." }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
+      return jsonResponse(env, { error: "Server configuration error." }, 500);
     }
 
     // 5. Endpoint Routing: /ask-sathi
     if (url.pathname === "/ask-sathi" && request.method === "POST") {
       try {
         const payload = JSON.parse(rawBody);
-        const userQuery = payload.query || "";
-        const systemPrompt = payload.system_prompt || "You are PujoRoute AI Guide.";
+        const userQuery = typeof payload.query === "string" ? payload.query : "";
+        const systemPrompt = typeof payload.system_prompt === "string" && payload.system_prompt
+          ? payload.system_prompt
+          : "You are PujoRoute AI Guide.";
+
+        if (!userQuery.trim() || userQuery.length > MAX_QUERY_CHARS || systemPrompt.length > MAX_SYSTEM_PROMPT_CHARS) {
+          return jsonResponse(env, { error: "Invalid request." }, 400);
+        }
 
         // In-Memory & Cloudflare KV Query Caching (1 Hour TTL - 0 Groq Token Cost)
-        const queryKey = userQuery.trim().toLowerCase();
+        // Cache key includes the system prompt hash so one client cannot poison
+        // cached answers served for a different prompt.
+        const queryKey = "v2:" + (await sha256Hex(systemPrompt + "\u0000" + userQuery.trim().toLowerCase()));
         const kv = env.AI_CACHE || env.CACHE_KV;
 
         let cachedAnswer = null;
@@ -194,11 +244,9 @@ export default {
         });
 
         if (!groqResponse.ok) {
-          const errText = await groqResponse.text();
-          return new Response(JSON.stringify({ error: "Upstream Groq error", details: errText }), {
-            status: groqResponse.status,
-            headers: { "Content-Type": "application/json" },
-          });
+          // Log details server-side only; do not leak upstream error bodies to clients.
+          console.error("Upstream error", groqResponse.status);
+          return jsonResponse(env, { error: "Upstream AI service error." }, 502);
         }
 
         const groqData = await groqResponse.json();
@@ -218,10 +266,8 @@ export default {
           headers: { "Content-Type": "application/json", "X-Cache": "MISS" },
         });
       } catch (err) {
-        return new Response(JSON.stringify({ error: "Internal Gateway Error", message: err.message }), {
-          status: 500,
-          headers: { "Content-Type": "application/json" },
-        });
+        console.error("Gateway error", err && err.name);
+        return jsonResponse(env, { error: "Internal gateway error." }, 500);
       }
     }
 

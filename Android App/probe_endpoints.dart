@@ -1,10 +1,11 @@
 // ignore_for_file: avoid_print
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 
 void main() async {
   const String base = 'https://my-freellmapi-server.onrender.com';
-  const String key = 'freellmapi-60361c293a499d1f5786eb8f96d950e842d171c84d32576b';
+  final String key = Platform.environment['FREELLMAPI_API_KEY'] ?? '';
   final List<String> candidatePaths = ['/v1/chat/completions', '/chat/completions', '/api/chat', '/v1', '/'];
 
   for (final path in candidatePaths) {

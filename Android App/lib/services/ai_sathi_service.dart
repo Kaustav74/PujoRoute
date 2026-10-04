@@ -9,8 +9,8 @@ String get _aiBaseUrl => kIsWeb
     ? 'http://localhost:8081'
     : 'https://my-freellmapi-server.onrender.com';
 
-const String _aiApiKey =
-    'freellmapi-aee0bcf8947be1ae92447fee0175f33e3277b275372f2931';
+// Provide at build time: --dart-define=FREELLMAPI_API_KEY=... (never commit keys).
+const String _aiApiKey = String.fromEnvironment('FREELLMAPI_API_KEY');
 
 Future<String> callAiSathi(String userPrompt) async {
   final String url = '$_aiBaseUrl/v1/chat/completions';

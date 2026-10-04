@@ -1,23 +1,63 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Path, Request, Response, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import json
+import logging
 import math
 import random
 import os
+from collections import OrderedDict
 from typing import List, Optional
 from datetime import datetime
-from groq import Groq
 
-app = FastAPI(title="PujoRoute API V2")
+# ---------------------------------------------------------------------------
+# Configuration (all via environment variables; see .env.example)
+# ---------------------------------------------------------------------------
+APP_ENV = os.environ.get("APP_ENV", "development").lower()
+IS_PRODUCTION = APP_ENV == "production"
+# Comma-separated list of allowed browser origins. Native mobile clients are not
+# subject to CORS, so this only matters for web front-ends.
+ALLOWED_ORIGINS = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "*").split(",") if o.strip()]
+CHAT_RATE_LIMIT_PER_MIN = int(os.environ.get("CHAT_RATE_LIMIT_PER_MIN", "30"))
+SYNC_RATE_LIMIT_PER_MIN = int(os.environ.get("SYNC_RATE_LIMIT_PER_MIN", "60"))
+MAX_SESSIONS = int(os.environ.get("MAX_SESSIONS", "20000"))
+MAX_CACHE_ENTRIES = int(os.environ.get("MAX_CACHE_ENTRIES", "1000"))
+# Reading sessions back by ID is not used by the app and session IDs were
+# historically guessable, so the read endpoint is disabled unless explicitly enabled.
+ENABLE_SESSION_READ = os.environ.get("ENABLE_SESSION_READ", "false").lower() == "true"
+
+logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO"))
+logger = logging.getLogger("pujoroute")
+
+app = FastAPI(
+    title="PujoRoute API V2",
+    # Do not expose interactive API docs publicly in production.
+    docs_url=None if IS_PRODUCTION else "/docs",
+    redoc_url=None if IS_PRODUCTION else "/redoc",
+    openapi_url=None if IS_PRODUCTION else "/openapi.json",
+)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=ALLOWED_ORIGINS,
+    # Credentials must never be combined with a wildcard origin; the API is
+    # token-less, so cookies/credentials are not needed at all.
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"],
 )
+
+
+@app.middleware("http")
+async def security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "no-referrer")
+    response.headers.setdefault("Content-Security-Policy", "default-src 'none'; frame-ancestors 'none'")
+    if IS_PRODUCTION:
+        response.headers.setdefault("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
+    return response
 
 # Load dataset
 PUJAS_FILE = os.path.join(os.path.dirname(__file__), "pujas.json")
@@ -39,19 +79,58 @@ def haversine(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return R * c
 
+ID_PATTERN = r"^[A-Za-z0-9_\-]{1,128}$"
+
+
 class ChatRequest(BaseModel):
-    query: str
-    lat: float
-    lon: float
+    query: str = Field(..., min_length=1, max_length=1000)
+    lat: float = Field(..., ge=-90, le=90)
+    lon: float = Field(..., ge=-180, le=180)
 
 class SessionSyncRequest(BaseModel):
-    session_id: str
-    circuit_ids: List[str] = []
-    bookmarked_ids: List[str] = []
-    visited_ids: List[str] = []
+    session_id: str = Field(..., min_length=8, max_length=128, pattern=ID_PATTERN)
+    circuit_ids: List[str] = Field(default_factory=list, max_length=600)
+    bookmarked_ids: List[str] = Field(default_factory=list, max_length=600)
+    visited_ids: List[str] = Field(default_factory=list, max_length=600)
     is_circuit_active: bool = False
 
-SESSIONS_DB = {}
+# In-memory, size-bounded stores (process-local; use Redis/Postgres for multi-instance)
+SESSIONS_DB: "OrderedDict[str, dict]" = OrderedDict()
+
+
+def _bounded_put(store: OrderedDict, key, value, max_entries: int) -> None:
+    store[key] = value
+    store.move_to_end(key)
+    while len(store) > max_entries:
+        store.popitem(last=False)
+
+
+def _validate_ids(ids: List[str]) -> List[str]:
+    for i in ids:
+        if not isinstance(i, str) or len(i) > 128:
+            raise HTTPException(status_code=422, detail="Invalid pandal id")
+    return ids
+
+
+def _client_ip(request) -> str:
+    # Run uvicorn with --proxy-headers --forwarded-allow-ips=<proxy> behind a
+    # reverse proxy (Render/Cloudflare) so request.client reflects the real client.
+    return request.client.host if (request.client and request.client.host) else "unknown"
+
+
+def _rate_limited(bucket: dict, key: str, limit: int, window_s: float = 60.0) -> bool:
+    now_ts = datetime.now().timestamp()
+    timestamps = [t for t in bucket.get(key, []) if now_ts - t < window_s]
+    if len(timestamps) >= limit:
+        bucket[key] = timestamps
+        return True
+    timestamps.append(now_ts)
+    bucket[key] = timestamps
+    # Opportunistic pruning so the map cannot grow without bound
+    if len(bucket) > 50000:
+        for k in [k for k, v in bucket.items() if not v or now_ts - v[-1] >= window_s]:
+            bucket.pop(k, None)
+    return False
 
 class Puja(BaseModel):
     id: str
@@ -73,6 +152,10 @@ class Puja(BaseModel):
 def read_root():
     return {"message": "PujoRoute API is online", "total_pujas": len(PUJAS_DB)}
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
 @app.get("/api/pandals/subsections")
 def get_subsections():
     counts = {}
@@ -86,16 +169,22 @@ def get_subsections():
         "subsections": counts
     }
 
+SYNC_REQUEST_LOGS = {}
+
 @app.post("/api/session/sync")
-def sync_session(req: SessionSyncRequest):
-    SESSIONS_DB[req.session_id] = {
+def sync_session(req: SessionSyncRequest, request: Request):
+    if _rate_limited(SYNC_REQUEST_LOGS, _client_ip(request), SYNC_RATE_LIMIT_PER_MIN):
+        raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Rate limit exceeded")
+    for ids in (req.circuit_ids, req.bookmarked_ids, req.visited_ids):
+        _validate_ids(ids)
+    _bounded_put(SESSIONS_DB, req.session_id, {
         "session_id": req.session_id,
         "circuit_ids": req.circuit_ids,
         "bookmarked_ids": req.bookmarked_ids,
         "visited_ids": req.visited_ids,
         "is_circuit_active": req.is_circuit_active,
         "updated_at": datetime.now().isoformat(),
-    }
+    }, MAX_SESSIONS)
     return {
         "status": "success",
         "message": "Session synchronized successfully",
@@ -108,13 +197,19 @@ def sync_session(req: SessionSyncRequest):
     }
 
 @app.get("/api/session/{session_id}")
-def get_session(session_id: str):
+def get_session(session_id: str = Path(..., max_length=128, pattern=ID_PATTERN)):
+    if not ENABLE_SESSION_READ:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
     if session_id in SESSIONS_DB:
         return {"status": "found", "session": SESSIONS_DB[session_id]}
     return {"status": "not_found", "session_id": session_id, "message": "Session not found"}
 
 @app.get("/api/pujas/nearby")
-def get_nearby_pujas(lat: float = Query(...), lon: float = Query(...), radius_m: float = Query(35000)):
+def get_nearby_pujas(
+    lat: float = Query(..., ge=-90, le=90),
+    lon: float = Query(..., ge=-180, le=180),
+    radius_m: float = Query(35000, gt=0, le=200000),
+):
     # Fallback to Kolkata center if 0,0 provided
     if lat == 0.0 and lon == 0.0:
         lat, lon = 22.5726, 88.3639
@@ -319,27 +414,22 @@ def parse_and_validate_action(raw_text: str):
     return clean_text, ui_action
 
 import hashlib
-from fastapi import Request, Response, HTTPException, status
 
 IP_REQUEST_LOGS = {}
-FAQ_CACHE = {}
+FAQ_CACHE: "OrderedDict[str, dict]" = OrderedDict()
 
 @app.post("/api/chat")
 async def chat_with_freellmapi(req: ChatRequest, request: Request, response: Response):
-    # Server-Side IP Rate Protection: Max 60 requests per minute per IP
-    client_ip = request.client.host if (request.client and request.client.host) else "127.0.0.1"
-    now_ts = datetime.now().timestamp()
-    timestamps = [t for t in IP_REQUEST_LOGS.get(client_ip, []) if now_ts - t < 60]
-    if len(timestamps) >= 60:
+    # Server-Side IP Rate Protection (configurable via CHAT_RATE_LIMIT_PER_MIN)
+    if _rate_limited(IP_REQUEST_LOGS, _client_ip(request), CHAT_RATE_LIMIT_PER_MIN):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-            detail="Rate limit exceeded: Max 60 queries per minute allowed."
+            detail="Rate limit exceeded. Please retry in a minute."
         )
-    timestamps.append(now_ts)
-    IP_REQUEST_LOGS[client_ip] = timestamps
 
     base_url = os.environ.get("FREELLMAPI_BASE_URL", "https://my-freellmapi-server.onrender.com/v1").rstrip("/")
-    raw_key = (os.environ.get("FREELLMAPI_API_KEY") or os.environ.get("GROQ_API_KEY") or "freellmapi-60361c293a499d1f5786eb8f96d950e842d171c84d32576b").strip()
+    # Secrets come ONLY from the environment; no hardcoded fallback.
+    raw_key = (os.environ.get("FREELLMAPI_API_KEY") or os.environ.get("GROQ_API_KEY") or "").strip()
     if raw_key.lower().startswith("bearer "):
         raw_key = raw_key[7:].strip()
     api_key = raw_key
@@ -439,6 +529,8 @@ Context Pandals:
     }
 
     try:
+        if not api_key:
+            raise RuntimeError("FREELLMAPI_API_KEY is not configured")
         endpoint = f"{base_url}/chat/completions" if not base_url.endswith("/chat/completions") else base_url
         res = requests.post(endpoint, headers=headers, json=payload, timeout=30)
         res.raise_for_status()
@@ -455,7 +547,7 @@ Context Pandals:
         }
 
         if is_deterministic_faq:
-            FAQ_CACHE[cache_key] = result
+            _bounded_put(FAQ_CACHE, cache_key, result, MAX_CACHE_ENTRIES)
             response.headers["Cache-Control"] = "public, max-age=14400, s-maxage=14400"
             response.headers["X-Cache-Status"] = "MISS"
         else:
@@ -463,6 +555,8 @@ Context Pandals:
 
         return result
     except Exception as e:
+        # Log server-side only; never return upstream error details to clients.
+        logger.warning("AI upstream call failed: %s", type(e).__name__)
         if is_stats_query:
             fallback_text = (
                 f"I am AI Sathi. The PujoRoute Master Database contains {total_pujas} registered Durga Pujas in Kolkata "
@@ -471,7 +565,7 @@ Context Pandals:
             )
             result = {"display_text": fallback_text, "ui_action": None, "reply": fallback_text, "suggested_route": []}
             if is_deterministic_faq:
-                FAQ_CACHE[cache_key] = result
+                _bounded_put(FAQ_CACHE, cache_key, result, MAX_CACHE_ENTRIES)
                 response.headers["Cache-Control"] = "public, max-age=14400, s-maxage=14400"
                 response.headers["X-Cache-Status"] = "MISS"
             return result
@@ -487,5 +581,11 @@ Context Pandals:
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(
+        "main:app",
+        host=os.environ.get("HOST", "127.0.0.1"),
+        port=int(os.environ.get("PORT", "8000")),
+        reload=not IS_PRODUCTION and os.environ.get("RELOAD", "false").lower() == "true",
+        proxy_headers=True,
+    )
 

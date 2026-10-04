@@ -1,3 +1,4 @@
+import os
 import urllib.request
 import json
 
@@ -19,7 +20,7 @@ def run_exact_user_curl(max_tokens):
         data=json.dumps(data).encode('utf-8'),
         headers={
             "Content-Type": "application/json",
-            "Authorization": "Bearer freellmapi-60361c293a499d1f5786eb8f96d950e842d171c84d32576b"
+            "Authorization": f"Bearer {os.environ.get('FREELLMAPI_API_KEY', '')}"
         }
     )
     
