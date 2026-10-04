@@ -197,14 +197,11 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     // 2. Metro Anchor & Candidate Selection
     Pandal? metroStartAnchor;
     Pandal? metroEndAnchor;
-    bool hasMetro(Pandal p) =>
-        p.metroStation.isNotEmpty &&
-        !p.metroStation.toLowerCase().contains('none');
-
     final int count = min(_targetStopCount, pool.length);
 
     if (_optimizeByMetro) {
-      final metroCandidates = pool.where(hasMetro).toList();
+      final metroCandidates =
+          pool.where(HardenedPujoOptimizer.hasUsableMetro).toList();
       if (metroCandidates.isNotEmpty) {
         // Start Anchor: closest metro station pandal from user location
         metroCandidates.sort((a, b) {
@@ -217,17 +214,11 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
         final start = metroCandidates.first;
         metroStartAnchor = start;
 
-        // Return/Exit Anchor: if count >= 3 and another metro pandal exists
-        if (count >= 3 && metroCandidates.length > 1) {
-          final returnCandidates =
-              metroCandidates.where((p) => p.id != start.id).toList();
-          returnCandidates.sort((a, b) {
-            final da = _getDistanceMeters(start.lat, start.lon, a.lat, a.lon);
-            final db = _getDistanceMeters(start.lat, start.lon, b.lat, b.lon);
-            return db
-                .compareTo(da); // anchor near return station across circuit
-          });
-          metroEndAnchor = returnCandidates.first;
+        // Exit Anchor: a metro pandal at walking-circuit distance (not the
+        // farthest one in the pool).
+        if (count >= 3) {
+          metroEndAnchor = HardenedPujoOptimizer.pickMetroExitAnchor(
+              start: start, candidates: metroCandidates, stops: count);
         }
       }
     }
@@ -277,7 +268,8 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     if (_optimizeByMetro && finalRoute.isNotEmpty) {
       narrative +=
           ' 🚇 Metro Anchors Active: Start at ${finalRoute.first.name} (${finalRoute.first.detailedMetroGate})';
-      if (finalRoute.length > 1 && finalRoute.last.metroStation.isNotEmpty) {
+      if (finalRoute.length > 1 &&
+          HardenedPujoOptimizer.hasUsableMetro(finalRoute.last)) {
         narrative += ' → Exit near ${finalRoute.last.metroStation} Metro.';
       } else {
         narrative += '.';
@@ -1326,7 +1318,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     Pandal? metroEndAnchor;
     if (_optimizeByMetro && pool.isNotEmpty) {
       final metroCandidates =
-          pool.where((p) => p.metroStation.isNotEmpty).toList();
+          pool.where(HardenedPujoOptimizer.hasUsableMetro).toList();
       if (metroCandidates.isNotEmpty) {
         metroCandidates.sort((a, b) => _getDistanceMeters(
                 widget.userLat, widget.userLon, a.lat, a.lon)
@@ -1334,15 +1326,8 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                 widget.userLat, widget.userLon, b.lat, b.lon)));
         final start = metroCandidates.first;
         metroStartAnchor = start;
-
-        final returnCandidates =
-            metroCandidates.where((p) => p.id != start.id).toList();
-        returnCandidates.sort((a, b) => _getDistanceMeters(
-                start.lat, start.lon, b.lat, b.lon)
-            .compareTo(_getDistanceMeters(start.lat, start.lon, a.lat, a.lon)));
-        if (returnCandidates.isNotEmpty) {
-          metroEndAnchor = returnCandidates.first;
-        }
+        metroEndAnchor = HardenedPujoOptimizer.pickMetroExitAnchor(
+            start: start, candidates: metroCandidates, stops: newTotalStops);
       }
     }
 
@@ -1527,6 +1512,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                       ],
                     ),
                   ),
+                  if (summary.metroRecommendedCount > 0)
                   Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -1591,15 +1577,15 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                   border: Border.all(
                       color: Colors.amberAccent.withValues(alpha: 0.35)),
                 ),
-                child: const Row(
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(Icons.lightbulb_outline,
+                    const Icon(Icons.lightbulb_outline,
                         color: Colors.amberAccent, size: 16),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Puja Rush Tip: During peak evening hours, station queues at Kalighat, Shyambazar & Esplanade can take 15–20 mins. Walking short hops (< 1.3 km) is usually faster and lets you enjoy Kolkata street illumination!',
+                        '${summary.hops.isNotEmpty && summary.walkCount == summary.hops.length ? 'Every hop in this circuit is walkable, so no Metro ride is suggested between pandals. ' : ''}How this guide decides: hops under 1.3 km are walks; for longer hops it compares walking with the full Metro trip (walk to the station + ~10 mins for entry, security and platform wait + ride + walk from the station) and suggests the Metro only when that is faster. Evening queues at busy stations during Puja can be longer.',
                         style: TextStyle(
                             color: Colors.white70, fontSize: 11, height: 1.35),
                       ),
@@ -1894,7 +1880,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                   hop.stationCount > 0) ...[
                 const SizedBox(width: 8),
                 Text(
-                  '• 🚇 ${hop.stationCount} stops (₹${hop.fareRupees})',
+                  '• 🚇 ${hop.stationCount} stops${hop.fareRupees > 0 ? ' (~₹${hop.fareRupees})' : ''}',
                   style: const TextStyle(
                       color: Colors.cyanAccent,
                       fontSize: 11,

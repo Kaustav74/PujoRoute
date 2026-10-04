@@ -131,7 +131,8 @@ void main() {
       expect(guidance.directWalkMeters, inExclusiveRange(1300, 1800));
       expect(guidance.recommendation, equals(TransitRecommendation.walk));
       expect(guidance.headline.toLowerCase(), contains('walk'));
-      expect(guidance.detailedAdvice.toLowerCase(), contains('longer than walking'));
+      // Phase 2: the advice now compares door-to-door Metro time with walking.
+      expect(guidance.detailedAdvice.toLowerCase(), contains('door to door'));
     });
 
     test('All 504 pandals resolve valid nearest metro info and gate', () {

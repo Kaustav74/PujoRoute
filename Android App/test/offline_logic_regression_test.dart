@@ -56,7 +56,7 @@ void main() {
       // Flagged in the Oct 2026 audit (/workspace/pujoroute-audit/phase1_results.csv):
       // the station matches the pandal's name/locality but its coordinates are an
       // unverified placeholder, so the station is deliberately left unchanged.
-      const knownPlaceholderCoords = {'tollygunge-road-27-pally-bijoyee-sangha'};
+      const knownPlaceholderCoords = <String>{};
       for (final p in kAllKolkataPujas) {
         if (knownPlaceholderCoords.contains(p.id)) continue;
         final canonical = metro.getCanonicalStation(p.metroStation) ?? p.metroStation;
