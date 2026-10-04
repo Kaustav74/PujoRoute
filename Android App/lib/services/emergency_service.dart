@@ -90,7 +90,7 @@ class EmergencyService {
       notes: 'Sealdah Railway Hub 24x7 Emergency Casualty',
     ),
     HospitalCasualty(
-      name: 'AMRI Hospital Dhakuria (24x7 Emergency)',
+      name: 'AMRI Hospital Dhakuria',
       zone: 'South',
       phone: '033-6680-0000',
       lat: 22.5117,
@@ -99,7 +99,7 @@ class EmergencyService {
       notes: 'South Kolkata Advanced Cardiac & Emergency Care',
     ),
     HospitalCasualty(
-      name: 'Ruby General Hospital (24x7 Trauma)',
+      name: 'Ruby General Hospital',
       zone: 'EM Bypass / South-East',
       phone: '033-3987-1800',
       lat: 22.5135,

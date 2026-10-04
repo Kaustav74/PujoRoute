@@ -92,6 +92,17 @@ void main() {
       expect(text, contains('Fire Brigade: 101'));
       expect(text, contains('Police Help Booth'));
     });
+
+    test('medical guidance never claims a hospital status (offline data)', () {
+      // Every hospital in the bundled list, reached via its own coordinates.
+      for (final h in EmergencyService.kKolkataCasualtyHospitals) {
+        final text = emergency.generateEmergencyGuidance('medical emergency', h.lat, h.lon);
+        expect(text, contains('Call ahead to confirm'));
+        expect(text, isNot(contains('24x7')));
+        expect(text, isNot(contains('Facility Status')));
+        expect(text, isNot(contains('Active')));
+      }
+    });
   });
 
   group('Live Feed Service & Traffic Bypass Tests', () {
