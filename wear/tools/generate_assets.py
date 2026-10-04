@@ -207,6 +207,13 @@ def build_pandals(metro):
         raw_metro = p.get("metroStation", "")
         station = canonical_station(raw_metro, metro) or raw_metro.strip()
         landmark = p.get("landmark", "")
+        lat_, lon_ = float(p.get("lat", 0.0)), float(p.get("lon", p.get("lng", 0.0)))
+        gate = gate_for(raw_metro, rules) if raw_metro else ""
+        sc = metro["coords"].get(station)
+        if sc:
+            d = haversine(lat_, lon_, sc[0], sc[1])
+            if d > NO_METRO_RADIUS_M:  # mirrors Pandal.isMetroTooFar / noMetroAdvice
+                gate = f"No Metro within 2.5 km (nearest: {station}, ~{d / 1000:.1f} km). Use a bus, auto or cab."
         rec = {
             "id": p["id"],
             "name": p["name"],
@@ -219,7 +226,7 @@ def build_pandals(metro):
             "landmark": "" if landmark.startswith(p["name"]) else landmark,
             "metro": station,
             "line": line_for(station, metro) or "",
-            "gate": gate_for(raw_metro, rules) if raw_metro else "",
+            "gate": gate,
             "about": short_history(p.get("history", "")),
             "rank": p.get("popularityRank", 999),
         }
@@ -244,7 +251,19 @@ def build_metro():
         stations = parse_list(text, rf"static const List<String> {const}\s*=\s*\[")
         lines.append({"name": f"{name} Line", "stations": [
             {"name": st, "lat": coords.get(st, [0, 0])[0], "lon": coords.get(st, [0, 0])[1]} for st in stations]})
-    return {"lines": lines, "aliases": aliases}
+    return {"lines": lines, "aliases": aliases, "coords": coords}
+
+
+NO_METRO_RADIUS_M = 2500
+
+
+def haversine(lat1, lon1, lat2, lon2):
+    import math
+    r = 6371000.0
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = math.sin(dlat / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2) ** 2
+    return r * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
 
 def parse_map(text, const):

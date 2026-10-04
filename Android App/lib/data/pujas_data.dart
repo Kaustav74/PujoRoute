@@ -1,6 +1,13 @@
 // Real, Curated Registry of Kolkata Durga Puja Pandals & Bonedi Bari Houses
 // Bundled offline dataset: subsections, nearest metro station and cultural notes.
 
+import 'dart:math' as math;
+import '../services/metro_graph_service.dart';
+
+/// Beyond this straight-line distance to the nearest open station the app
+/// does not suggest the Metro for a pandal (bus / auto / cab instead).
+const double kNoMetroRadiusMeters = 2500;
+
 class Pandal {
   final String id;
   final String name;
@@ -78,7 +85,43 @@ class Pandal {
   }
 
   /// Detailed Metro Gate Number & Road Orientation
+  /// Straight-line metres from the pandal to its assigned (nearest open)
+  /// station, or null if the station is unknown.
+  double? get metroDistanceMeters {
+    final canonical =
+        MetroGraphService.instance.getCanonicalStation(metroStation);
+    final c = canonical == null
+        ? null
+        : MetroGraphService.kStationCoordinates[canonical];
+    if (c == null) return null;
+    const r = 6371000.0;
+    final dLat = (c[0] - lat) * math.pi / 180;
+    final dLon = (c[1] - lon) * math.pi / 180;
+    final a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(lat * math.pi / 180) *
+            math.cos(c[0] * math.pi / 180) *
+            math.sin(dLon / 2) *
+            math.sin(dLon / 2);
+    return r * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+  }
+
+  /// True when no open Metro station is within [kNoMetroRadiusMeters].
+  bool get isMetroTooFar {
+    final d = metroDistanceMeters;
+    return d != null && d > kNoMetroRadiusMeters;
+  }
+
+  /// Shown instead of a Metro gate when the nearest station is too far.
+  String get noMetroAdvice {
+    final canonical =
+        MetroGraphService.instance.getCanonicalStation(metroStation) ??
+            metroStation;
+    final km = ((metroDistanceMeters ?? 0) / 1000).toStringAsFixed(1);
+    return 'No Metro within 2.5 km (nearest: $canonical, ~$km km). Use a bus, auto or cab.';
+  }
+
   String get detailedMetroGate {
+    if (isMetroTooFar) return noMetroAdvice;
     final mLower = metroStation.toLowerCase();
     if (mLower.contains('kalighat')) return 'Kalighat (Blue Line) - Gate 3 (Rashbehari Ave / Gariahat)';
     if (mLower.contains('shobhabazar') || mLower.contains('shovabazar') || mLower.contains('sovabazar')) return 'Shobhabazar Sutanuti (Blue Line) - Gate 2 (Sovabazar St)';
@@ -102,7 +145,7 @@ class Pandal {
     if (mLower.contains('howrah maidan')) return 'Howrah Maidan (Green Line) - Gate 1 (Howrah Court / GT Rd)';
     if (mLower.contains('maidan')) return 'Maidan (Blue Line) - Gate 2 (Jawaharlal Nehru Rd)';
     if (mLower.contains('rabindra sadan')) return 'Rabindra Sadan (Blue Line) - Gate 1 (Exide Crossing / SSKM)';
-    if (mLower.contains('kavi subhash') || mLower.contains('new garia')) return 'Kavi Subhash (Blue/Orange Line) - Gate 1';
+    if (mLower.contains('kavi subhash') || mLower.contains('new garia')) return 'Kavi Subhash (Orange Line; Blue Line platforms closed)';
     if (mLower.contains('dakshineswar')) return 'Dakshineswar (Blue Line) - Gate 2 (Temple Skywalk)';
     if (mLower.contains('shyambazar')) return 'Shyambazar (Blue Line) - Gate 1 (Five-Point Crossing)';
     if (mLower.contains('chandni')) return 'Chandni Chowk (Blue Line) - Gate 2 (Ganesh Chandra Ave)';
@@ -4555,7 +4598,7 @@ Pandal(
     lat: 22.5188,
     lon: 88.3598,
     landmark: 'Tollygunge Road 27 Pally Bijoyee Sangha, Kolkata',
-    metroStation: 'Mahanayak Uttam Kumar',
+    metroStation: 'Kalighat',
     history: 'A dedicated community festival celebrated for preserving neighborhood camaraderie and devotional rituals. The mood is friendly and celebratory. Highlights classical clay sculptures by traditional artisans, surrounded by bright festive lights and community cultural recitals.',
     gateStatus: 'open',
     gateClosingTime: '01:30 PM (for Bhog)',

@@ -76,7 +76,7 @@ void main() {
     //    across the Hooghly is nearer in a straight line.
     const flagged = {
       'bhowanipore-sanatan-dharmautsahini-sobha', 'seventy-six-pally-sarbojanin-durgotsab',
-      'tollygunge-road-27-pally-bijoyee-sangha', 'southern-satadal', 'lake-yuba-sangha',
+      'southern-satadal', 'lake-yuba-sangha',
       'tarun-brindo-sarbojonin-durga-puja-mondop', 'fatehpur-bazar-durga-puja-pandal',
       'salkia-bharat-sangha', 'salkia-sadharan-durga-puja-jatadhari-park', 'salkia-santi-sangha',
     };

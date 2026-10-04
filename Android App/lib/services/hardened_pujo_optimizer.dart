@@ -41,6 +41,40 @@ class HardenedPujoOptimizer {
 
   static double _rad(double deg) => deg * (pi / 180.0);
 
+  /// True if the pandal has a usable Metro station (assigned and within
+  /// kNoMetroRadiusMeters).
+  static bool hasUsableMetro(Pandal p) =>
+      p.metroStation.isNotEmpty &&
+      !p.metroStation.toLowerCase().contains('none') &&
+      !p.isMetroTooFar;
+
+  /// Exit anchor for "Optimize by Metro": a pandal served by a *different*
+  /// station than [start] whose distance from the start best matches what a
+  /// walking circuit of [stops] can cover ((stops - 1) x 700 m, clamped to
+  /// 1.2-4 km). The old code sorted descending and picked the FARTHEST metro
+  /// pandal in the pool, which produced last hops of ~40 km.
+  static Pandal? pickMetroExitAnchor({
+    required Pandal start,
+    required List<Pandal> candidates,
+    required int stops,
+  }) {
+    final others = candidates
+        .where((p) => p.id != start.id && hasUsableMetro(p))
+        .toList();
+    if (others.isEmpty) return null;
+    final differentStation =
+        others.where((p) => p.metroStation != start.metroStation).toList();
+    final pool = differentStation.isNotEmpty ? differentStation : others;
+    final target = ((stops - 1) * 700.0).clamp(1200.0, 4000.0);
+    pool.sort((a, b) {
+      final da = (distance(start.lat, start.lon, a.lat, a.lon) - target).abs();
+      final db = (distance(start.lat, start.lon, b.lat, b.lon) - target).abs();
+      if ((da - db).abs() > _epsilon) return da.compareTo(db);
+      return a.popularityRank.compareTo(b.popularityRank);
+    });
+    return pool.first;
+  }
+
   /// Generates an ordered, non-looping pandal hopping circuit anchored toward home.
   static RoutingResult generateHomeBoundCircuit({
     required List<Pandal> pool,

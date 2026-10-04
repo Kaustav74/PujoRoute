@@ -20,15 +20,16 @@ void main() {
         expect(p.detailedMetroGate, isNotEmpty);
         // Stations opened in 2025 have no verified gate numbers, so the text
         // names the station and line instead of inventing a gate.
-        expect(p.detailedMetroGate, contains('Line'), reason: p.id);
+        // Pandals with no open station within 2.5 km say so instead (Phase 2).
+        expect(p.detailedMetroGate, p.isMetroTooFar ? startsWith('No Metro within 2.5 km') : contains('Line'), reason: p.id);
       }
 
       // Regression (audit 2026-10): substring rules used to show Howrah Maidan
       // pandals as "Maidan (Blue Line)" and Central Park as "Central (Blue Line)".
-      for (var p in kAllKolkataPujas.where((p) => p.metroStation == 'Howrah Maidan')) {
+      for (var p in kAllKolkataPujas.where((p) => p.metroStation == 'Howrah Maidan' && !p.isMetroTooFar)) {
         expect(p.detailedMetroGate, startsWith('Howrah Maidan (Green Line)'), reason: p.id);
       }
-      for (var p in kAllKolkataPujas.where((p) => p.metroStation == 'Central Park')) {
+      for (var p in kAllKolkataPujas.where((p) => p.metroStation == 'Central Park' && !p.isMetroTooFar)) {
         expect(p.detailedMetroGate, startsWith('Central Park (Green Line)'), reason: p.id);
       }
 

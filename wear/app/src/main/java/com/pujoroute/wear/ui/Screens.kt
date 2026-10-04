@@ -199,7 +199,8 @@ fun PandalDetailScreen(p: Pandal, visited: Boolean, bookmarked: Boolean, onNavig
         label("Zone", listOf(p.zone, p.area).filter { it.isNotBlank() }.joinToString(" · "))
         label("Landmark", p.landmark)
         label("Nearest metro", listOf(p.metro, p.line).filter { it.isNotBlank() }.joinToString(" · "))
-        label("Gate", p.gate)
+        // Pandals with no open station within 2.5 km carry advice, not a gate.
+        label(if (p.gate.startsWith("No Metro")) "Metro" else "Gate", p.gate)
         label("About", p.about)
     }
 }

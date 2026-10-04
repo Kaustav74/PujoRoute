@@ -27,8 +27,7 @@
         "Masterda Surya Sen",
         "Gitanjali",
         "Kavi Nazrul",
-        "Shahid Khudiram",
-        "Kavi Subhash"
+        "Shahid Khudiram"
       ]
     },
     "green": {
@@ -99,7 +98,7 @@
         "blue",
         "orange"
       ],
-      "instructions": "Direct concourse interchange at Kavi Subhash (New Garia) connecting Blue Line and Orange Line (EM Bypass)."
+      "instructions": "No rail interchange right now: the Blue Line platforms at Kavi Subhash are closed and Blue Line trains end at Shahid Khudiram. Walk or take an auto (~1 km) between Shahid Khudiram (Blue) and Kavi Subhash (Orange)."
     },
     {
       "station": "Noapara",
@@ -120,7 +119,7 @@
   ],
   "forbidden_aliases": {
     "Bagbazar": "Shyambazar or Sovabazar Sutanuti",
-    "Lake Town": "Belgachia or Karunamoyee plus appropriate onward transport",
+    "Lake Town": "City Centre or Central Park (Green Line), Jessore Road (Yellow Line) or Belgachia (Blue Line), plus a short auto ride",
     "Gariahat": "Kalighat or another verified appropriate connection"
   }
 }

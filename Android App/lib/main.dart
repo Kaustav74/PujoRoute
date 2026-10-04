@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'screens/map_screen.dart';
 import 'services/session_service.dart';
+import 'services/metro_graph_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SessionService.instance.init();
+  // Load the bundled metro topology (assets/data/metro_graph.json). Before
+  // the audit this was never called, so the JSON was dead data.
+  await MetroGraphService.instance.initialize();
   runApp(const PujoRouteApp());
 }
 
