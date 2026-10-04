@@ -199,6 +199,11 @@ def build_pandals(metro):
     text = (LIB / "data" / "pujas_data.dart").read_text(encoding="utf-8")
     rules = gate_rules(text)
     items = parse_list(text, r"const List<Pandal> kAllKolkataPujas\s*=\s*\[")
+    status = (LIB / "data" / "location_status.dart").read_text(encoding="utf-8")
+    unv_block = re.search(r"kUnverifiedLocationIds = \{(.*?)\};", status, re.S).group(1)
+    unverified_ids = set(re.findall(r"'([^']+)'", unv_block))
+    dup_block = re.search(r"kDuplicatePandalIds = \{(.*?)\};", status, re.S).group(1)
+    duplicates = dict(re.findall(r"'([^']+)':\s*'([^']+)'", dup_block))
     out, seen = [], set()
     for p in items:
         if p["id"] in seen:
@@ -214,6 +219,9 @@ def build_pandals(metro):
             d = haversine(lat_, lon_, sc[0], sc[1])
             if d > NO_METRO_RADIUS_M:  # mirrors Pandal.isMetroTooFar / noMetroAdvice
                 gate = f"No Metro within 2.5 km (nearest: {station}, ~{d / 1000:.1f} km). Use a bus, auto or cab."
+        unverified = p["id"] in unverified_ids
+        if unverified:  # mirrors Pandal.isLocationUnverified / detailedMetroGate
+            station, gate = "", "Location unverified: no Metro station suggested"
         rec = {
             "id": p["id"],
             "name": p["name"],
@@ -232,6 +240,10 @@ def build_pandals(metro):
         }
         if rec["rank"] == 999:
             del rec["rank"]
+        if unverified:
+            rec["loc"] = "u"
+        if p["id"] in duplicates:
+            rec["dup"] = duplicates[p["id"]]
         out.append({k: v for k, v in rec.items() if v != ""})
     return out
 

@@ -161,11 +161,17 @@ class DataTest {
     @Test fun pandalsHaveCoordinatesMetroLineAndGate() {
         val pandals = PujoParser.pandals(asset("pandals.json"))
         assertTrue(pandals.all { it.lat in 21.5..23.5 && it.lon in 87.5..89.5 })
-        assertTrue(pandals.all { it.metro.isNotBlank() && it.line.isNotBlank() && it.gate.isNotBlank() })
+        val located = pandals.filter { !it.isLocationUnverified }
+        assertTrue(located.all { it.metro.isNotBlank() && it.line.isNotBlank() && it.gate.isNotBlank() })
+        // Phase 3: placeholder locations suggest no station and stay out of Nearby / routes.
+        val unverified = pandals.filter { it.isLocationUnverified }
+        assertEquals(109, unverified.size)
+        assertTrue(unverified.all { it.metro.isBlank() && it.gate.startsWith("Location unverified") && !it.isMappable })
+        assertEquals(15, pandals.count { !it.isListed })
         assertTrue(pandals.any { it.isHeritage } && pandals.any { !it.isHeritage })
         val metro = PujoParser.metro(asset("metro.json"))
         val stations = metro.lines.flatMap { l -> l.stations.map { it.name } }.toSet()
-        assertTrue(pandals.all { it.metro in stations })
+        assertTrue(located.all { it.metro in stations })
     }
 
     @Test fun searchMatchesNameMetroAndArea() {
@@ -189,7 +195,8 @@ class DataTest {
     @Test fun emergencyNumbersPresentAndDialable() {
         val em = PujoParser.emergency(asset("emergency.json"))
         val all = em.helplines.flatMap { it.numbers }
-        listOf("112", "100", "101", "102", "108", "1091", "1073").forEach { assertTrue("missing $it", it in all) }
+        listOf("112", "100", "101", "102", "1091", "1098", "1073").forEach { assertTrue("missing $it", it in all) }
+        assertTrue("108 is not a general ambulance number in WB", "108" !in all)
         assertTrue(em.hospitals.isNotEmpty() && em.police.isNotEmpty())
         assertEquals("03322143230", dialable("033-2214-3230"))
         assertEquals("112", dialable(" 112 "))

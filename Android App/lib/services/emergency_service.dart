@@ -45,22 +45,22 @@ class EmergencyService {
 
   static const List<HospitalCasualty> kKolkataCasualtyHospitals = [
     HospitalCasualty(
-      name: 'SSKM Hospital (IPGMER) - Main Trauma Care',
+      name: 'SSKM Hospital (IPGMER)',
       zone: 'South / Central',
-      phone: '033-2223-1589',
+      phone: '033-2204-1100',
       lat: 22.5385,
       lon: 88.3444,
       address: '244 AJC Bose Road, Bhowanipore, Kolkata',
-      notes: 'Premier 24x7 Level-1 Government Trauma Care Centre',
+      notes: 'Government hospital (IPGMER); emergency and trauma care',
     ),
     HospitalCasualty(
       name: 'Calcutta Medical College & Hospital',
       zone: 'Central',
-      phone: '033-2255-1621',
+      phone: '033-2255-1612',
       lat: 22.5739,
       lon: 88.3619,
       address: '88 College Street, Bowbazar, Kolkata',
-      notes: 'Central Kolkata Emergency Casualty & ICU',
+      notes: 'Government medical college hospital; emergency department',
     ),
     HospitalCasualty(
       name: 'R.G. Kar Medical College & Hospital',
@@ -69,7 +69,7 @@ class EmergencyService {
       lat: 22.6041,
       lon: 88.3752,
       address: '1 Khudiram Bose Sarani, Belgachia / Shyambazar, Kolkata',
-      notes: 'North Kolkata Primary 24x7 Emergency Casualty Ward',
+      notes: 'Government medical college hospital; emergency department',
     ),
     HospitalCasualty(
       name: 'Calcutta National Medical College (CNMC)',
@@ -78,16 +78,16 @@ class EmergencyService {
       lat: 22.5401,
       lon: 88.3718,
       address: '32 Gorachand Road, Beniapukur, Kolkata',
-      notes: 'South-East Corridor 24x7 Emergency & Trauma',
+      notes: 'Government medical college hospital; emergency department',
     ),
     HospitalCasualty(
       name: 'N.R.S. Medical College & Hospital',
       zone: 'Central / Sealdah',
-      phone: '033-2286-0033',
+      phone: '033-2265-3215',
       lat: 22.5645,
       lon: 88.3698,
       address: '138 AJC Bose Road, Sealdah, Kolkata',
-      notes: 'Sealdah Railway Hub 24x7 Emergency Casualty',
+      notes: 'Government medical college hospital; emergency department',
     ),
     HospitalCasualty(
       name: 'AMRI Hospital Dhakuria',
@@ -96,7 +96,7 @@ class EmergencyService {
       lat: 22.5117,
       lon: 88.3639,
       address: 'Block A, Scheme LII, Gariahat / Dhakuria, Kolkata',
-      notes: 'South Kolkata Advanced Cardiac & Emergency Care',
+      notes: 'Private hospital; emergency department',
     ),
     HospitalCasualty(
       name: 'Ruby General Hospital',
@@ -105,7 +105,7 @@ class EmergencyService {
       lat: 22.5135,
       lon: 88.4025,
       address: 'Kasba Golpark, EM Bypass, Kolkata',
-      notes: 'EM Bypass 24x7 Emergency & Critical Care',
+      notes: 'Private hospital; emergency department',
     ),
     HospitalCasualty(
       name: 'Apollo Multispeciality Hospitals',
@@ -114,10 +114,13 @@ class EmergencyService {
       lat: 22.5699,
       lon: 88.4042,
       address: '58 Canal Circular Road, Kadapara, Kolkata',
-      notes: 'Salt Lake & EM Bypass North 24x7 Emergency Care',
+      notes: 'Private hospital; emergency department',
     ),
   ];
 
+  // Only the Lalbazar control room is listed: the earlier division booth
+  // numbers (033-2475-1212, 033-2555-5555, 033-2335-8788, 033-2414-2222)
+  // could not be matched to any official Kolkata Police directory.
   static const List<PoliceAssistanceBooth> kPoliceBooths = [
     PoliceAssistanceBooth(
       division: 'Lalbazar Central Control Room',
@@ -125,34 +128,6 @@ class EmergencyService {
       contact: '100 / 033-2214-3230',
       lat: 22.5714,
       lon: 88.3533,
-    ),
-    PoliceAssistanceBooth(
-      division: 'South Division Police Help Booth',
-      landmark: 'Gariahat Crossing & Kalighat Temple Gate',
-      contact: '033-2475-1212',
-      lat: 22.5190,
-      lon: 88.3650,
-    ),
-    PoliceAssistanceBooth(
-      division: 'North Division Police Help Booth',
-      landmark: 'Shyambazar Five-Point & Hatibagan',
-      contact: '033-2555-5555',
-      lat: 22.6000,
-      lon: 88.3700,
-    ),
-    PoliceAssistanceBooth(
-      division: 'Bidhannagar Police Commissionerate',
-      landmark: 'Salt Lake Karunamoyee & Central Park',
-      contact: '033-2335-8788',
-      lat: 22.5867,
-      lon: 88.4178,
-    ),
-    PoliceAssistanceBooth(
-      division: 'South Suburban / Jadavpur Booth',
-      landmark: 'Jadavpur 8B Bus Stand / Tollygunge',
-      contact: '033-2414-2222',
-      lat: 22.4989,
-      lon: 88.3712,
     ),
   ];
 
@@ -247,9 +222,9 @@ class EmergencyService {
 
     if (isLostCase) {
       return "🚨 EMERGENCY: LOST PERSON / FAMILY SEPARATION ALERT\n\n"
-          "Stay calm. Kolkata Police maintains active Lost & Found Enclosures at all major puja pandals.\n\n"
+          "Stay calm. Large pandals usually have a puja committee or Kolkata Police help desk.\n\n"
           "Immediate Steps:\n"
-          "1. Report immediately to the nearest Kolkata Police Help Booth:\n"
+          "1. Tell the nearest police officer or help desk, or call Kolkata Police:\n"
           "   • ${police.division} (~${distPolice > 1000 ? (distPolice / 1000).toStringAsFixed(1) : distPolice}${distPolice > 1000 ? 'km' : 'm'} away at ${police.landmark})\n"
           "   • Direct Helpline: ${police.contact}\n"
           "2. Request the volunteer desk for an immediate PA system announcement.\n"
@@ -258,7 +233,8 @@ class EmergencyService {
           "• Kolkata Police Emergency: 112 / 100\n"
           "• Traffic Helpline: 1073\n"
           "• Women Helpline: 1091\n"
-          "• Medical Ambulance: 102 / 108\n"
+          "• Child Helpline: 1098\n"
+          "• Ambulance: 102\n"
           "• Fire Brigade: 101";
     }
 
@@ -269,7 +245,7 @@ class EmergencyService {
         "• Address: ${hospital.address}\n"
         "• Emergency Hotline: ${hospital.phone}\n"
         "• Call ahead to confirm emergency services are available.\n\n"
-        "Closest Kolkata Police Booth:\n"
+        "Kolkata Police control room:\n"
         "👮 ${police.division}\n"
         "• Landmark: ${police.landmark} (~${distPolice > 1000 ? (distPolice / 1000).toStringAsFixed(1) : distPolice}${distPolice > 1000 ? 'km' : 'm'})\n"
         "• Phone: ${police.contact}\n\n"
@@ -277,7 +253,7 @@ class EmergencyService {
         "• Kolkata Police Emergency: 112 / 100\n"
         "• Traffic Helpline: 1073\n"
         "• Women Helpline: 1091\n"
-        "• Medical Ambulance: 102 / 108\n"
+        "• Ambulance: 102\n"
         "• Fire Brigade: 101\n"
         "• Rail / Metro Helpline (RailMadad): 139";
   }

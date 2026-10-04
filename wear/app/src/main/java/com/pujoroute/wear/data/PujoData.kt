@@ -46,7 +46,11 @@ class PujoRepository private constructor(context: Context) {
 
     val calendar: CalendarData by lazy { PujoParser.calendar(read("calendar.json")) }
     val pandals: List<Pandal> by lazy { PujoParser.pandals(read("pandals.json")) }
-    val zones: List<Pair<String, List<Pandal>>> by lazy { PujoParser.groupByZone(pandals) }
+    /** Pandals shown in lists and search (duplicate entries removed). */
+    val listed: List<Pandal> by lazy { pandals.filter { it.isListed } }
+    /** Pandals with a usable location (Nearby, route planner, Metro). */
+    val mappable: List<Pandal> by lazy { pandals.filter { it.isMappable } }
+    val zones: List<Pair<String, List<Pandal>>> by lazy { PujoParser.groupByZone(listed) }
     val pandalById: Map<String, Pandal> by lazy { pandals.associateBy { it.id } }
     val emergency: EmergencyData by lazy { PujoParser.emergency(read("emergency.json")) }
     val metro: MetroData by lazy { PujoParser.metro(read("metro.json")) }

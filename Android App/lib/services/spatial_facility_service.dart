@@ -35,7 +35,8 @@ class SpatialFacilityService {
   SpatialFacilityService._();
   static final SpatialFacilityService instance = SpatialFacilityService._();
 
-  /// Verified coordinates for KMC Public Washrooms, Safe Drinking Water, & Police Booths
+  /// UNVERIFIED sample facility list (no official source found). Not shown in
+  /// the UI since the Phase 3 audit; kept only for the existing unit tests.
   static const List<SpatialFacility> verifiedFacilities = [
     // ----------------- SOUTH KOLKATA -----------------
     // Washrooms

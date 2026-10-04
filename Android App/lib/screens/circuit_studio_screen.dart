@@ -152,7 +152,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
 
     // 1. Filter candidates by zone & style (with Context-Aware Deduplication)
     List<Pandal> pool = PandalDeduplicationService.instance
-        .deduplicate(List.from(kAllKolkataPujas));
+        .deduplicate(List.from(kAllKolkataPujas.where((p) => p.hasMappableLocation)));
 
     if (_selectedZone != 'All') {
       pool = pool.where((p) => p.zone == _selectedZone).toList();
@@ -182,7 +182,8 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
       pool = pool.where((p) => p.category == 'heritage').toList();
       if (pool.isEmpty) {
         pool =
-            List.from(kAllKolkataPujas.where((p) => p.category == 'heritage'));
+            List.from(kAllKolkataPujas.where(
+                (p) => p.category == 'heritage' && p.hasMappableLocation));
       }
     } else if (_circuitStyle == 'mega') {
       pool = pool.where((p) => p.category == 'mega').toList();
@@ -664,6 +665,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
 
             final available = kAllKolkataPujas
                 .where((p) =>
+                    p.hasMappableLocation &&
                     !existingIds.contains(p.id) &&
                     (!hideStampedInPicker || !visitedIds.contains(p.id)) &&
                     (filter.isEmpty ||
@@ -1287,9 +1289,10 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     await Future.delayed(const Duration(milliseconds: 100));
 
     // 1. Prepare candidate pool
+    final mappable = kAllKolkataPujas.where((p) => p.hasMappableLocation);
     List<Pandal> pool = _selectedZone == 'All'
-        ? kAllKolkataPujas
-        : kAllKolkataPujas.where((p) => p.zone == _selectedZone).toList();
+        ? mappable.toList()
+        : mappable.where((p) => p.zone == _selectedZone).toList();
 
     // Ensure all existing circuit stops and forced stops are present in candidate pool
     final Map<String, Pandal> poolMap = {for (var p in pool) p.id: p};

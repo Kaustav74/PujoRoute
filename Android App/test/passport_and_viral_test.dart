@@ -21,15 +21,22 @@ void main() {
         // Stations opened in 2025 have no verified gate numbers, so the text
         // names the station and line instead of inventing a gate.
         // Pandals with no open station within 2.5 km say so instead (Phase 2).
-        expect(p.detailedMetroGate, p.isMetroTooFar ? startsWith('No Metro within 2.5 km') : contains('Line'), reason: p.id);
+        expect(
+            p.detailedMetroGate,
+            p.isLocationUnverified
+                ? startsWith('Location unverified')
+                : p.isMetroTooFar
+                    ? startsWith('No Metro within 2.5 km')
+                    : contains('Line'),
+            reason: p.id);
       }
 
       // Regression (audit 2026-10): substring rules used to show Howrah Maidan
       // pandals as "Maidan (Blue Line)" and Central Park as "Central (Blue Line)".
-      for (var p in kAllKolkataPujas.where((p) => p.metroStation == 'Howrah Maidan' && !p.isMetroTooFar)) {
+      for (var p in kAllKolkataPujas.where((p) => p.metroStation == 'Howrah Maidan' && !p.isMetroTooFar && !p.isLocationUnverified)) {
         expect(p.detailedMetroGate, startsWith('Howrah Maidan (Green Line)'), reason: p.id);
       }
-      for (var p in kAllKolkataPujas.where((p) => p.metroStation == 'Central Park' && !p.isMetroTooFar)) {
+      for (var p in kAllKolkataPujas.where((p) => p.metroStation == 'Central Park' && !p.isMetroTooFar && !p.isLocationUnverified)) {
         expect(p.detailedMetroGate, startsWith('Central Park (Green Line)'), reason: p.id);
       }
 
@@ -42,13 +49,13 @@ void main() {
       expect(sovabazar.detailedMetroGate, contains('Gate 2'));
     });
 
-    test('Pandal barricadeAdvisory provides police pedestrian routing', () {
+    test('Pandal barricadeAdvisory makes no invented one-way claims', () {
+      for (final p in kAllKolkataPujas) {
+        expect(p.barricadeAdvisory, isNot(contains('One-Way')));
+        expect(p.barricadeAdvisory, isNotEmpty);
+      }
       final sreebhumi = kAllKolkataPujas.firstWhere((p) => p.id == 'sreebhumi_sporting');
-      expect(sreebhumi.barricadeAdvisory, contains('Police One-Way'));
-      expect(sreebhumi.barricadeAdvisory, contains('VIP Road'));
-
-      final collegeSq = kAllKolkataPujas.firstWhere((p) => p.id == 'college_square');
-      expect(collegeSq.barricadeAdvisory, contains('College Street'));
+      expect(sreebhumi.barricadeAdvisory, contains('Kolkata Police'));
     });
 
     test('Pandal ritualTimingBadge returns active or upcoming ritual countdown', () {

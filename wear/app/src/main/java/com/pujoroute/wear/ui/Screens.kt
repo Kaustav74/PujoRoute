@@ -172,7 +172,7 @@ fun SearchScreen(repo: PujoRepository, visited: Set<String>, onPandal: (String) 
             android.widget.Toast.makeText(ctx, "Text input not available", android.widget.Toast.LENGTH_SHORT).show()
         }
     }
-    val results = remember(query) { PujoParser.search(repo.pandals, query) }
+    val results = remember(query) { PujoParser.search(repo.listed, query) }
     PujoScreen {
         header("Search")
         item { NavChip(if (query.isBlank()) "Tap to search" else "\"$query\"", "Speak or type", primary = true) { ask() } }
@@ -180,7 +180,8 @@ fun SearchScreen(repo: PujoRepository, visited: Set<String>, onPandal: (String) 
             if (results.isEmpty()) note("No pandal matches \"$query\".") else note("${results.size} result${if (results.size == 1) "" else "s"}")
             items(results.size, key = { results[it].id }) { i ->
                 val p = results[i]
-                NavChip((if (p.id in visited) "✓ " else "") + p.name, "${p.zone} · Ⓜ ${p.metro}") { onPandal(p.id) }
+                NavChip((if (p.id in visited) "✓ " else "") + p.name,
+                    if (p.isLocationUnverified) "${p.zone} · location unverified" else "${p.zone} · Ⓜ ${p.metro}") { onPandal(p.id) }
             }
         } else {
             note("Search by name, landmark, metro station or area, e.g. \"Behala\", \"Kalighat\".")
@@ -193,14 +194,18 @@ fun PandalDetailScreen(p: Pandal, visited: Boolean, bookmarked: Boolean, onNavig
     PujoScreen {
         header(p.name)
         note(p.categoryLabel)
-        item { NavChip("Navigate", "Compass & distance", primary = true, onClick = onNavigate) }
+        if (p.isLocationUnverified) {
+            note("Location unverified: we could not confirm where this pandal is, so there is no compass or Metro suggestion. Check the address locally.")
+        } else {
+            item { NavChip("Navigate", "Compass & distance", primary = true, onClick = onNavigate) }
+        }
         item { ToggleRow("Passport stamp", if (visited) "Visited ✓" else "Mark visited", visited) { onVisited() } }
         item { ToggleRow("Bookmark", null, bookmarked) { onBookmark() } }
         label("Zone", listOf(p.zone, p.area).filter { it.isNotBlank() }.joinToString(" · "))
         label("Landmark", p.landmark)
         label("Nearest metro", listOf(p.metro, p.line).filter { it.isNotBlank() }.joinToString(" · "))
         // Pandals with no open station within 2.5 km carry advice, not a gate.
-        label(if (p.gate.startsWith("No Metro")) "Metro" else "Gate", p.gate)
+        label(if (p.gate.startsWith("No Metro") || p.isLocationUnverified) "Metro" else "Gate", p.gate)
         label("About", p.about)
     }
 }
@@ -421,11 +426,11 @@ fun EmergencyScreen(em: EmergencyData, onDial: (String) -> Unit) {
         em.helplines.forEach { h ->
             h.numbers.forEach { n -> item { NavChip(n, h.label, color = Sindoor) { onDial(n) } } }
         }
-        header("Police help booths")
+        header("Police control room")
         em.police.forEach { b ->
             b.numbers.filter { it.length > 4 }.forEach { n -> item { NavChip(n, b.name) { onDial(n) } } }
         }
-        header("Hospitals (24x7)")
+        header("Hospitals (call ahead)")
         em.hospitals.forEach { h -> item { NavChip(h.phone, h.name) { onDial(h.phone) } } }
     }
 }

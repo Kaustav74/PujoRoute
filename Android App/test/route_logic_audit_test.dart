@@ -169,8 +169,9 @@ void main() {
 
   test('pandals without a station within 2.5 km are a known, bounded set', () {
     final far = kAllKolkataPujas.where((p) => p.isMetroTooFar).length;
-    // 67 at audit time (straight-line distance to the assigned open station).
-    expect(far, inInclusiveRange(55, 75));
+    // 67 after Phase 2; 50 after Phase 3, which marks placeholder locations
+    // as unverified (those suggest no station at all).
+    expect(far, inInclusiveRange(40, 60));
   });
 
   test('watch pandals.json is in sync with the phone data (station, line, gate)', () {
@@ -180,7 +181,9 @@ void main() {
     expect(byId.length, kAllKolkataPujas.length);
     for (final p in kAllKolkataPujas) {
       final w = byId[p.id]!;
-      expect(w['metro'], metro.getCanonicalStation(p.metroStation), reason: p.id);
+      expect(w['metro'],
+          p.isLocationUnverified ? null : metro.getCanonicalStation(p.metroStation),
+          reason: p.id);
       expect(w['gate'], p.detailedMetroGate, reason: p.id);
       expect((w['lat'] as num).toDouble(), closeTo(p.lat, 0.00006), reason: p.id);
     }

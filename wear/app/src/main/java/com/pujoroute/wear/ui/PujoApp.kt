@@ -90,11 +90,11 @@ fun PujoApp(repo: PujoRepository, store: UserStore, startDestination: String = R
                     NavigateScreen(p, loc, rememberHeading(loc.location), p.id in store.visited) { store.toggleVisited(p.id) }
                 }
             }
-            composable(Routes.NEARBY) { NearbyScreen(repo.pandals, rememberWatchLocation(), openPandal) }
+            composable(Routes.NEARBY) { NearbyScreen(repo.mappable, rememberWatchLocation(), openPandal) }
             composable(Routes.ROUTE_SETUP) {
                 val loc = rememberWatchLocation()
                 RouteSetupScreen(repo.zones.map { it.first }, loc) { zone, stops, useLocation ->
-                    val pool = if (zone == null) repo.pandals else repo.zones.first { it.first == zone }.second
+                    val pool = (if (zone == null) repo.pandals else repo.zones.first { it.first == zone }.second).filter { it.isMappable }
                     val l = loc.location.takeIf { useLocation }
                     val route = RouteOptimizer.plan(pool, stops, l?.latitude, l?.longitude)
                     store.saveRoute(route.stops.map { it.id })
@@ -117,12 +117,12 @@ fun PujoApp(repo: PujoRepository, store: UserStore, startDestination: String = R
             composable("line/{i}", listOf(navArgument("i") { type = NavType.IntType })) { e ->
                 val i = e.arguments?.getInt("i") ?: 0
                 repo.metro.lines.getOrNull(i)?.let { line ->
-                    MetroLineScreen(line, repo.pandals) { s -> nav.navigate("station/$i/$s") }
+                    MetroLineScreen(line, repo.mappable) { s -> nav.navigate("station/$i/$s") }
                 }
             }
             composable("station/{i}/{s}", listOf(navArgument("i") { type = NavType.IntType }, navArgument("s") { type = NavType.IntType })) { e ->
                 repo.metro.lines.getOrNull(e.arguments?.getInt("i") ?: 0)?.stations?.getOrNull(e.arguments?.getInt("s") ?: 0)?.let { st ->
-                    StationScreen(st, repo.pandals, openPandal)
+                    StationScreen(st, repo.mappable, openPandal)
                 }
             }
             composable(Routes.EMERGENCY) { EmergencyScreen(repo.emergency) { dial(ctx, it) } }

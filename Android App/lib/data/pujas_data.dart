@@ -3,6 +3,7 @@
 
 import 'dart:math' as math;
 import '../services/metro_graph_service.dart';
+import 'location_status.dart';
 
 /// Beyond this straight-line distance to the nearest open station the app
 /// does not suggest the Metro for a pandal (bus / auto / cab instead).
@@ -84,6 +85,20 @@ class Pandal {
     );
   }
 
+  /// True when the bundled coordinates are a placeholder or contradict the
+  /// pandal's locality and no credible source could confirm the location.
+  bool get isLocationUnverified => kUnverifiedLocationIds.contains(id);
+
+  /// True when this entry repeats another pandal (see kDuplicatePandalIds).
+  bool get isDuplicateEntry => kDuplicatePandalIds.containsKey(id);
+
+  /// Whether the pandal may appear on the map, in 'nearest to you' and in
+  /// route planning.
+  bool get hasMappableLocation => !isLocationUnverified && !isDuplicateEntry;
+
+  static const String kLocationUnverifiedNote =
+      'Location unverified: we could not confirm where this pandal is, so it is not shown on the map and no Metro station is suggested. Check the address locally before you go.';
+
   /// Detailed Metro Gate Number & Road Orientation
   /// Straight-line metres from the pandal to its assigned (nearest open)
   /// station, or null if the station is unknown.
@@ -107,6 +122,7 @@ class Pandal {
 
   /// True when no open Metro station is within [kNoMetroRadiusMeters].
   bool get isMetroTooFar {
+    if (isLocationUnverified) return false;
     final d = metroDistanceMeters;
     return d != null && d > kNoMetroRadiusMeters;
   }
@@ -121,6 +137,9 @@ class Pandal {
   }
 
   String get detailedMetroGate {
+    if (isLocationUnverified) {
+      return 'Location unverified: no Metro station suggested';
+    }
     if (isMetroTooFar) return noMetroAdvice;
     final mLower = metroStation.toLowerCase();
     if (mLower.contains('kalighat')) return 'Kalighat (Blue Line) - Gate 3 (Rashbehari Ave / Gariahat)';
@@ -184,45 +203,17 @@ class Pandal {
     return '$metroStation Metro';
   }
 
+  /// General crowd guidance. The app has no official 2026 traffic or
+  /// barricade plan, so it gives no pandal-specific one-way or entry claims.
   String get barricadeAdvisory {
-    final nLower = name.toLowerCase();
-    if (nLower.contains('ekdalia')) {
-      return '🚨 Police One-Way: Entry strictly via Gariahat crossing barricade; exit directed into Cornfield Road. Backtracking to Gariahat is barred.';
-    }
-    if (nLower.contains('sreebhumi')) {
-      return '🚨 Police One-Way: VIP Road pedestrian walkway active along service lane. Exit routed towards Bangur Foot Overbridge.';
-    }
-    if (nLower.contains('suruchi')) {
-      return '🚨 Police One-Way: Approach barricaded from New Alipore petrol pump; exit directed towards Taratala road.';
-    }
-    if (nLower.contains('chetla')) {
-      return '🚨 Police One-Way: Entry from Hazra bridge down Govinda Auddy Road; exit onto Chetla Central Road.';
-    }
-    if (nLower.contains('college square')) {
-      return '🚨 Police One-Way: Entry from College Street main gate; exit strictly onto Surya Sen Street towards Central Ave.';
-    }
-    if (nLower.contains('mohammad ali')) {
-      return '🚨 Police One-Way: Entry from Chittaranjan Avenue; exit into Tara Chand Dutt Street.';
-    }
-    if (nLower.contains('bagbazar')) {
-      return '🚨 Police One-Way: One-way pedestrian lane along Bagbazar Street to Ganga riverbank; exit via Girish Avenue.';
-    }
-    if (nLower.contains('maddox')) {
-      return 'ℹ️ Open Field: Open lawn seating; vehicular parking strictly prohibited on Ritchie Road and Lansdowne.';
-    }
-    if (nLower.contains('tridhara')) {
-      return '🚨 Police One-Way: Entry from Monoharpukur Road; exit towards Rashbehari Avenue connector.';
-    }
-    if (nLower.contains('fd block')) {
-      return 'ℹ️ Township Layout: Broad pedestrian boulevards; vehicle drop-off at Karunamoyee only.';
-    }
     if (category == 'heritage') {
-      return '🏛️ Bonedi Bari Protocol: Open courtyard Thakur Dalan darshan; queue along heritage residential lane.';
+      return 'Family (bonedi bari) puja in a private home: entry and timings are set by the family. Please be respectful.';
     }
-    return '🚶 Standard Police Barricade: Follow dedicated entry ropeways; keep exit pathways unobstructed.';
+    return 'Follow Kolkata Police barricades and volunteers on site. Entry and exit routes can change daily.';
   }
 
-  /// Real-Time Pushpanjali and Bhog Schedule Badge
+  /// Typical Pushpanjali / Bhog / Aarati windows by clock time (approximate,
+  /// not live; each puja sets its own schedule).
   String get ritualTimingBadge {
     final now = DateTime.now();
     final hour = now.hour;
@@ -905,8 +896,8 @@ Pandal(
     category: 'mega',
     zone: 'South',
     subsection: 'South Kolkata (Ballygunge / Gariahat)',
-    lat: 22.5189,
-    lon: 88.3614,
+    lat: 22.51786,
+    lon: 88.36209,
     landmark: 'Hindustan Park Sarbojanin, Kolkata',
     metroStation: 'Kalighat',
     history: 'An elite cultural institution celebrating over nine decades of artistic excellence, fine aesthetic curation, and intellectual depth. The atmosphere is dignified and serene. Renowned for collaborating with top contemporary sculptors to explore heritage crafts, folk literature, and philosophical themes with subtle, beautiful lighting.',
@@ -920,8 +911,8 @@ Pandal(
     category: 'mega',
     zone: 'South',
     subsection: 'South Kolkata (Ballygunge / Gariahat)',
-    lat: 22.5192,
-    lon: 88.3578,
+    lat: 22.51957,
+    lon: 88.35534,
     landmark: 'Tridhara Sammilani, Kolkata',
     metroStation: 'Kalighat',
     history: 'A powerhouse festival known for masterfully combining cutting-edge contemporary themes with deep spiritual devotion. The mood is vibrant, artistic, and emotionally resonant. Famous for bold, large-scale installations that tackle ecological and humanitarian questions, complemented by custom-sculpted, theme-integrated deities.',
@@ -935,8 +926,8 @@ Pandal(
     category: 'mega',
     zone: 'South',
     subsection: 'South Kolkata (Ballygunge / Gariahat)',
-    lat: 22.5186,
-    lon: 88.3562,
+    lat: 22.51843,
+    lon: 88.35351,
     landmark: 'Deshapriya Park, Kolkata',
     metroStation: 'Kalighat',
     history: 'A colossal open-ground festival that regularly pushes structural engineering limits to build some of the largest pavilions in India. The atmosphere is vast and exhilarating. Known for monumental scales, intricate classical bas-relief facades, and expansive visitor spaces designed for high crowd capacity.',
@@ -950,8 +941,8 @@ Pandal(
     category: 'mega',
     zone: 'South',
     subsection: 'South Kolkata (Ballygunge / Gariahat)',
-    lat: 22.5158,
-    lon: 88.3584,
+    lat: 22.51588,
+    lon: 88.35581,
     landmark: 'Ballygunge Cultural Association, Kolkata',
     metroStation: 'Kalighat',
     history: 'Established in 1951, this storied institution is celebrated for literary depth, classical artistic taste, and cultural sophistication. The atmosphere is refined and family-centered. Respected for reviving indigenous folk traditions like patachitra, dokra, and rural woodcraft, complemented by elegant Bengal school idol modeling.',
@@ -1366,13 +1357,13 @@ Pandal(
   ),
   Pandal(
     id: 'alpha-atheletic-association',
-    name: 'Alpha Atheletic Association',
+    name: 'Alpha Athletic Association',
     category: 'mega',
     zone: 'Central',
     subsection: 'Central Kolkata (College Street / Bowbazar)',
     lat: 22.5729,
     lon: 88.3629,
-    landmark: 'Alpha Atheletic Association, Kolkata',
+    landmark: 'Alpha Athletic Association, Kolkata',
     metroStation: 'Central',
     history: 'A lively community festival organized by an athletic club, blending sportsmanship with festive enthusiasm. The ambiance is energetic, open, and youthful. Known for vibrant decorative pavilions, colorful lighting, and support for community welfare and youth sports.',
     gateStatus: 'open',
@@ -2146,13 +2137,13 @@ Pandal(
   ),
   Pandal(
     id: 'ramakrishna-atheletic-club',
-    name: 'Ramakrishna Atheletic Club',
+    name: 'Ramakrishna Athletic Club',
     category: 'mega',
     zone: 'South',
     subsection: 'South Kolkata (Ballygunge / Gariahat)',
     lat: 22.5176,
     lon: 88.3608,
-    landmark: 'Ramakrishna Atheletic Club, Kolkata',
+    landmark: 'Ramakrishna Athletic Club, Kolkata',
     metroStation: 'Kalighat',
     history: 'A vibrant sports and cultural club festival blending physical culture ideals with devotional celebration. The setting is energetic, open, and community-centric. Features colorful structural pavilions and bright illuminations, honoring traditional rituals alongside youth philanthropic programs.',
     gateStatus: 'open',
@@ -2359,11 +2350,11 @@ Pandal(
     name: 'Pally Mangal Samity',
     category: 'mega',
     zone: 'South',
-    subsection: 'South Kolkata (Gariahat / Kasba / Kalighat)',
-    lat: 22.5184,
-    lon: 88.3624,
+    subsection: 'South Kolkata (Jodhpur Park / Lake Gardens)',
+    lat: 22.50292,
+    lon: 88.36459,
     landmark: 'Pally Mangal Samity, Kolkata',
-    metroStation: 'Kalighat',
+    metroStation: 'Rabindra Sarobar',
     history: 'A dedicated community festival focused on neighborhood welfare, environmental health, and devotional joy. The mood is friendly, open, and family-centric. Showcases handcrafted pavilions made from eco-friendly materials, paired with classical idol craftsmanship and traditional bhog.',
     gateStatus: 'open',
     gateClosingTime: '01:30 PM (for Bhog)',
@@ -2401,13 +2392,13 @@ Pandal(
   ),
   Pandal(
     id: 'santragachi-south-howrah-vivekananda-foudation',
-    name: 'Santragachi South Howrah Vivekananda Foudation',
+    name: 'Santragachi South Howrah Vivekananda Foundation',
     category: 'mega',
     zone: 'South',
     subsection: 'Howrah & Riverfront (Santragachi / South Howrah)',
     lat: 22.5843,
     lon: 88.3192,
-    landmark: 'Santragachi South Howrah Vivekananda Foudation, Kolkata',
+    landmark: 'Santragachi South Howrah Vivekananda Foundation, Kolkata',
     metroStation: 'Howrah Maidan',
     history: 'A suburban institution dedicated to the humanitarian ideals of Swami Vivekananda through spiritual celebration. The atmosphere is solemn, inspiring, and inclusive. Focuses on philanthropic activities, educational exhibitions, and traditional idol worship, fostering cultural unity and service.',
     gateStatus: 'open',
@@ -2628,12 +2619,12 @@ Pandal(
     id: 'ultadanga-sangrami-sarbojanin-durgotsab',
     name: 'Ultadanga Sangrami Sarbojanin Durgotsab',
     category: 'mega',
-    zone: 'South',
-    subsection: 'South Kolkata (Gariahat / Ballygunge / Kalighat)',
-    lat: 22.5192,
-    lon: 88.3586,
+    zone: 'North',
+    subsection: 'North Kolkata (Ultadanga / Maniktala)',
+    lat: 22.59041,
+    lon: 88.39493,
     landmark: 'Ultadanga Sangrami Sarbojanin Durgotsab, Kolkata',
-    metroStation: 'Kalighat',
+    metroStation: 'Bengal Chemical',
     history: 'A long-standing community-led celebration known for devotional sincerity and cultural pride. The atmosphere is serene, traditional, and neighborly. Preserves authentic Ekchala idol styling with traditional foil craftsmanship, supported by Vedic rituals and active youth involvement in social service.',
     gateStatus: 'open',
     gateClosingTime: '01:30 PM (for Bhog)',
@@ -3241,13 +3232,13 @@ Pandal(
   ),
   Pandal(
     id: 'dakshin-pally-sarbojanin-durgotsav-committtee',
-    name: 'Dakshin Pally Sarbojanin Durgotsav Committtee',
+    name: 'Dakshin Pally Sarbojanin Durgotsav Committee',
     category: 'mega',
     zone: 'South',
     subsection: 'Behala & South West (Diamond Harbour Rd)',
     lat: 22.5,
     lon: 88.3187,
-    landmark: 'Dakshin Pally Sarbojanin Durgotsav Committtee, Kolkata',
+    landmark: 'Dakshin Pally Sarbojanin Durgotsav Committee, Kolkata',
     metroStation: 'Behala Bazar',
     history: 'A dedicated community festival centered on neighborhood unity, religious traditions, and cultural heritage. The setting is welcoming, vibrant, and family-oriented. Emphasizes classical clay modeling by hereditary artisans, paired with traditional floral decorations, evening dhunuchi dances, and community bhog distributions.',
     gateStatus: 'open',
@@ -7711,13 +7702,13 @@ Pandal(
   ),
   Pandal(
     id: 'dakshinayan-residents-welfare-soceity',
-    name: 'Dakshinayan Resident\'s Welfare Soceity',
+    name: 'Dakshinayan Resident\'s Welfare Society',
     category: 'mega',
     zone: 'South',
     subsection: 'South Kolkata (Kalighat / Gariahat / Ballygunge)',
     lat: 22.5179,
     lon: 88.3638,
-    landmark: 'Dakshinayan Resident\'s Welfare Soceity, Kolkata',
+    landmark: 'Dakshinayan Resident\'s Welfare Society, Kolkata',
     metroStation: 'Kalighat',
     history: 'Nestled in the cultural crossroads of Kalighat, this puja committee\'s *pratimas*—often crafted in the *murtikatha* (narrative sculpture) style—weave tales of the *Mahabharata* with a modern twist. The pandal\'s proximity to the Kalighat temple and the historic *chowk* makes it a microcosm of South Kolkata\'s syncretic traditions, where *sari*-clad devotees mingle with art enthusiasts.',
     gateStatus: 'open',

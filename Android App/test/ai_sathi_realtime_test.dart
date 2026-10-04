@@ -68,14 +68,11 @@ void main() {
       expect(hospEast.name, contains('Ruby'));
     });
 
-    test('findNearestPoliceBooth resolves nearest Kolkata Police Division', () {
-      // South Division (near Ballygunge / Gariahat 22.5190, 88.3650)
-      final boothSouth = emergency.findNearestPoliceBooth(22.5200, 88.3600);
-      expect(boothSouth.division, contains('South'));
-
-      // North Division (near Shyambazar 22.6000, 88.3700)
-      final boothNorth = emergency.findNearestPoliceBooth(22.5900, 88.3650);
-      expect(boothNorth.division, contains('North'));
+    test('findNearestPoliceBooth only returns the verified Lalbazar control room', () {
+      expect(EmergencyService.kPoliceBooths.length, 1);
+      final booth = emergency.findNearestPoliceBooth(22.5200, 88.3600);
+      expect(booth.division, contains('Lalbazar'));
+      expect(booth.contact, contains('033-2214-3230'));
     });
 
     test('generateEmergencyGuidance produces direct helpline and casualty ward info without conversational fluff', () {
@@ -90,7 +87,9 @@ void main() {
       expect(text, contains('1091')); // Women helpline (Kolkata)
       expect(text, isNot(contains('1090')), reason: '1090 is not a Kolkata/WB helpline');
       expect(text, contains('Fire Brigade: 101'));
-      expect(text, contains('Police Help Booth'));
+      expect(text, contains('Lalbazar'));
+      expect(text, contains('1098')); // Child helpline
+      expect(text, isNot(contains('102 / 108')));
     });
 
     test('medical guidance never claims a hospital status (offline data)', () {

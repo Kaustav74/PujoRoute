@@ -45,7 +45,16 @@ data class Pandal(
     val gate: String = "",
     val about: String = "",
     val rank: Int = 999,
+    /** "u" = location unverified (placeholder / contradictory coordinates). */
+    val loc: String = "",
+    /** Id of the kept entry when this one duplicates another pandal. */
+    val dup: String = "",
 ) {
+    val isLocationUnverified get() = loc == "u"
+    /** Duplicates are hidden from lists. */
+    val isListed get() = dup.isEmpty()
+    /** Only these appear in Nearby, route planning and Metro station lists. */
+    val isMappable get() = isListed && !isLocationUnverified
     val isHeritage get() = cat == "h"
     val categoryLabel get() = if (isHeritage) "Heritage (Bonedi Bari)" else "Mega / Theme"
 }

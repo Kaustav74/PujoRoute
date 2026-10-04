@@ -17,8 +17,8 @@ void main() {
 
       expect(megaCount, equals(483));
       expect(heritageCount, equals(21));
-      expect(southCount, equals(287));
-      expect(northCount, equals(138));
+      expect(southCount, equals(286)); // Phase 3: Ultadanga Sangrami moved to North
+      expect(northCount, equals(139));
       expect(saltLakeCount, equals(42));
       expect(centralCount, equals(37));
     });
