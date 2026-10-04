@@ -2104,6 +2104,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
               color: Colors.white, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
+        titleSpacing: 0,
         title: Row(
           children: [
             Container(
@@ -2116,24 +2117,31 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                   const Icon(Icons.auto_awesome, color: Colors.white, size: 18),
             ),
             const SizedBox(width: 10),
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Circuit Studio',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18),
-                ),
-                Text(
-                  'Automated Hopping Route Optimizer',
-                  style: TextStyle(
-                      color: kMarigoldAmber,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600),
-                ),
-              ],
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'Circuit Studio',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+                    ),
+                  ),
+                  Text(
+                    'Automated Hopping Route Optimizer',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: kMarigoldAmber,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -2629,12 +2637,15 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                                 children: [
                                   Row(
                                     children: [
-                                      const Text(
-                                        'Exclude Passport Stamped',
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12),
+                                      const Flexible(
+                                        child: Text(
+                                          'Exclude Passport Stamped',
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 12),
+                                        ),
                                       ),
                                       const SizedBox(width: 6),
                                       Container(
@@ -2800,14 +2811,17 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'ROUTE SEQUENCE (DRAG TO REORDER):',
-                      style: TextStyle(
-                          color: Colors.white70,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 11,
-                          letterSpacing: 1),
+                    const Expanded(
+                      child: Text(
+                        'ROUTE SEQUENCE (DRAG TO REORDER):',
+                        style: TextStyle(
+                            color: Colors.white70,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11,
+                            letterSpacing: 1),
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF26263A),
