@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PujoRoute</string>
+    <string name="tile_label">Pujo Countdown</string>
+    <string name="complication_label">Pujo days left</string>
+</resources>
