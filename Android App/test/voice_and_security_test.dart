@@ -20,7 +20,9 @@ void main() {
       await session.saveEmergencyProfile(phone: '9830012345', name: 'Anirban', blood: 'B+');
       await session.saveLastPosition(22.5726, 88.3639);
       await session.saveCircuit(['sreebhumi_sporting', 'college_square'], true);
-      await session.reportCrowdStatus('sreebhumi_sporting', 'slow');
+      // Key left behind by the removed local-only crowd-report UI in older builds
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('pujo_crowd_sreebhumi_sporting', 'slow');
 
       // Verify data was populated
       expect(session.bookmarkedIds, contains('sreebhumi_sporting'));
@@ -29,7 +31,7 @@ void main() {
       expect(session.emergencyName, equals('Anirban'));
       expect(session.isCircuitActive, isTrue);
       expect(session.activeCircuitIds, hasLength(2));
-      expect(session.getCrowdReport('sreebhumi_sporting'), equals('slow'));
+      expect(prefs.getString('pujo_crowd_sreebhumi_sporting'), equals('slow'));
 
       // Cryptographic Shred Execution
       await session.secureShredUserData();
@@ -41,7 +43,7 @@ void main() {
       expect(session.emergencyName, isEmpty);
       expect(session.isCircuitActive, isFalse);
       expect(session.activeCircuitIds, isEmpty);
-      expect(session.getCrowdReport('sreebhumi_sporting'), isNull);
+      expect(prefs.getKeys().where((k) => k.startsWith('pujo_crowd_')), isEmpty);
       expect(session.lastLat, isNull);
       expect(session.lastLon, isNull);
     });

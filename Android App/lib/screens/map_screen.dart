@@ -421,59 +421,6 @@ class _MapScreenState extends State<MapScreen>
     }
   }
 
-  Widget _buildLineReportBtn(
-    BuildContext sheetContext,
-    StateSetter setReportState,
-    Pandal p,
-    String status,
-    String label,
-    MaterialColor color,
-  ) {
-    final current = SessionService.instance.getCrowdReport(p.id);
-    final isSelected = current == status;
-
-    return Expanded(
-      child: InkWell(
-        onTap: () async {
-          await SessionService.instance.reportCrowdStatus(p.id, status);
-          setReportState(() {});
-          if (!sheetContext.mounted) return;
-          ScaffoldMessenger.of(sheetContext).showSnackBar(
-            SnackBar(
-              content: Text(
-                  '🙏 Reported "$status" queue for ${p.name}! Crowd radar updated.'),
-              duration: const Duration(seconds: 2),
-              backgroundColor: color.shade800,
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 2),
-          decoration: BoxDecoration(
-            color:
-                isSelected ? color.withOpacity(0.3) : const Color(0xFF242033),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: isSelected ? color : color.withOpacity(0.3),
-              width: isSelected ? 1.5 : 1,
-            ),
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white70,
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   // Enhanced Detailed Pandal Sheet with Ritual Timings, Metro Exit Gate, and Sculptor Credits
   void _showPandalDetailsModal(Pandal p, int distMeters, int durMins) {
     showModalBottomSheet(
@@ -576,144 +523,6 @@ class _MapScreenState extends State<MapScreen>
                       ],
                     ),
                     const SizedBox(height: 14),
-
-                    // Live Status Badges
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: Colors.greenAccent),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('GATE STATUS',
-                                    style: TextStyle(
-                                        color: Colors.white54, fontSize: 9.5)),
-                                const SizedBox(height: 2),
-                                Text(
-                                  p.category == 'heritage'
-                                      ? '🟢 Open (Bhog: ${p.gateClosingTime})'
-                                      : '🟢 Open 24x7',
-                                  style: const TextStyle(
-                                      color: Colors.greenAccent,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 11.5),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 10),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF242438),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: kMarigoldAmber.withOpacity(0.4)),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('CROWD SPEED',
-                                    style: TextStyle(
-                                        color: Colors.white54, fontSize: 9.5)),
-                                const SizedBox(height: 2),
-                                Text(
-                                  p.crowdStatus == 'fast'
-                                      ? '🟢 Fast Walk (~5m wait)'
-                                      : (p.crowdStatus == 'slow'
-                                          ? '🟡 Slow Crawl (~25m)'
-                                          : '🔴 Dead Stop (60m+)'),
-                                  style: TextStyle(
-                                    color: p.crowdStatus == 'fast'
-                                        ? Colors.greenAccent
-                                        : (p.crowdStatus == 'slow'
-                                            ? kMarigoldAmber
-                                            : kSindoorRed),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 11.5,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-
-                    // 1-Tap Crowdsourced Crowd Line Reporter
-                    StatefulBuilder(
-                      builder: (modalCtx, setReportState) {
-                        final reported =
-                            SessionService.instance.getCrowdReport(p.id);
-                        return Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF1B1828),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                                color: Colors.purpleAccent.withOpacity(0.35)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.people_alt_rounded,
-                                      color: Colors.purpleAccent, size: 16),
-                                  const SizedBox(width: 8),
-                                  const Text(
-                                    'LIVE LINE CHECK-IN (1-Tap Crowd Report)',
-                                    style: TextStyle(
-                                        color: Colors.purpleAccent,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 11,
-                                        letterSpacing: 0.6),
-                                  ),
-                                  const Spacer(),
-                                  if (reported != null)
-                                    Text(
-                                      'You: $reported',
-                                      style: const TextStyle(
-                                          color: Colors.greenAccent,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  _buildLineReportBtn(ctx, setReportState, p,
-                                      'Smooth', '🟢 <20m', Colors.green),
-                                  const SizedBox(width: 6),
-                                  _buildLineReportBtn(ctx, setReportState, p,
-                                      'Moderate', '🟡 20-40m', Colors.amber),
-                                  const SizedBox(width: 6),
-                                  _buildLineReportBtn(ctx, setReportState, p,
-                                      'Packed', '🔴 40-60m', Colors.deepOrange),
-                                  const SizedBox(width: 6),
-                                  _buildLineReportBtn(ctx, setReportState, p,
-                                      'Standstill', '⛔ >60m', Colors.red),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-
-                    const SizedBox(height: 12),
 
                     // Metro Connectivity & Kolkata Police Traffic Barricade Advisory
                     Container(
@@ -1075,33 +884,6 @@ class _MapScreenState extends State<MapScreen>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF26263A),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: kMarigoldAmber.withOpacity(0.3)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.perm_identity,
-                        color: kMarigoldAmber, size: 16),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        'Session: ${SessionService.instance.sessionId}',
-                        style: const TextStyle(
-                            color: kMarigoldAmber,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
               const Text('KOLKATA POLICE PUJA HELPLINES',
                   style: TextStyle(
                       color: Colors.white54,
@@ -1194,7 +976,7 @@ class _MapScreenState extends State<MapScreen>
           ],
         ),
         content: const Text(
-          'This permanently deletes everything PujoRoute stores on this phone: bookmarks, visited pandals (Passport stamps), your saved circuit, crowd notes, last map position and your emergency contact / blood group.',
+          'This permanently deletes everything PujoRoute stores on this phone: bookmarks, visited pandals (Passport stamps), your saved circuit, last map position and your emergency contact / blood group.',
           style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
         ),
         actions: [

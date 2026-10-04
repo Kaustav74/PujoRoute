@@ -53,18 +53,6 @@ void main() {
         );
       }
     });
-
-    test('SessionService saves and retrieves crowdsourced crowd queue reports', () async {
-      final session = SessionService.instance;
-
-      expect(session.getCrowdReport('sreebhumi_sporting'), isNull);
-
-      await session.reportCrowdStatus('sreebhumi_sporting', 'Packed');
-      expect(session.getCrowdReport('sreebhumi_sporting'), equals('Packed'));
-
-      await session.reportCrowdStatus('ekdalia_evergreen', 'Smooth');
-      expect(session.getCrowdReport('ekdalia_evergreen'), equals('Smooth'));
-    });
   });
 
   group('Gamified Pandal Passport & Cultural Stamps Tests', () {
