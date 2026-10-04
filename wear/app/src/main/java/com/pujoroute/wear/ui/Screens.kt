@@ -128,7 +128,7 @@ fun DayScreen(day: PujaDay, beniMadhab: Boolean) {
         label(if (beniMadhab) "Tithi (Beni Madhab)" else "Tithi (Belur Math)", listOf(day.tithiName, tithi).filter { it.isNotBlank() }.joinToString("\n"))
         if (!beniMadhab) label(day.muhuratTitle.ifBlank { "Muhurat" }, day.muhuratWindow)
         if (moments.isNotEmpty()) label("Muhurats", moments.joinToString("\n") { "• $it" })
-        label("Crowd", day.crowdForecast)
+        label("Expected crowd", day.crowdForecast)
     }
 }
 
