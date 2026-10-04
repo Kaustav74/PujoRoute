@@ -171,13 +171,15 @@ class SecurityService {
     return {'Authorization': 'Bearer $clean'};
   }
 
-  /// Obtains environment-passed token or default FreeLLMAPI token
+  /// Obtains build-time (--dart-define) token, or empty string if none was provided
   String getObfuscatedClientToken() {
     const freeKey = String.fromEnvironment('FREELLMAPI_API_KEY');
     if (freeKey.isNotEmpty) return freeKey.trim();
     const envKey = String.fromEnvironment('GROQ_API_KEY');
     if (envKey.isNotEmpty) return envKey.trim();
-    return '***REMOVED***';
+    // No hardcoded fallback: provide the key at build time with
+    // --dart-define=FREELLMAPI_API_KEY=... (never commit it).
+    return '';
   }
 
   /// Forwards an AI chat completion request through the secure serverless proxy gateway

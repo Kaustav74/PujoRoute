@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
@@ -849,8 +850,7 @@ $contextPujasStr
       final hasAuth = headers.containsKey('Authorization');
       final authHeaderVal = headers['Authorization'] ?? '';
       final isBearerScheme = authHeaderVal.startsWith('Bearer ');
-      debugPrint("Outgoing Auth Header: ${authHeaderVal.length > 22 ? authHeaderVal.substring(0, 22) : authHeaderVal}...");
-      debugPrint("AI Auth Diagnostic -> endpoint: $gatewayUrl, scheme: ${isBearerScheme ? 'Bearer' : (hasAuth ? 'Custom/Raw' : 'None')}, keyPresent: $hasAuth, length: ${authHeaderVal.length}");
+      if (kDebugMode) debugPrint("AI Auth Diagnostic -> endpoint: $gatewayUrl, scheme: ${isBearerScheme ? 'Bearer' : (hasAuth ? 'Custom/Raw' : 'None')}, keyPresent: $hasAuth, length: ${authHeaderVal.length}");
 
       http.Response? response;
       try {

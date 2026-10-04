@@ -13,7 +13,7 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 # CONFIGURATION VIA ENVIRONMENT VARIABLES
 TARGET_API_URL = os.environ.get("TARGET_API_URL", "https://my-freellmapi-server.onrender.com/v1/chat/completions")
-API_KEY = os.environ.get("FREELLMAPI_API_KEY") or os.environ.get("GROQ_API_KEY") or "***REMOVED***"
+API_KEY = os.environ.get("FREELLMAPI_API_KEY") or os.environ.get("GROQ_API_KEY") or ""
 MODEL_NAME = os.environ.get("MODEL_NAME", "auto")
 GROQ_API_KEY = API_KEY
 GROQ_MODEL = MODEL_NAME
