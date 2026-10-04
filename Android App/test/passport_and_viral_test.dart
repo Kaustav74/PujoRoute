@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pujoroute/data/pujas_data.dart';
 import 'package:pujoroute/services/session_service.dart';
-import 'package:pujoroute/services/voice_assistant_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -135,28 +134,6 @@ void main() {
       expect(message, contains('• Singhi Park'));
       expect(message, contains('📍 Google Maps Multi-Route:'));
       expect(message, contains('Planned via PujoRoute 🪔'));
-    });
-  });
-
-  group('Banglish & Food Adda Voice Intent Tests', () {
-    final voice = VoiceAssistantService.instance;
-
-    test('Fast route Banglish queries resolve to fast queue pandal', () {
-      final intent1 = voice.resolveVoiceIntent("fast-e kon pandal jabo?");
-      expect(intent1.vocalResponse, contains('kom line'));
-      expect(intent1.targetPandal, isNotNull);
-
-      final intent2 = voice.resolveVoiceIntent("taratari kon pandal hobe?");
-      expect(intent2.vocalResponse, contains('kom line'));
-    });
-
-    test('Street food and adda queries resolve to Kolkata food hub pandal', () {
-      final intent1 = voice.resolveVoiceIntent("Maddox Square e bhalo roll kothay pabo?");
-      expect(intent1.vocalResponse, contains('kathi roll'));
-      expect(intent1.targetPandal, isNotNull);
-
-      final intent2 = voice.resolveVoiceIntent("kothay bhalo adda hobe?");
-      expect(intent2.vocalResponse, contains('adda'));
     });
   });
 }

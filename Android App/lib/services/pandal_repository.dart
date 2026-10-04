@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import '../data/pujas_data.dart';
 
-/// Production-grade Local Read Replica for PujoRoute / AI Sathi (Durga Puja 2026).
+/// Production-grade Local Read Replica for PujoRoute (Durga Puja 2026).
 /// Provides 0-network offline access to 504 verified pandals.
 class PandalRepository {
   static const String schemaVersion = '1';

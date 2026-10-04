@@ -53,14 +53,14 @@ Joy Maa Durga!
 - Progressive distance pruning preventing fatiguing routes (>1.2 km per step).
 
 ### 🚇 Kolkata Metro Transit Guide
-- Station-by-station recommendations for Blue, Green, Purple, Orange, and Yellow metro lines.
+- Station-by-station recommendations for Blue, Green, Purple and Orange metro lines.
 - Honest walking vs. transit advice to save time during high-traffic festival hours.
 
 ### 📅 Official 2026 Panjika & Sandhi Puja Countdown
 - Tithi timings from Mahalaya to Bijoya Dashami with exact Belur Math and Para traditions.
 - Live countdown clock for the 48-minute Sandhi Puja window on Maha Ashtami.
 
-### 🛡️ Local-First & Zero-Secret Architecture
-- All core navigation, pandal data, and emergency assistance function 100% offline.
+### 🛡️ Local-First Architecture
+- Pandal data, route planner, calendar, metro guide and emergency contacts work offline (map tiles need internet).
 - Built-in Data Shredder to wipe local trip history at any time.
 - Fully compliant with Android 16 / API level 36 standards.

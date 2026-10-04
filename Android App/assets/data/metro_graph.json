@@ -1,4 +1,4 @@
-﻿{
+{
   "lines": {
     "blue": {
       "name": "North-South Corridor",
@@ -47,6 +47,28 @@
         "Karunamoyee",
         "Salt Lake Sector V"
       ]
+    },
+    "purple": {
+      "name": "Purple Line",
+      "stations": [
+        "Joka",
+        "Thakurpukur",
+        "Sakher Bazar",
+        "Behala Chowrasta",
+        "Behala Bazar",
+        "Taratala",
+        "Majerhat"
+      ]
+    },
+    "orange": {
+      "name": "Orange Line",
+      "stations": [
+        "Kavi Subhash",
+        "Satyajit Ray",
+        "Jyotirindra Nandi",
+        "Kavi Sukanta",
+        "Hemanta Mukhopadhyay"
+      ]
     }
   },
   "interchanges": [
@@ -57,6 +79,22 @@
         "green"
       ],
       "instructions": "Follow the designated concourse to transfer between Blue and Green lines."
+    },
+    {
+      "station": "Kavi Subhash",
+      "connects": [
+        "blue",
+        "orange"
+      ],
+      "instructions": "Direct concourse interchange at Kavi Subhash (New Garia) connecting Blue Line and Orange Line (EM Bypass)."
+    },
+    {
+      "station": "Majerhat",
+      "connects": [
+        "purple",
+        "blue"
+      ],
+      "instructions": "No direct rail interchange: take a short road/auto connection (8-10 mins) between Majerhat/Taratala and Kalighat / Rabindra Sarobar (Blue Line)."
     }
   ],
   "forbidden_aliases": {

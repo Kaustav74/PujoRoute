@@ -4,14 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:url_launcher/url_launcher.dart';
+import '../utils/external_links.dart';
 import '../data/pujas_data.dart';
 import 'circuit_studio_screen.dart';
 import 'pandal_passport_screen.dart';
 import 'puja_calendar_screen.dart';
 import '../services/session_service.dart';
 import '../services/spatial_facility_service.dart';
-import '../widgets/voice_assistant_dialog.dart';
 
 // Pujo Festive Theme Palette
 const Color kMidnightBlue =
@@ -66,6 +65,7 @@ class _MapScreenState extends State<MapScreen>
   String _selectedZone =
       'All'; // 'All', 'Bookmarked ⭐', 'Visited ✅', 'North', 'South', 'Salt Lake', 'Central'
   String _searchQuery = '';
+  bool _tilesUnavailable = false;
   final TextEditingController _searchController = TextEditingController();
 
   // Selection & Circuit
@@ -176,14 +176,21 @@ class _MapScreenState extends State<MapScreen>
 
       if (permission == LocationPermission.whileInUse ||
           permission == LocationPermission.always) {
-        // First fast initial location lookup
-        final initialPos = await Geolocator.getLastKnownPosition() ??
-            await Geolocator.getCurrentPosition(
-              desiredAccuracy: LocationAccuracy.medium,
-              timeLimit: const Duration(seconds: 4),
-            );
-        _handleNewLocation(initialPos.latitude, initialPos.longitude,
-            notifyOutside: true);
+        // First fast initial location lookup. A cold GPS fix can exceed the
+        // 4 s limit; that must not prevent the live stream below from starting.
+        try {
+          final initialPos = await Geolocator.getLastKnownPosition() ??
+              await Geolocator.getCurrentPosition(
+                desiredAccuracy: LocationAccuracy.medium,
+                timeLimit: const Duration(seconds: 4),
+              );
+          if (!mounted) return;
+          _handleNewLocation(initialPos.latitude, initialPos.longitude,
+              notifyOutside: true);
+        } catch (_) {
+          // Keep the fallback position until the stream delivers a fix.
+        }
+        if (!mounted) return;
 
         // Continuous location stream for real-time tracking
         _positionStreamSub = Geolocator.getPositionStream(
@@ -192,7 +199,10 @@ class _MapScreenState extends State<MapScreen>
             distanceFilter: 8,
           ),
         ).listen((pos) {
+          if (!mounted) return;
           _handleNewLocation(pos.latitude, pos.longitude, notifyOutside: false);
+        }, onError: (_) {
+          // Location services switched off mid-session: keep last position.
         });
       }
     } catch (_) {
@@ -258,8 +268,8 @@ class _MapScreenState extends State<MapScreen>
       }
 
       // Search query
-      if (_searchQuery.isNotEmpty) {
-        final q = _searchQuery.toLowerCase();
+      if (_searchQuery.trim().isNotEmpty) {
+        final q = _searchQuery.trim().toLowerCase();
         final matchName = p.name.toLowerCase().contains(q);
         final matchLandmark = p.landmark.toLowerCase().contains(q);
         final matchMetro = p.metroStation.toLowerCase().contains(q);
@@ -352,11 +362,8 @@ class _MapScreenState extends State<MapScreen>
     }
     final url = Uri.parse(urlString);
     try {
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.externalApplication);
-      } else {
-        await launchUrl(url);
-      }
+      if (!mounted) return;
+      await openExternalLink(context, url);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -399,11 +406,8 @@ class _MapScreenState extends State<MapScreen>
     final url = Uri.parse(urlString);
 
     try {
-      if (await canLaunchUrl(url)) {
-        await launchUrl(url, mode: LaunchMode.externalApplication);
-      } else {
-        await launchUrl(url);
-      }
+      if (!mounted) return;
+      await openExternalLink(context, url);
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1111,7 +1115,9 @@ class _MapScreenState extends State<MapScreen>
               _buildEmergencyTile(
                   'Ambulance / Medical', '102 / 108', Icons.medical_services),
               _buildEmergencyTile(
-                  'Kolkata Metro Helpline', '139', Icons.directions_subway),
+                  'Fire Brigade', '101', Icons.local_fire_department),
+              _buildEmergencyTile(
+                  'Rail / Metro Helpline (RailMadad)', '139', Icons.directions_subway),
             ],
           ),
         ),
@@ -1123,7 +1129,7 @@ class _MapScreenState extends State<MapScreen>
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             ),
             icon: const Icon(Icons.delete_forever, size: 16),
-            label: const Text('Shred User Data',
+            label: const Text('Delete My Data',
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
             onPressed: () => _confirmShredUserData(ctx),
           ),
@@ -1180,7 +1186,7 @@ class _MapScreenState extends State<MapScreen>
           children: [
             Icon(Icons.warning_amber_rounded, color: kSindoorRed, size: 24),
             SizedBox(width: 8),
-            Text('Cryptographic Shred?',
+            Text('Delete all app data?',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 16,
@@ -1188,7 +1194,7 @@ class _MapScreenState extends State<MapScreen>
           ],
         ),
         content: const Text(
-          'This will permanently overwrite with random entropy and delete all cached session IDs, GPS history, chat histories, bookmarks, and emergency medical profiles.',
+          'This permanently deletes everything PujoRoute stores on this phone: bookmarks, visited pandals (Passport stamps), your saved circuit, crowd notes, last map position and your emergency contact / blood group.',
           style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
         ),
         actions: [
@@ -1209,7 +1215,7 @@ class _MapScreenState extends State<MapScreen>
                   const SnackBar(
                     backgroundColor: kTranslucentObsidian,
                     content: Text(
-                      '🔒 User data & telemetry securely shredded with zero traces.',
+                      '🔒 All PujoRoute data on this device has been deleted.',
                       style: TextStyle(
                           color: kMarigoldAmber, fontWeight: FontWeight.bold),
                     ),
@@ -1217,7 +1223,7 @@ class _MapScreenState extends State<MapScreen>
                 );
               }
             },
-            child: const Text('Shred Now',
+            child: const Text('Delete',
                 style: TextStyle(
                     color: Colors.white, fontWeight: FontWeight.bold)),
           ),
@@ -1266,10 +1272,18 @@ class _MapScreenState extends State<MapScreen>
               // OpenStreetMap Standard Tiles (Fast, Free, Local Memory & Disk Buffer Caching)
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.pujoroute.kolkata',
+                userAgentPackageName: 'com.pujoroute.app',
                 maxZoom: 18.0,
                 keepBuffer: 3,
                 panBuffer: 1,
+                // No network: show a neutral placeholder tile instead of blank
+                // squares, and tell the user the rest of the app still works.
+                errorImage: const AssetImage('assets/images/offline_tile.png'),
+                errorTileCallback: (tile, error, stackTrace) {
+                  if (!_tilesUnavailable && mounted) {
+                    setState(() => _tilesUnavailable = true);
+                  }
+                },
               ),
 
               // Active Hopping Circuit Polyline in Sindoor Red
@@ -1467,6 +1481,41 @@ class _MapScreenState extends State<MapScreen>
                   }),
                 ],
               ),
+              if (_tilesUnavailable)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 36),
+                    child: Material(
+                      color: kTranslucentObsidian,
+                      borderRadius: BorderRadius.circular(20),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: () => setState(() => _tilesUnavailable = false),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                          child: Text(
+                            'Map tiles need internet. Pandals, planner & calendar work offline. (tap to hide)',
+                            style: TextStyle(color: kMarigoldAmber, fontSize: 11),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              // Required OpenStreetMap attribution (tile usage policy)
+              // Always-visible (non-collapsing) attribution, as OSM requires.
+              SimpleAttributionWidget(
+                alignment: Alignment.bottomLeft,
+                backgroundColor: Colors.black54,
+                source: const Text(
+                  'OpenStreetMap contributors',
+                  style: TextStyle(color: Colors.white, fontSize: 11),
+                ),
+                onTap: () => openExternalLink(context,
+                    Uri.parse('https://www.openstreetmap.org/copyright')),
+              ),
             ],
           ),
 
@@ -1557,26 +1606,6 @@ class _MapScreenState extends State<MapScreen>
                           ),
                         ),
                       ),
-
-                      // Voice Assistant Mic Button
-                      IconButton(
-                        icon:
-                            const Icon(Icons.mic, color: kSindoorRed, size: 22),
-                        tooltip: 'Voice AI Assistant',
-                        padding: const EdgeInsets.symmetric(horizontal: 4),
-                        constraints: const BoxConstraints(),
-                        onPressed: () {
-                          VoiceAssistantDialog.show(
-                            context,
-                            userLat: _userPosition.latitude,
-                            userLon: _userPosition.longitude,
-                            onEmergencyRequested: _showEmergencyOfflineCard,
-                            onNavigateToPandal: (pandal) =>
-                                _openGoogleMapsWalking(pandal),
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 4),
 
                       // Emergency Offline Pass Shortcut
                       IconButton(
@@ -1940,7 +1969,7 @@ class _MapScreenState extends State<MapScreen>
                                     icon: const Icon(Icons.alt_route,
                                         color: kMarigoldAmber, size: 14),
                                     label: const Text(
-                                      'AI Studio',
+                                      'Route Planner',
                                       style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
@@ -2357,7 +2386,7 @@ class _MapScreenState extends State<MapScreen>
                 ),
                 _buildNavItem(
                   icon: Icons.alt_route_rounded,
-                  label: 'AI Studio',
+                  label: 'Route Planner',
                   isSelected: false,
                   badgeCount: _hoppingCircuit.isNotEmpty
                       ? _hoppingCircuit.length

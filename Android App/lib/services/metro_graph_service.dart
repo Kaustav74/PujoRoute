@@ -211,7 +211,7 @@ class MetroGraphService {
   static const Map<String, List<double>> kStationCoordinates = {
     'Dakshineswar': [22.6536, 88.3582],
     'Baranagar': [22.6394, 88.3683],
-    'Noapara': [22.6247, 88.3842],
+    'Noapara': [22.6397, 88.394],
     'Dum Dum': [22.6217, 88.3934],
     'Belgachia': [22.6067, 88.3820],
     'Shyambazar': [22.6025, 88.3719],
@@ -229,12 +229,12 @@ class MetroGraphService {
     'Kalighat': [22.5178, 88.3468],
     'Rabindra Sarobar': [22.5085, 88.3467],
     'Mahanayak Uttam Kumar': [22.4988, 88.3458],
-    'Netaji': [22.4892, 88.3452],
-    'Masterda Surya Sen': [22.4776, 88.3442],
-    'Gitanjali': [22.4697, 88.3436],
-    'Kavi Nazrul': [22.4578, 88.3430],
-    'Shahid Khudiram': [22.4485, 88.3432],
-    'Kavi Subhash': [22.4414, 88.3976],
+    'Netaji': [22.481, 88.346],
+    'Masterda Surya Sen': [22.4735, 88.3609],
+    'Gitanjali': [22.4694, 88.37],
+    'Kavi Nazrul': [22.4642, 88.3805],
+    'Shahid Khudiram': [22.4662, 88.3915],
+    'Kavi Subhash': [22.4723, 88.3983],
     'Howrah Maidan': [22.5855, 88.3283],
     'Howrah Railway Station': [22.5840, 88.3415],
     'Mahakaran': [22.5732, 88.3496],
@@ -253,9 +253,9 @@ class MetroGraphService {
     'Sakher Bazar': [22.4819, 88.3115],
     'Thakurpukur': [22.4632, 88.3078],
     'Joka': [22.4520, 88.3040],
-    'Hemanta Mukhopadhyay': [22.5133, 88.4005],
-    'Kavi Sukanta': [22.5020, 88.3980],
-    'Jyotirindra Nandi': [22.4920, 88.3970],
+    'Hemanta Mukhopadhyay': [22.5148, 88.4015],
+    'Kavi Sukanta': [22.5053, 88.401],
+    'Jyotirindra Nandi': [22.4959, 88.3987],
     'Satyajit Ray': [22.4700, 88.3970],
   };
 
@@ -265,7 +265,10 @@ class MetroGraphService {
     try {
       final jsonString =
           await rootBundle.loadString('assets/data/metro_graph.json');
-      final data = json.decode(jsonString) as Map<String, dynamic>;
+      // Strip a UTF-8 BOM if present: json.decode rejects it, which previously
+      // made the bundled graph silently fall back to in-memory data.
+      final clean = jsonString.startsWith('\uFEFF') ? jsonString.substring(1) : jsonString;
+      final data = json.decode(clean) as Map<String, dynamic>;
       _parseGraphData(data);
       _isLoaded = true;
     } catch (e) {

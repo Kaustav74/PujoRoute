@@ -1,18 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pujoroute/services/pandal_repository.dart';
-import 'package:pujoroute/services/ai_token_gate_service.dart';
 import 'package:pujoroute/services/quick_reply_service.dart';
 
 void main() {
   group('PujoRoute Performance & Surge-Resilience Layer Tests', () {
     late PandalRepository repo;
-    late AiTokenGateService tokenGate;
     late QuickReplyService quickReply;
 
     setUp(() {
       repo = PandalRepository();
-      tokenGate = AiTokenGateService();
-      tokenGate.reset();
       quickReply = QuickReplyService();
     });
 
@@ -134,50 +130,11 @@ void main() {
       expect(url, contains('travelmode=walking'));
     });
 
-    test('15. AiTokenGateService permits 2 queries per 5-minute rolling window', () {
-      expect(tokenGate.remainingTokens, equals(2));
-      expect(tokenGate.canMakeQuery(), isTrue);
-
-      final token1 = tokenGate.tryConsumeToken();
-      expect(token1, isTrue);
-      tokenGate.releaseInFlight();
-      expect(tokenGate.remainingTokens, equals(1));
-
-      final token2 = tokenGate.tryConsumeToken();
-      expect(token2, isTrue);
-      tokenGate.releaseInFlight();
-      expect(tokenGate.remainingTokens, equals(0));
-    });
-
-    test('16. AiTokenGateService rejects 3rd query when quota exhausted', () {
-      tokenGate.tryConsumeToken();
-      tokenGate.releaseInFlight();
-      tokenGate.tryConsumeToken();
-      tokenGate.releaseInFlight();
-
-      expect(tokenGate.canMakeQuery(), isFalse);
-      final token3 = tokenGate.tryConsumeToken();
-      expect(token3, isFalse);
-    });
-
-    test('17. AiTokenGateService.reset() clears timestamps and restores quota', () {
-      tokenGate.tryConsumeToken();
-      tokenGate.releaseInFlight();
-      tokenGate.tryConsumeToken();
-      tokenGate.releaseInFlight();
-      expect(tokenGate.remainingTokens, equals(0));
-
-      tokenGate.reset();
-      expect(tokenGate.remainingTokens, equals(2));
-      expect(tokenGate.canMakeQuery(), isTrue);
-    });
-
     test('18. QuickReplyService matches "sandhi puja" offline with 0 token consumption', () {
       final match = quickReply.matchQuery("When is Sandhi Puja 2026?");
       expect(match, isNotNull);
       expect(match!.id, equals("sandhi_puja"));
       expect(match.response, contains("19 October 2026"));
-      expect(tokenGate.remainingTokens, equals(2), reason: 'Quick reply consumed AI token');
     });
 
     test('19. QuickReplyService matches "metro hours" and "rashbehari" offline', () {

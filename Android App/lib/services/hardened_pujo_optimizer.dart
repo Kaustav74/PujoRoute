@@ -80,12 +80,14 @@ class HardenedPujoOptimizer {
         terminalPandal.lat, terminalPandal.lon, homeLat, homeLng);
 
     if (requestedStops == 1) {
+      // A user-added (forced) pandal must win over the auto-picked terminal.
+      final single = forcedStops.isNotEmpty ? forcedStops.first : terminalPandal;
       return RoutingResult(
-        route: [terminalPandal],
+        route: [single],
         totalWalkingMeters: 0,
-        walkToHomeMeters: terminalToHome,
+        walkToHomeMeters: distance(single.lat, single.lon, homeLat, homeLng),
         fellBackEarly: false,
-        diagnostics: 'Single-stop circuit (terminal only).',
+        diagnostics: 'Single-stop circuit.',
       );
     }
 
@@ -263,7 +265,10 @@ class HardenedPujoOptimizer {
     bool improved = true;
     int iterations = 0;
     const int maxIterations = 300;
-    final int startEdge = anchorStart ? 1 : 0;
+    // A 2-opt move reverses bestRoute[i+1..j], so index 0 never moves and the
+    // start stays anchored even with i = 0. (Previously i started at 1 when
+    // anchorStart was true, which skipped every improvement on the first hop.)
+    const int startEdge = 0;
     while (improved && iterations < maxIterations) {
       improved = false;
       iterations++;

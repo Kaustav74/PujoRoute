@@ -1,55 +1,26 @@
-# PujoRoute — Kolkata Durga Puja 2026 Companion
+# PujoRoute
 
-PujoRoute is an offline-first Flutter app for navigating Kolkata's Durga Puja pandals
-(504 pandals, route planner "Circuit Studio", Panjika calendar, metro guide, emergency
-directory) with an optional AI assistant ("AI Sathi").
+An offline-first Android guide to Kolkata's Durga Puja 2026: 504 pandals, a route planner (Circuit Studio), Pandal Passport, the 2026 puja calendar, a metro guide and emergency contacts.
 
-## Repository layout
+- **App source:** [`Android App/`](Android%20App/) (Flutter). `app/` is a stale copy, so do not use it.
+- **Release, signing and store notes:** [`docs/HANDOFF.md`](docs/HANDOFF.md)
+- **Privacy policy:** [`docs/privacy-policy.html`](docs/privacy-policy.html) (served via GitHub Pages from `/docs`)
 
-| Path | What it is |
-|------|-----------|
-| `Android App/` | **Main Flutter app** (tests pass: `flutter test`). |
-| `app/` | Older Flutter copy — currently does **not compile** (missing services). Prefer `Android App/`. |
-| `backend/` | FastAPI API (`main.py`): nearby pandals, calendar, session sync, AI chat proxy. |
-| `server/cloudflare_worker/` | Cloudflare Worker AI gateway (HMAC-signed requests, rate limiting, KV cache). |
-| `server/main.py` | Legacy FastAPI variant (expects `server/pujas.json`, which is absent). |
-| `supabase/schema.sql` | Postgres/PostGIS schema with Row Level Security. |
-| root `*.py` | Ad-hoc evaluation / stress-test scripts (read keys from env). |
+## Network use
+All content is bundled in the app. Only the map background (OpenStreetMap tiles) needs internet. Directions open Google Maps, and sharing opens WhatsApp. The app has no backend, accounts, analytics or ads.
 
-## Configuration
-
-All secrets come from environment variables — see [`.env.example`](.env.example).
-Never commit `.env`, `key.properties` or `*.jks` (they are git-ignored).
-
-## Run the backend
-
-```bash
-cd backend
-pip install -r requirements.txt
-export FREELLMAPI_API_KEY=...   # rotated key
-uvicorn main:app --host 0.0.0.0 --port 8000 --proxy-headers
-# or: docker build -t pujoroute-api . && docker run -p 8000:8000 -e FREELLMAPI_API_KEY=... pujoroute-api
-```
-
-Tests: `pip install -r requirements-dev.txt && python -m pytest -q tests`
-
-## Cloudflare Worker
-
-```bash
-cd server/cloudflare_worker
-npx wrangler secret put GROQ_API_KEY
-npx wrangler secret put GATEWAY_SEED   # must match the app's signing seed
-npx wrangler deploy
-```
-
-## Flutter app
-
+## Develop
 ```bash
 cd "Android App"
-flutter pub get && flutter test
-flutter build appbundle --release --dart-define=FREELLMAPI_API_KEY=...
+flutter pub get
+flutter analyze
+flutter test
+flutter run
 ```
 
-Release signing reads `android/key.properties` (git-ignored). Anything passed with
-`--dart-define` ships inside the APK and can be extracted — keep real provider keys on
-the server (backend / worker) whenever possible.
+## Build
+```bash
+flutter build apk --release        # universal APK (armeabi-v7a + arm64-v8a)
+flutter build appbundle --release  # Google Play
+```
+Signing needs `Android App/android/key.properties` (gitignored). See `docs/HANDOFF.md`.
