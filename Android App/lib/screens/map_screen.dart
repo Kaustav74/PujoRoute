@@ -1040,9 +1040,13 @@ class _MapScreenState extends State<MapScreen>
   Widget build(BuildContext context) {
     final visibleList = _getSortedFilteredPandals();
     final int megaCount =
-        kAllKolkataPujas.where((p) => p.category == 'mega').length;
+        kAllKolkataPujas
+            .where((p) => p.category == 'mega' && !p.isDuplicateEntry)
+            .length;
     final int heritageCount =
-        kAllKolkataPujas.where((p) => p.category == 'heritage').length;
+        kAllKolkataPujas
+            .where((p) => p.category == 'heritage' && !p.isDuplicateEntry)
+            .length;
     final clusters = _buildClusters(
         visibleList.where((p) => p.hasMappableLocation).toList(),
         _currentZoom);
@@ -1390,7 +1394,7 @@ class _MapScreenState extends State<MapScreen>
                           style: const TextStyle(
                               color: Colors.white, fontSize: 13.5),
                           decoration: InputDecoration(
-                            hintText: 'Search 504 pandals, metro, zones...',
+                            hintText: 'Search $kDistinctPandalCount pandals, metro, zones...',
                             hintStyle: const TextStyle(
                                 color: Colors.white38, fontSize: 12.5),
                             isDense: true,
