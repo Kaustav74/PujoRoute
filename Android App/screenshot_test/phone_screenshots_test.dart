@@ -238,6 +238,11 @@ void main() {
   });
 
   testWidgets('04 route planner + 05 metro station guide', (tester) async {
+    // Start near Dakshineswar: at default settings (All / mega / 8 stops) this
+    // circuit includes a real Metro hop, so the guide shows a Metro ride. From
+    // most start positions every hop is a walk (audit Phase 3).
+    await SessionService.instance.saveLastPosition(22.654, 88.3637);
+    addTearDown(() => SessionService.instance.saveLastPosition(22.5152, 88.3845));
     await _pumpApp(tester);
     await _tapText(tester, 'Route Planner');
     await _settle(tester, frames: 10);
@@ -250,6 +255,7 @@ void main() {
     await _shot(tester, '04_route_planner');
     await _tapText(tester, '🚇 Generate Metro Station Guide');
     await _settle(tester, frames: 20);
+    expect(find.textContaining('Metro Recommended'), findsWidgets);
     await _shot(tester, '05_metro_station_guide');
   });
 

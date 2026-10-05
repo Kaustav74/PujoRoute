@@ -10,7 +10,6 @@ import 'circuit_studio_screen.dart';
 import 'pandal_passport_screen.dart';
 import 'puja_calendar_screen.dart';
 import '../services/session_service.dart';
-import '../services/spatial_facility_service.dart';
 
 // Pujo Festive Theme Palette
 const Color kMidnightBlue =
@@ -253,7 +252,13 @@ class _MapScreenState extends State<MapScreen>
   }
 
   List<Pandal> _getSortedFilteredPandals() {
+    final bool searching = _searchQuery.trim().isNotEmpty;
     List<Pandal> list = kAllKolkataPujas.where((p) {
+      // Duplicate entries are never listed; pandals with an unverified
+      // location only appear when the user searches for them.
+      if (p.isDuplicateEntry) return false;
+      if (p.isLocationUnverified && !searching) return false;
+
       // Category filter
       if (p.category == 'mega' && !_filterMega) return false;
       if (p.category == 'heritage' && !_filterHeritage) return false;
@@ -282,8 +287,11 @@ class _MapScreenState extends State<MapScreen>
       return true;
     }).toList();
 
-    // Sort by proximity to user position
+    // Sort by proximity to user position (unverified locations last)
     list.sort((a, b) {
+      if (a.isLocationUnverified != b.isLocationUnverified) {
+        return a.isLocationUnverified ? 1 : -1;
+      }
       final distA = _getDistanceMeters(
           _userPosition.latitude, _userPosition.longitude, a.lat, a.lon);
       final distB = _getDistanceMeters(
@@ -335,7 +343,9 @@ class _MapScreenState extends State<MapScreen>
   Pandal? _findNextBestPandal(Pandal current) {
     final unvisited = kAllKolkataPujas
         .where((p) =>
-            p.id != current.id && !SessionService.instance.isVisited(p.id))
+            p.id != current.id &&
+            p.hasMappableLocation &&
+            !SessionService.instance.isVisited(p.id))
         .toList();
     if (unvisited.isEmpty) return null;
     unvisited.sort((a, b) {
@@ -524,6 +534,27 @@ class _MapScreenState extends State<MapScreen>
                     ),
                     const SizedBox(height: 14),
 
+                    if (p.isLocationUnverified) ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF3A2410),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                              color: Colors.orangeAccent.withOpacity(0.6)),
+                        ),
+                        child: const Text(
+                          '📍 ${Pandal.kLocationUnverifiedNote}',
+                          style: TextStyle(
+                              color: Color(0xFFFFCC80),
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                    ],
+
                     // Metro Connectivity & Kolkata Police Traffic Barricade Advisory
                     Container(
                       padding: const EdgeInsets.all(12),
@@ -577,7 +608,7 @@ class _MapScreenState extends State<MapScreen>
                                       style: TextStyle(fontSize: 13)),
                                   Expanded(
                                     child: Text(
-                                      'Police Advisory: ${p.barricadeAdvisory}',
+                                      'Crowd tip: ${p.barricadeAdvisory}',
                                       style: const TextStyle(
                                           color: Color(0xFFFFE082),
                                           fontSize: 11,
@@ -629,26 +660,11 @@ class _MapScreenState extends State<MapScreen>
                     ),
                     const SizedBox(height: 10),
 
-                    // Facilities chips - Dynamic Spatial Facility Engine
-                    Builder(
-                      builder: (context) {
-                        final fac = SpatialFacilityService.instance
-                            .getNearestFacilities(p);
-                        return Wrap(
-                          spacing: 6,
-                          runSpacing: 6,
-                          children: fac.chips
-                              .map((f) => Chip(
-                                    backgroundColor: const Color(0xFF222234),
-                                    visualDensity: VisualDensity.compact,
-                                    label: Text(f,
-                                        style: const TextStyle(
-                                            color: Colors.white70,
-                                            fontSize: 11)),
-                                  ))
-                              .toList(),
-                        );
-                      },
+                    // Facilities: the app has no verified washroom / water /
+                    // police-booth locations, so it does not invent any.
+                    const Text(
+                      '🚻 Washrooms, drinking water and police help: ask the puja volunteers or the nearest police officer on site.',
+                      style: TextStyle(color: Colors.white60, fontSize: 11.5),
                     ),
                     const SizedBox(height: 14),
                   ],
@@ -884,18 +900,24 @@ class _MapScreenState extends State<MapScreen>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('KOLKATA POLICE PUJA HELPLINES',
+              const Text('KOLKATA EMERGENCY HELPLINES',
                   style: TextStyle(
                       color: Colors.white54,
                       fontSize: 10,
                       fontWeight: FontWeight.bold)),
               const SizedBox(height: 6),
+              _buildEmergencyTile(
+                  'Emergency (all services)', '112', Icons.sos),
               _buildEmergencyTile('Lalbazar Control Room',
                   '100 / 033-2214-3230', Icons.local_police),
               _buildEmergencyTile(
                   'Women Helpline', '1091', Icons.support_agent),
               _buildEmergencyTile(
-                  'Ambulance / Medical', '102 / 108', Icons.medical_services),
+                  'Child Helpline', '1098', Icons.child_care),
+              _buildEmergencyTile(
+                  'Traffic Helpline', '1073', Icons.traffic),
+              _buildEmergencyTile(
+                  'Ambulance', '102', Icons.medical_services),
               _buildEmergencyTile(
                   'Fire Brigade', '101', Icons.local_fire_department),
               _buildEmergencyTile(
@@ -1021,7 +1043,9 @@ class _MapScreenState extends State<MapScreen>
         kAllKolkataPujas.where((p) => p.category == 'mega').length;
     final int heritageCount =
         kAllKolkataPujas.where((p) => p.category == 'heritage').length;
-    final clusters = _buildClusters(visibleList, _currentZoom);
+    final clusters = _buildClusters(
+        visibleList.where((p) => p.hasMappableLocation).toList(),
+        _currentZoom);
 
     // Polyline points for hopping circuit
     List<LatLng> circuitPoints = [];
@@ -1907,6 +1931,17 @@ class _MapScreenState extends State<MapScreen>
                                               const SizedBox(height: 3),
                                               Row(
                                                 children: [
+                                                  if (p.isLocationUnverified)
+                                                    const Text(
+                                                      '📍 Location unverified',
+                                                      style: TextStyle(
+                                                          color: Colors
+                                                              .orangeAccent,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 11.5),
+                                                    )
+                                                  else ...[
                                                   Text(
                                                     distMeters > 1000
                                                         ? '${(distMeters / 1000).toStringAsFixed(1)} km away'
@@ -1925,6 +1960,7 @@ class _MapScreenState extends State<MapScreen>
                                                       style: const TextStyle(
                                                           color: Colors.white60,
                                                           fontSize: 11.5)),
+                                                  ],
                                                 ],
                                               ),
                                               const SizedBox(height: 3),

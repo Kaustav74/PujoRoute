@@ -150,7 +150,7 @@ class _PandalPassportScreenState extends State<PandalPassportScreen> {
     double minD = double.infinity;
 
     for (final p in kAllKolkataPujas) {
-      if (!visited.contains(p.id)) {
+      if (p.hasMappableLocation && !visited.contains(p.id)) {
         final d = _getDistanceMeters(widget.userLat, widget.userLon, p.lat, p.lon);
         if (d < minD) {
           minD = d;
@@ -433,6 +433,7 @@ class _PandalPassportScreenState extends State<PandalPassportScreen> {
                     }
                     final query = textEditingValue.text.toLowerCase();
                     return kAllKolkataPujas.where((p) {
+                      if (p.isDuplicateEntry) return false;
                       return p.name.toLowerCase().contains(query) ||
                              p.id.toLowerCase().contains(query);
                     }).take(5); // Show top 5 matches

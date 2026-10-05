@@ -106,10 +106,10 @@ abstract class ScreenshotBase(private val configName: String, private val fontSc
         val target = repo.pandals.first { it.name.contains("Ekdalia", true) }
         NavigateScreen(target, LocationUi(true, fix), heading = 20f, visited = false) {}
     }
-    @Test fun nearby() = shot("07_nearby") { NearbyScreen(repo.pandals, LocationUi(true, fix)) {} }
+    @Test fun nearby() = shot("07_nearby") { NearbyScreen(repo.mappable, LocationUi(true, fix)) {} }
     @Test fun routeSetup() = shot("08_route_setup") { RouteSetupScreen(repo.zones.map { it.first }, LocationUi(true, fix)) { _, _, _ -> } }
     @Test fun route() = shot("09_route") {
-        val r = RouteOptimizer.plan(repo.zones.first { it.first == "South" }.second, 5, fix.latitude, fix.longitude)
+        val r = RouteOptimizer.plan(repo.zones.first { it.first == "South" }.second.filter { it.isMappable }, 5, fix.latitude, fix.longitude)
         RouteScreen(r.stops, setOf(r.stops.first().id), {}, {}, {}, {})
     }
     @Test fun passport() = shot("10_passport") { PassportScreen(repo, repo.pandals.take(4).map { it.id }.toSet()) {} }

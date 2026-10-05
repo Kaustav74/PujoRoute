@@ -41,20 +41,19 @@ class QuickReplyService {
       label: '🚆 Metro Hours',
       query: 'What are the Metro running hours during Durga Puja 2026?',
       response:
-          '🚆 **Kolkata Metro Puja Schedule 2026**:\n'
-          '• **Blue Line (Dakshineswar – Kavi Subhash)**: Night-long service running continuously till 4:00 AM from Saptami to Navami.\n'
-          '• **Green Line (Sealdah – Howrah Maidan & Sector V)**: Trains run till 12:00 AM Midnight.\n'
-          '• **Interchange**: Esplanade Station serves as the single cross-platform interchange.',
+          '🚆 **Kolkata Metro during Durga Puja 2026**:\n'
+          '• Metro Railway Kolkata announces special Puja timings each year; this offline app does not have the 2026 timetable. Check mtp.indianrailways.gov.in or station notices before planning a late return.\n'
+          '• **Interchanges**: Esplanade (Blue/Green), Noapara (Blue/Yellow). The Orange Line has no open interchange while the Blue Line platforms at Kavi Subhash are closed; Shahid Khudiram (Blue) is about 900 m away by road.',
     ),
     QuickReplyItem(
       id: 'rashbehari_traffic',
       label: '🚨 Traffic & Barricades',
       query: 'What is the traffic situation at Rashbehari Crossing?',
       response:
-          '🚨 **Rashbehari & Gariahat Police Advisory**:\n'
-          '• **One-Way Pedestrian Flow**: Entry strictly via Monoharpukur Rd to Tridhara, exit towards Rashbehari connector.\n'
-          '• **Ekdalia Corridor**: Entry via Gariahat crossing barricade, exit onto Cornfield Road.\n'
-          '• **Vehicular Restrictions**: No private cars permitted on Rashbehari Avenue between 4:00 PM and 4:00 AM.',
+          '🚨 **Traffic & barricades**:\n'
+          '• Kolkata Police publish Puja traffic arrangements each year; this offline app has no 2026 plan or live traffic data.\n'
+          '• Follow police barricades and volunteers on site. Kolkata Police traffic helpline: 1073.\n'
+          '• Around Rashbehari and Gariahat, the Metro (Kalighat, Rabindra Sarobar) is usually easier than a car.',
       actionTag: '[ACTION:OPEN_MAP]',
     ),
     QuickReplyItem(
