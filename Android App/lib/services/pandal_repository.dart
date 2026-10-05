@@ -2,7 +2,9 @@ import 'dart:math' as math;
 import '../data/pujas_data.dart';
 
 /// Production-grade Local Read Replica for PujoRoute (Durga Puja 2026).
-/// Provides 0-network offline access to 504 verified pandals.
+/// Provides 0-network offline access to all 504 bundled pandal records
+/// (including duplicate entries and pandals whose location is unverified;
+/// see location_status.dart).
 class PandalRepository {
   static const String schemaVersion = '1';
   static const String datasetVersion = '2026.x';
@@ -13,7 +15,7 @@ class PandalRepository {
   factory PandalRepository() => _instance;
   PandalRepository._internal();
 
-  /// Return all 504 verified pandals packaged in local read replica
+  /// Return all 504 bundled pandal records packaged in local read replica
   List<Pandal> get allPandals => List.unmodifiable(kAllKolkataPujas);
 
   /// Total count of local pandal records

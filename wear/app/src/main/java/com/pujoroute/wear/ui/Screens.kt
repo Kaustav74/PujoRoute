@@ -151,7 +151,12 @@ fun PandalListScreen(title: String, pandals: List<Pandal>, visited: Set<String>,
         if (pandals.isEmpty()) note(empty)
         items(pandals.size, key = { pandals[it].id }) { i ->
             val p = pandals[i]
-            NavChip((if (p.id in visited) "✓ " else "") + p.name, if (p.metro.isNotBlank()) "Ⓜ ${p.metro}" else p.area) { onPandal(p.id) }
+            NavChip((if (p.id in visited) "✓ " else "") + p.name,
+                when {
+                    p.isLocationUnverified -> "${p.area} · location unverified"
+                    p.metro.isNotBlank() -> "Ⓜ ${p.metro}"
+                    else -> p.area
+                }) { onPandal(p.id) }
         }
     }
 }

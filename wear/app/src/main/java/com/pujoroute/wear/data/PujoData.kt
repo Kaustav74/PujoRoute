@@ -50,7 +50,9 @@ class PujoRepository private constructor(context: Context) {
     val listed: List<Pandal> by lazy { pandals.filter { it.isListed } }
     /** Pandals with a usable location (Nearby, route planner, Metro). */
     val mappable: List<Pandal> by lazy { pandals.filter { it.isMappable } }
-    val zones: List<Pair<String, List<Pandal>>> by lazy { PujoParser.groupByZone(listed) }
+    /** Zone lists show mappable pandals only, like the phone's lists; pandals
+     *  with an unverified location stay reachable through Search. */
+    val zones: List<Pair<String, List<Pandal>>> by lazy { PujoParser.groupByZone(mappable) }
     val pandalById: Map<String, Pandal> by lazy { pandals.associateBy { it.id } }
     val emergency: EmergencyData by lazy { PujoParser.emergency(read("emergency.json")) }
     val metro: MetroData by lazy { PujoParser.metro(read("metro.json")) }

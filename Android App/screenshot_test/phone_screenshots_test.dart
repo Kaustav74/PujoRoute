@@ -204,8 +204,8 @@ void main() {
 
   testWidgets('01 home (map with offline placeholder tiles)', (tester) async {
     await _pumpApp(tester);
-    expect(kDistinctPandalCount, 489);
-    expect(find.textContaining('Search 489 pandals'), findsOneWidget);
+    expect(kDistinctPandalCount, 487);
+    expect(find.textContaining('Search 487 pandals'), findsOneWidget);
     await _shot(tester, '01_home');
   });
 
@@ -279,7 +279,7 @@ void main() {
     await _pumpApp(tester);
     await _tapText(tester, 'Passport');
     await _settle(tester, frames: 20);
-    expect(find.textContaining('of 489 Pandals Visited'), findsOneWidget);
+    expect(find.textContaining('of 487 Pandals Visited'), findsOneWidget);
     await _shot(tester, '07_passport_bookmarks');
   });
 
