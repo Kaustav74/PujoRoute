@@ -123,6 +123,7 @@ const Map<String, String> kDuplicatePandalIds = {
   '66-pally-durgapuja-pandal': 'palli_66',
   'ahiritola-jubakbrinda-sarbojanin-sarodotsab': 'ahiritola_jubak',
   'baghbazar-haldar-bari-puja': 'baghbazar_haldar',
+  'behala-club-sarbojanin-durgotsav-comm': 'behala_club',
   'behala_nutan_dal': 'behala-natun-dal',
   'beliaghata-33-no-palli-bashi-brinda': 'beliaghata_33',
   'beliaghata-33-pally': 'beliaghata_33',
@@ -133,6 +134,7 @@ const Map<String, String> kDuplicatePandalIds = {
   'kashi-bose-lane-durga-puja-samity': 'kashi_bose_lane',
   'lake-town-adhibashi-brinda': 'laketown_adhibasi',
   'nalin-sarkar-street': 'nalin_sarkar_st',
+  'saltlake_ak_block': 'ak-block-association-salt-lake',
   'sikdar-bagan-sadharan-durgotsab': 'sikdar_bagan',
   'telengabagan-sarbojanin-durgotsab': 'telengabagan',
 };

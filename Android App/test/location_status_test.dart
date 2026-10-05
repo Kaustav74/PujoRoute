@@ -28,9 +28,14 @@ void main() {
     expect(kVerifiedLocationIds.intersection(kUnverifiedLocationIds), isEmpty);
   });
 
-  test('Phase 3 counts: 489 distinct, 57 verified, 108 hidden as unverified', () {
+  test('Phase 3 counts: 487 distinct, 57 verified, 108 hidden as unverified', () {
     final distinct = kAllKolkataPujas.where((p) => !p.isDuplicateEntry).toList();
-    expect(distinct.length, 489);
+    expect(distinct.length, 487);
+    expect(kDuplicatePandalIds.length, 17);
+    expect(kDuplicatePandalIds['saltlake_ak_block'], 'ak-block-association-salt-lake');
+    expect(kDuplicatePandalIds['behala-club-sarbojanin-durgotsav-comm'], 'behala_club');
+    // Visible on the map / nearest list / route planning.
+    expect(kAllKolkataPujas.where((p) => p.hasMappableLocation).length, 379);
     expect(distinct.where((p) => kVerifiedLocationIds.contains(p.id)).length, 57);
     expect(distinct.where((p) => p.isLocationUnverified).length, 108);
   });

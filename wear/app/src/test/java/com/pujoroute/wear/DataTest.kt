@@ -167,7 +167,13 @@ class DataTest {
         val unverified = pandals.filter { it.isLocationUnverified }
         assertEquals(109, unverified.size)
         assertTrue(unverified.all { it.metro.isBlank() && it.gate.startsWith("Location unverified") && !it.isMappable })
-        assertEquals(15, pandals.count { !it.isListed })
+        assertEquals(17, pandals.count { !it.isListed })
+        assertEquals(487, pandals.count { it.isListed })
+        assertEquals(379, pandals.count { it.isMappable })
+        // Zone lists (repo.zones) are built from mappable pandals only.
+        val zoneLists = PujoParser.groupByZone(pandals.filter { it.isMappable })
+        assertTrue(zoneLists.all { (_, l) -> l.none { it.isLocationUnverified || !it.isListed } })
+        assertEquals(379, zoneLists.sumOf { it.second.size })
         assertTrue(pandals.any { it.isHeritage } && pandals.any { !it.isHeritage })
         val metro = PujoParser.metro(asset("metro.json"))
         val stations = metro.lines.flatMap { l -> l.stations.map { it.name } }.toSet()
