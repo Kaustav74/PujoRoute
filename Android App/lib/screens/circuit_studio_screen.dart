@@ -789,7 +789,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText:
-                          'Search 504 Kolkata pandals by name, zone, landmark...',
+                          'Search $kDistinctPandalCount Kolkata pandals by name, zone, landmark...',
                       hintStyle:
                           const TextStyle(color: Colors.white38, fontSize: 13),
                       prefixIcon:

@@ -207,7 +207,7 @@ class _PandalPassportScreenState extends State<PandalPassportScreen> {
 
     final StringBuffer sb = StringBuffer();
     sb.writeln("🏆 *My Official Kolkata Durga Puja 2026 Passport*");
-    sb.writeln("Visited: ${visited.length} / 504 Pandals (${((visited.length / 504) * 100).toStringAsFixed(1)}%)");
+    sb.writeln("Visited: ${visited.length} / $kDistinctPandalCount Pandals (${((visited.length / kDistinctPandalCount) * 100).toStringAsFixed(1)}%)");
     sb.writeln("🎖️ *Rank:* $rank\n");
 
     if (unlockedStamps.isNotEmpty) {
@@ -347,7 +347,7 @@ class _PandalPassportScreenState extends State<PandalPassportScreen> {
                         border: Border.all(color: Colors.white24),
                       ),
                       child: Text(
-                        '${((visitedCount / 504) * 100).toStringAsFixed(1)}% Done',
+                        '${((visitedCount / kDistinctPandalCount) * 100).toStringAsFixed(1)}% Done',
                         style: const TextStyle(color: Colors.greenAccent, fontSize: 11, fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -379,7 +379,7 @@ class _PandalPassportScreenState extends State<PandalPassportScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            '$visitedCount of 504 Pandals Visited',
+                            '$visitedCount of $kDistinctPandalCount Pandals Visited',
                             style: const TextStyle(color: Colors.white70, fontSize: 12.5),
                           ),
                         ],
@@ -389,7 +389,7 @@ class _PandalPassportScreenState extends State<PandalPassportScreen> {
                 ),
                 const SizedBox(height: 16),
                 LinearProgressIndicator(
-                  value: (visitedCount / 504).clamp(0.0, 1.0),
+                  value: (visitedCount / kDistinctPandalCount).clamp(0.0, 1.0),
                   backgroundColor: Colors.white12,
                   valueColor: const AlwaysStoppedAnimation<Color>(kMarigoldAmber),
                   minHeight: 6,

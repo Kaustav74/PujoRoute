@@ -204,6 +204,8 @@ void main() {
 
   testWidgets('01 home (map with offline placeholder tiles)', (tester) async {
     await _pumpApp(tester);
+    expect(kDistinctPandalCount, 489);
+    expect(find.textContaining('Search 489 pandals'), findsOneWidget);
     await _shot(tester, '01_home');
   });
 
@@ -221,15 +223,22 @@ void main() {
   });
 
   testWidgets('03 pandal detail', (tester) async {
+    // A pandal with a verified location and a plain, claim-free description.
+    const detailId = '64-pally-durgotsav-committee';
+    final detail = kAllKolkataPujas.firstWhere((p) => p.id == detailId);
+    expect(detail.isLocationUnverified, isFalse);
+    expect(detail.history.contains('*'), isFalse);
     await _pumpApp(tester);
+    await tester.enterText(find.byType(TextField).first, detail.name);
+    await _settle(tester);
     await tester.drag(
         find.textContaining('NEAREST TO YOU'), const Offset(0, -380));
     await _settle(tester, frames: 20);
-    final names = kAllKolkataPujas.map((p) => p.name).toSet();
-    final card = find.byWidgetPredicate(
-        (w) => w is Text && w.data != null && names.contains(w.data));
-    await tester.tap(card.first, warnIfMissed: false);
+    FocusManager.instance.primaryFocus?.unfocus();
+    await _settle(tester);
+    await tester.tap(find.text(detail.name).last, warnIfMissed: false);
     await _settle(tester, frames: 20);
+    expect(find.textContaining(detail.history.substring(0, 40)), findsWidgets);
     // Removed fake "live" UI must not come back.
     expect(find.textContaining('GATE STATUS'), findsNothing);
     expect(find.textContaining('CROWD SPEED'), findsNothing);
@@ -270,6 +279,7 @@ void main() {
     await _pumpApp(tester);
     await _tapText(tester, 'Passport');
     await _settle(tester, frames: 20);
+    expect(find.textContaining('of 489 Pandals Visited'), findsOneWidget);
     await _shot(tester, '07_passport_bookmarks');
   });
 
@@ -278,6 +288,8 @@ void main() {
     await tester.tap(find.byTooltip('Offline Emergency Pass'));
     await _settle(tester, frames: 10);
     expect(find.textContaining('Session:'), findsNothing);
+    // The search hint behind the overlay must show the real distinct count.
+    expect(find.textContaining('504'), findsNothing);
     await _shot(tester, '08_offline_emergency_pass');
   });
 }
