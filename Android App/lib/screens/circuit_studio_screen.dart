@@ -69,8 +69,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
   String _selectedZone =
       'All'; // 'All', 'North', 'South', 'Salt Lake', 'Central'
   int _targetStopCount = 8; // 3 to 15 stops
-  String _circuitStyle =
-      'mega'; // 'mega', 'heritage', 'nearest', 'bookmarked'
+  final Set<String> _themePriority = {'mega'}; // multi-select: mega, heritage, nearest, bookmarked
   bool _optimizeByMetro =
       false; // Transit optimization via Kolkata Metro corridors
   bool _rerouteHeavyTraffic =
@@ -178,22 +177,26 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
       }
     }
 
-    if (_circuitStyle == 'heritage') {
-      pool = pool.where((p) => p.category == 'heritage').toList();
-      if (pool.isEmpty) {
-        pool =
-            List.from(kAllKolkataPujas.where(
-                (p) => p.category == 'heritage' && p.hasMappableLocation));
-      }
-    } else if (_circuitStyle == 'mega') {
-      pool = pool.where((p) => p.category == 'mega').toList();
-    } else if (_circuitStyle == 'bookmarked') {
+    // Theme Priority: any selected theme matches (OR). 'nearest' does not restrict category.
+    final wantsCategory = _themePriority.contains('mega') || _themePriority.contains('heritage');
+    if (wantsCategory) {
+      pool = pool.where((p) {
+        if (_themePriority.contains('mega') && p.category == 'mega') return true;
+        if (_themePriority.contains('heritage') && p.category == 'heritage') return true;
+        return false;
+      }).toList();
+    }
+    if (_themePriority.contains('bookmarked')) {
       final bIds = SessionService.instance.bookmarkedIds;
-      final bookmarkedPool = pool.where((p) => bIds.contains(p.id)).toList();
-      if (bookmarkedPool.isNotEmpty) {
-        pool = bookmarkedPool;
+      if (bIds.isNotEmpty) {
+        final extra = pool.where((p) => bIds.contains(p.id)).toList();
+        pool = [...pool, ...extra];
       }
     }
+    // No duplicacy across zones: unique by id, then re-dedupe near-duplicates
+    final seen = <String>{};
+    pool = pool.where((p) => seen.add(p.id)).toList();
+    pool = PandalDeduplicationService.instance.deduplicate(pool);
 
     // 2. Metro Anchor & Candidate Selection
     Pandal? metroStartAnchor;
@@ -251,6 +254,9 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     finalRoute
       ..clear()
       ..addAll(clustered);
+    // Guarantee no duplicate stops across zones
+    final uniq = <String>{};
+    finalRoute.removeWhere((p) => !uniq.add(p.id));
 
 
     // 5. Calculate total distance & narrative
@@ -266,10 +272,12 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     final double totalKm = totalMeters / 1000;
     final int totalMins = max(10, (totalMeters / 75).round());
 
-    String styleDesc = 'Mega Thematic';
-    if (_circuitStyle == 'heritage') styleDesc = 'Historic Bonedi Bari';
-    if (_circuitStyle == 'nearest') styleDesc = 'Shortest Walk';
-    if (_circuitStyle == 'bookmarked') styleDesc = 'Bookmarked Favorites';
+    final labels = <String>[];
+    if (_themePriority.contains('mega')) labels.add('Mega');
+    if (_themePriority.contains('heritage')) labels.add('Bonedi Bari');
+    if (_themePriority.contains('nearest')) labels.add('Shortest Walk');
+    if (_themePriority.contains('bookmarked')) labels.add('Bookmarks');
+    final String styleDesc = labels.isEmpty ? 'Mixed' : labels.join(' + ');
 
     String narrative =
         '✅ Route ready: ${finalRoute.length} $styleDesc stops in $_selectedZone Kolkata. Total walk: ${totalKm.toStringAsFixed(1)} km (~$totalMins mins). 2-Opt path optimization active.';
@@ -2527,6 +2535,8 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                               color: Colors.white70,
                               fontSize: 12,
                               fontWeight: FontWeight.bold)),
+                      const Text('Tap more than one — the route mixes them.',
+                          style: TextStyle(color: Colors.white38, fontSize: 10)),
                       const SizedBox(height: 6),
                       Wrap(
                         spacing: 8,
@@ -2540,7 +2550,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                           {'id': 'nearest', 'label': '📍 Shortest Walk'},
                           {'id': 'bookmarked', 'label': '⭐ My Bookmarks'},
                         ].map((s) {
-                          final isSelected = _circuitStyle == s['id'];
+                          final isSelected = _themePriority.contains(s['id']);
                           final bool isHeritage = s['id'] == 'heritage';
                           return ChoiceChip(
                             label: Text(
@@ -2568,10 +2578,14 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16)),
                             onSelected: (val) {
-                              if (val) {
-                                setState(() => _circuitStyle = s['id']!);
-                                _generateCircuit();
-                              }
+                              setState(() {
+                                if (val) {
+                                  _themePriority.add(s['id']!);
+                                } else if (_themePriority.length > 1) {
+                                  _themePriority.remove(s['id']);
+                                }
+                              });
+                              _generateCircuit();
                             },
                           );
                         }).toList(),
