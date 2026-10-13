@@ -179,18 +179,12 @@ class HardenedPujoOptimizer {
         final distToTerm = distance(
             candidate.lat, candidate.lon, terminalPandal.lat, terminalPandal.lon);
 
-        // Strong progressive cost function — prefer short steps so nearby
-        // pandals (e.g. Tridhara / Ekdalia) stay together.
-        double score = step + (0.35 * distToTerm);
-
-        // Strong bonus for same zone so North/South/Salt Lake clusters stay intact
-        if (candidate.zone == current.zone) {
-          score *= 0.55;
-        }
+        // Strong progressive cost function
+        double score = step + (0.75 * distToTerm);
 
         // Bonus for user-forced stops
         if (remainingForced.contains(candidate.id)) {
-          score *= 0.75;
+          score *= 0.82;
         }
 
         if (score < bestScore - _epsilon) {
@@ -273,76 +267,46 @@ class HardenedPujoOptimizer {
     // 8. Append locked terminal
     route.add(terminalPandal);
 
-    // 9. Cluster by zone only when multiple zones are present, then 2-opt.
-    final clustered = clusterByZone(route);
-    final optimized = apply2Opt(clustered, anchorStart: false, anchorEnd: false);
-    final totalDist = _computePathDistance(clustered);
-    final bool fellBack = clustered.length < requestedStops;
+    // 9. Aggressive 2-Opt
+    final zoned = clusterByZone(route);
+    final optimized = apply2Opt(zoned, anchorStart: false, anchorEnd: false);
+    final totalDist = _computePathDistance(optimized);
+    final bool fellBack = optimized.length < requestedStops;
     final String diag = fellBack
         ? 'Could only generate ${optimized.length}/$requestedStops stops under distance constraints.'
         : totalDist > 5500
             ? 'Route generated (${(totalDist / 1000).toStringAsFixed(1)} km). Consider a tighter zone filter.'
             : 'Optimized circuit with ${optimized.length} stops.';
 
-
-    // Cluster pass: if two pandals are within 900 m but not adjacent, move the
-    // later one next to the earlier one when that shortens (or barely lengthens)
-    // the path. Keeps Tridhara/Ekdalia-style pairs and same-zone groups together.
-    List<Pandal> clustered = List.from(optimized);
-    bool moved = true;
-    int guard = 0;
-    while (moved && guard < 40) {
-      moved = false;
-      guard++;
-      for (int a = 0; a < clustered.length; a++) {
-        for (int b = a + 2; b < clustered.length; b++) {
-          final d = distance(
-              clustered[a].lat, clustered[a].lon, clustered[b].lat, clustered[b].lon);
-          final sameZone = clustered[a].zone == clustered[b].zone;
-          if (d > (sameZone ? 1400.0 : 900.0)) continue;
-          final trial = List<Pandal>.from(clustered);
-          final item = trial.removeAt(b);
-          trial.insert(a + 1, item);
-          if (_computePathDistance(trial) <= _computePathDistance(clustered) + 250) {
-            clustered = trial;
-            moved = true;
-            break;
-          }
-        }
-        if (moved) break;
-      }
-    }
-
     return RoutingResult(
-      route: clustered,
+      route: optimized,
       totalWalkingMeters: totalDist,
       walkToHomeMeters: distance(
-          clustered.last.lat, clustered.last.lon, homeLat, homeLng),
+          optimized.last.lat, optimized.last.lon, homeLat, homeLng),
       fellBackEarly: fellBack,
       diagnostics: diag,
     );
   }
 
 
-  /// When a route mixes zones, group same-zone pandals together so nearby
-  /// stops are not split to opposite ends. No-op if every stop is one zone.
+  /// Groups same-zone pandals when the route mixes zones. No-op if one zone.
   static List<Pandal> clusterByZone(List<Pandal> path) {
     if (path.length <= 2) return List.from(path);
     final zones = path.map((p) => p.zone).toSet();
     if (zones.length <= 1) return List.from(path);
-    final List<String> zoneOrder = [];
-    final Map<String, List<Pandal>> buckets = {};
+    final order = <String>[];
+    final buckets = <String, List<Pandal>>{};
     for (final p in path) {
       buckets.putIfAbsent(p.zone, () {
-        zoneOrder.add(p.zone);
+        order.add(p.zone);
         return <Pandal>[];
       }).add(p);
     }
-    final clustered = <Pandal>[];
-    for (final z in zoneOrder) {
-      clustered.addAll(buckets[z]!);
+    final out = <Pandal>[];
+    for (final z in order) {
+      out.addAll(buckets[z]!);
     }
-    return clustered;
+    return out;
   }
 
   /// Aggressive 2-Opt local search.
@@ -360,9 +324,7 @@ class HardenedPujoOptimizer {
     // A 2-opt move reverses bestRoute[i+1..j], so index 0 never moves and the
     // start stays anchored even with i = 0. (Previously i started at 1 when
     // anchorStart was true, which skipped every improvement on the first hop.)
-    // When anchorStart is false we also try rotating the path so the first
-    // stop can move next to nearby pandals instead of staying locked.
-    final int startEdge = 0;
+    const int startEdge = 0;
     while (improved && iterations < maxIterations) {
       improved = false;
       iterations++;
