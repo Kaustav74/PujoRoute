@@ -64,6 +64,7 @@ class _MapScreenState extends State<MapScreen>
   String _selectedZone =
       'All'; // 'All', 'Bookmarked ⭐', 'Visited ✅', 'North', 'South', 'Salt Lake', 'Central'
   String _searchQuery = '';
+  String _metroFilter = ''; // empty = all stations
   bool _tilesUnavailable = false;
   final TextEditingController _searchController = TextEditingController();
 
@@ -269,6 +270,12 @@ class _MapScreenState extends State<MapScreen>
       } else if (_selectedZone == 'Visited ✅') {
         if (!SessionService.instance.isVisited(p.id)) return false;
       } else if (_selectedZone != 'All' && p.zone != _selectedZone) {
+        return false;
+      }
+
+      // Metro station filter
+      if (_metroFilter.isNotEmpty &&
+          p.metroStation.toLowerCase() != _metroFilter.toLowerCase()) {
         return false;
       }
 
@@ -875,6 +882,69 @@ class _MapScreenState extends State<MapScreen>
     );
   }
 
+
+  void _showMetroFilterSheet() {
+    final stations = kAllKolkataPujas
+        .where((p) =>
+            p.metroStation.trim().isNotEmpty &&
+            !p.metroStation.toLowerCase().contains('none'))
+        .map((p) => p.metroStation.trim())
+        .toSet()
+        .toList()
+      ..sort();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF141424),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              const Text('Filter by Metro Station',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16)),
+              const SizedBox(height: 8),
+              Flexible(
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.clear, color: Colors.white54),
+                      title: const Text('All stations',
+                          style: TextStyle(color: Colors.white)),
+                      onTap: () {
+                        setState(() => _metroFilter = '');
+                        Navigator.pop(ctx);
+                      },
+                    ),
+                    ...stations.map((s) => ListTile(
+                          leading: const Icon(Icons.train, color: Colors.cyanAccent, size: 18),
+                          title: Text(s, style: const TextStyle(color: Colors.white)),
+                          trailing: _metroFilter == s
+                              ? const Icon(Icons.check, color: Colors.cyanAccent)
+                              : null,
+                          onTap: () {
+                            setState(() => _metroFilter = s);
+                            Navigator.pop(ctx);
+                          },
+                        )),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _showEmergencyOfflineCard() {
     showDialog(
       context: context,
@@ -1437,6 +1507,20 @@ class _MapScreenState extends State<MapScreen>
                   physics: const BouncingScrollPhysics(),
                   child: Row(
                     children: [
+                      // Metro station filter
+                      _buildFilterPill(
+                        label: _metroFilter.isEmpty
+                            ? '🚇 Metro'
+                            : '🚇 $_metroFilter',
+                        isActive: _metroFilter.isNotEmpty,
+                        activeColor: Colors.cyanAccent,
+                        textColor: _metroFilter.isNotEmpty
+                            ? Colors.black87
+                            : Colors.white70,
+                        onTap: _showMetroFilterSheet,
+                      ),
+                      const SizedBox(width: 6),
+
                       // Mega Theme Pill
                       _buildFilterPill(
                         label: '🔥 Mega ($megaCount)',
