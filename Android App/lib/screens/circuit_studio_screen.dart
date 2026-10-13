@@ -241,7 +241,15 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     );
 
 
-    final List<Pandal> finalRoute = routingResult.route;
+    final List<Pandal> finalRoute = _orderByNearestNeighbour(routingResult.route);
+    final clustered = HardenedPujoOptimizer.apply2Opt(
+      finalRoute,
+      anchorStart: false,
+      anchorEnd: false,
+    );
+    finalRoute
+      ..clear()
+      ..addAll(clustered);
 
 
     // 5. Calculate total distance & narrative
@@ -1292,6 +1300,34 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     );
   }
 
+
+  /// Orders stops so geographically close pandals stay consecutive.
+  /// Starts from the stop nearest the user, then always visits the nearest unvisited.
+  List<Pandal> _orderByNearestNeighbour(List<Pandal> stops) {
+    if (stops.length <= 2) return List.from(stops);
+    final remaining = List<Pandal>.from(stops);
+    remaining.sort((a, b) {
+      final da = _getDistanceMeters(widget.userLat, widget.userLon, a.lat, a.lon);
+      final db = _getDistanceMeters(widget.userLat, widget.userLon, b.lat, b.lon);
+      return da.compareTo(db);
+    });
+    final ordered = <Pandal>[remaining.removeAt(0)];
+    while (remaining.isNotEmpty) {
+      final cur = ordered.last;
+      int best = 0;
+      double bestD = double.infinity;
+      for (int i = 0; i < remaining.length; i++) {
+        final d = _getDistanceMeters(cur.lat, cur.lon, remaining[i].lat, remaining[i].lon);
+        if (d < bestD) {
+          bestD = d;
+          best = i;
+        }
+      }
+      ordered.add(remaining.removeAt(best));
+    }
+    return ordered;
+  }
+
   /// Regenerates circuit with user-specified forced pandals and target stops count.
   void _regenerateCircuitWithForcedStops(
       List<Pandal> newlyAdded, int newTotalStops) async {
@@ -1397,9 +1433,12 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
         presentIds.add(f.id);
       }
     }
-    // Re-optimize order after any forced inserts so the route is not just appended
+    // Re-optimize so nearby pandals stay together (not split to first/last).
+    // 1) Nearest-neighbour order starting from the stop closest to the user.
+    // 2) Unanchored 2-opt to tighten the path.
+    final clustered = _orderByNearestNeighbour(finalRoute);
     final optimized = HardenedPujoOptimizer.apply2Opt(
-      finalRoute,
+      clustered,
       anchorStart: false,
       anchorEnd: false,
     );
