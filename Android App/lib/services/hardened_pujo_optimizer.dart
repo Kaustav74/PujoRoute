@@ -323,16 +323,13 @@ class HardenedPujoOptimizer {
     );
   }
 
+
   /// When a route mixes zones, group same-zone pandals together so nearby
-  /// stops (e.g. Tridhara and Ekdalia in South) are not split to opposite ends.
-  /// No-op if every stop is in the same zone.
+  /// stops are not split to opposite ends. No-op if every stop is one zone.
   static List<Pandal> clusterByZone(List<Pandal> path) {
     if (path.length <= 2) return List.from(path);
     final zones = path.map((p) => p.zone).toSet();
-    if (zones.length <= 1) return List.from(path); // same zone: leave as-is
-
-    // Preserve relative order within each zone, emit zones in the order
-    // their first stop currently appears (so the overall direction is kept).
+    if (zones.length <= 1) return List.from(path);
     final List<String> zoneOrder = [];
     final Map<String, List<Pandal>> buckets = {};
     for (final p in path) {
