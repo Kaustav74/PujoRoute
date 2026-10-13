@@ -1063,6 +1063,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
   }
 
   /// Option C Bottom Sheet: Lets user review added pandals, select new total stops, and regenerate AI Circuit.
+  // ignore: unused_element
   void _showConfigureAndRegenerateSheet(List<Pandal> newlyAdded) {
     if (newlyAdded.isEmpty) return;
 
