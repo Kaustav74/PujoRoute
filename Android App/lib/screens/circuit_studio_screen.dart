@@ -665,6 +665,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     // changes MediaQuery and rebuilds the sheet; if these were inside the
     // builder they would reset and the filtered pandal would disappear.
     String filter = '';
+    String metroFilter = ''; // empty = all stations
     bool hideStampedInPicker = _excludeVisitedStamps;
     final Set<Pandal> selectedPandals = {};
     final searchController = TextEditingController();
@@ -698,7 +699,9 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                         p.zone.toLowerCase().contains(filter.toLowerCase()) ||
                         p.landmark
                             .toLowerCase()
-                            .contains(filter.toLowerCase())))
+                            .contains(filter.toLowerCase())) &&
+                    (metroFilter.isEmpty ||
+                        p.metroStation.toLowerCase() == metroFilter.toLowerCase()))
                 .toList();
 
             // Sort available by distance from reference location
@@ -824,6 +827,51 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                       });
                     },
                   ),
+                  const SizedBox(height: 8),
+                  // Metro station filter
+                  Builder(builder: (_) {
+                    final stations = kAllKolkataPujas
+                        .where((p) => p.metroStation.trim().isNotEmpty &&
+                            !p.metroStation.toLowerCase().contains('none'))
+                        .map((p) => p.metroStation.trim())
+                        .toSet()
+                        .toList()
+                      ..sort();
+                    return DropdownButtonFormField<String>(
+                      value: metroFilter.isEmpty ? null : metroFilter,
+                      isExpanded: true,
+                      dropdownColor: const Color(0xFF1C1C2E),
+                      decoration: InputDecoration(
+                        labelText: 'Filter by Metro Station',
+                        labelStyle: const TextStyle(color: Colors.white70, fontSize: 13),
+                        prefixIcon: const Icon(Icons.train, color: kMarigoldAmber, size: 20),
+                        filled: true,
+                        fillColor: const Color(0xFF1C1C2E),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      hint: const Text('All stations', style: TextStyle(color: Colors.white54, fontSize: 13)),
+                      style: const TextStyle(color: Colors.white, fontSize: 13),
+                      items: [
+                        const DropdownMenuItem<String>(
+                          value: '',
+                          child: Text('All stations', style: TextStyle(color: Colors.white70)),
+                        ),
+                        ...stations.map((s) => DropdownMenuItem<String>(
+                              value: s,
+                              child: Text(s, style: const TextStyle(color: Colors.white)),
+                            )),
+                      ],
+                      onChanged: (val) {
+                        setModalState(() {
+                          metroFilter = val ?? '';
+                        });
+                      },
+                    );
+                  }),
                   const SizedBox(height: 8),
                   Text(
                     'Distances computed from: $referenceName',
