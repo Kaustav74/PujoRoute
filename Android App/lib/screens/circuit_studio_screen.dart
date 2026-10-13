@@ -1038,6 +1038,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
 
   /// Directly appends selected pandals to the current circuit without regenerating.
   /// This guarantees previously selected stops never disappear.
+  // ignore: unused_element
   void _appendStopsDirectly(List<Pandal> newlyAdded) {
     if (newlyAdded.isEmpty) return;
     setState(() {
