@@ -240,7 +240,9 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
       requestedStops: count,
     );
 
+
     final List<Pandal> finalRoute = routingResult.route;
+
 
     // 5. Calculate total distance & narrative
     double totalMeters = 0;
@@ -1001,11 +1003,11 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                               onPressed: () {
                                 final chosen = selectedPandals.toList();
                                 Navigator.pop(ctx);
-                                _showConfigureAndRegenerateSheet(chosen);
+                                _appendStopsDirectly(chosen);
                               },
-                              icon: const Icon(Icons.tune_rounded, size: 16),
+                              icon: const Icon(Icons.add_location_alt_rounded, size: 16),
                               label: const Text(
-                                'Configure Stops →',
+                                'Add to Circuit',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
@@ -1023,6 +1025,35 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
           },
         );
       },
+    );
+  }
+
+
+  /// Directly appends selected pandals to the current circuit without regenerating.
+  /// This guarantees previously selected stops never disappear.
+  void _appendStopsDirectly(List<Pandal> newlyAdded) {
+    if (newlyAdded.isEmpty) return;
+    setState(() {
+      final existingIds = _circuitStops.map((p) => p.id).toSet();
+      for (final p in newlyAdded) {
+        if (!existingIds.contains(p.id)) {
+          _circuitStops.add(p);
+          existingIds.add(p.id);
+        }
+      }
+      _targetStopCount = _circuitStops.length.clamp(3, 15);
+      _aiNarrative =
+          '✅ Added ${newlyAdded.length} stop(s). Circuit now has ${_circuitStops.length} stops. You can reorder or generate a new route anytime.';
+    });
+    SessionService.instance
+        .saveCircuit(_circuitStops.map((s) => s.id).toList(), true);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Added ${newlyAdded.length} stop(s). Circuit kept intact.'),
+        backgroundColor: Colors.green[800],
+        duration: const Duration(seconds: 3),
+      ),
     );
   }
 
@@ -1373,6 +1404,15 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     }
 
     final List<Pandal> finalRoute = routingResult.route;
+
+    // Safety net: guarantee every previously selected stop and every newly added stop stays
+    final presentIds = finalRoute.map((p) => p.id).toSet();
+    for (final f in [..._circuitStops, ...newlyAdded]) {
+      if (!presentIds.contains(f.id)) {
+        finalRoute.add(f);
+        presentIds.add(f.id);
+      }
+    }
 
     if (finalRoute.isEmpty) {
       if (!mounted) return;
