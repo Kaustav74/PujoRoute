@@ -1008,11 +1008,13 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                               onPressed: () {
                                 final chosen = selectedPandals.toList();
                                 Navigator.pop(ctx);
-                                _appendStopsDirectly(chosen);
+                                // Keep every selected pandal and re-optimize the full route
+                                final newTotal = (_circuitStops.length + chosen.length).clamp(3, 15);
+                                _regenerateCircuitWithForcedStops(chosen, newTotal);
                               },
-                              icon: const Icon(Icons.add_location_alt_rounded, size: 16),
+                              icon: const Icon(Icons.route_rounded, size: 16),
                               label: const Text(
-                                'Add to Circuit',
+                                'Add & Optimize',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
@@ -1391,6 +1393,13 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
       _targetStopCount = newTotalStops;
     });
 
+    final allForced = [
+      ..._circuitStops,
+      ...newlyAdded.where((p) => !_circuitStops.any((e) => e.id == p.id)),
+    ];
+    // Never request fewer stops than the number of pandals the user already chose
+    final effectiveStops = max(newTotalStops, allForced.length).clamp(1, 15);
+
     final RoutingResult routingResult =
         HardenedPujoOptimizer.generateHomeBoundCircuit(
       pool: pool,
@@ -1398,11 +1407,8 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
       startLng: originLon,
       homeLat: destLat,
       homeLng: destLon,
-      requestedStops: newTotalStops,
-      forcedStops: [
-        ..._circuitStops,
-        ...newlyAdded.where((p) => !_circuitStops.any((e) => e.id == p.id)),
-      ],
+      requestedStops: effectiveStops,
+      forcedStops: allForced,
     );
 
     if (mounted) {
@@ -1419,6 +1425,15 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
         presentIds.add(f.id);
       }
     }
+    // Re-optimize order after any forced inserts so the route is not just appended
+    final optimized = HardenedPujoOptimizer.apply2Opt(
+      finalRoute,
+      anchorStart: false,
+      anchorEnd: false,
+    );
+    finalRoute
+      ..clear()
+      ..addAll(optimized);
 
     if (finalRoute.isEmpty) {
       if (!mounted) return;
