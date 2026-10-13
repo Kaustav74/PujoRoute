@@ -273,8 +273,9 @@ class HardenedPujoOptimizer {
     // 8. Append locked terminal
     route.add(terminalPandal);
 
-    // 9. Aggressive 2-Opt
-    final optimized = apply2Opt(route, anchorStart: false, anchorEnd: false);
+    // 9. Cluster by zone only when multiple zones are present, then 2-opt.
+    final clustered = clusterByZone(route);
+    final optimized = apply2Opt(clustered, anchorStart: false, anchorEnd: false);
     final totalDist = _computePathDistance(clustered);
     final bool fellBack = clustered.length < requestedStops;
     final String diag = fellBack
@@ -320,6 +321,31 @@ class HardenedPujoOptimizer {
       fellBackEarly: fellBack,
       diagnostics: diag,
     );
+  }
+
+  /// When a route mixes zones, group same-zone pandals together so nearby
+  /// stops (e.g. Tridhara and Ekdalia in South) are not split to opposite ends.
+  /// No-op if every stop is in the same zone.
+  static List<Pandal> clusterByZone(List<Pandal> path) {
+    if (path.length <= 2) return List.from(path);
+    final zones = path.map((p) => p.zone).toSet();
+    if (zones.length <= 1) return List.from(path); // same zone: leave as-is
+
+    // Preserve relative order within each zone, emit zones in the order
+    // their first stop currently appears (so the overall direction is kept).
+    final List<String> zoneOrder = [];
+    final Map<String, List<Pandal>> buckets = {};
+    for (final p in path) {
+      buckets.putIfAbsent(p.zone, () {
+        zoneOrder.add(p.zone);
+        return <Pandal>[];
+      }).add(p);
+    }
+    final clustered = <Pandal>[];
+    for (final z in zoneOrder) {
+      clustered.addAll(buckets[z]!);
+    }
+    return clustered;
   }
 
   /// Aggressive 2-Opt local search.

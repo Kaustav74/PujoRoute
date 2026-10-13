@@ -241,7 +241,8 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     );
 
 
-    final List<Pandal> finalRoute = _orderByNearestNeighbour(routingResult.route);
+    final List<Pandal> finalRoute = _orderByNearestNeighbour(
+        HardenedPujoOptimizer.clusterByZone(routingResult.route));
     final clustered = HardenedPujoOptimizer.apply2Opt(
       finalRoute,
       anchorStart: false,
@@ -1433,10 +1434,11 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
         presentIds.add(f.id);
       }
     }
-    // Re-optimize so nearby pandals stay together (not split to first/last).
-    // 1) Nearest-neighbour order starting from the stop closest to the user.
-    // 2) Unanchored 2-opt to tighten the path.
-    final clustered = _orderByNearestNeighbour(finalRoute);
+    // Multi-zone only: group same-zone pandals so they stay together.
+    // Same-zone routes are left alone (no-op inside clusterByZone).
+    final zoned = HardenedPujoOptimizer.clusterByZone(finalRoute);
+    // Then nearest-neighbour from the user + unanchored 2-opt.
+    final clustered = _orderByNearestNeighbour(zoned);
     final optimized = HardenedPujoOptimizer.apply2Opt(
       clustered,
       anchorStart: false,
