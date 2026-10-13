@@ -18,9 +18,9 @@ void main() {
       expect(megaCount, equals(483));
       expect(heritageCount, equals(21));
       expect(southCount, equals(285)); // Phase 3: Ultadanga Sangrami, Salkia Sanskriti -> North
-      expect(northCount, equals(141)); // + Salkia Santi Sangha (was Salt Lake)
-      expect(saltLakeCount, equals(41));
-      expect(centralCount, equals(37));
+      expect(northCount, equals(139)); // zone audit: Salt Lake/New Town moved out, Shyambazar in
+      expect(saltLakeCount, equals(45)); // + Rajdanga, Hossenpur, Nehru Nagar, R.M.S. Maidan
+      expect(centralCount, equals(35)); // Panchanantala, Sarkarbagan moved to North
     });
 
     test('Every pandal has valid coordinates, landmark, subsection, metro, and significance', () {
