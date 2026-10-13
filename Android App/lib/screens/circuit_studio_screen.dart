@@ -652,15 +652,19 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
   }
 
   void _showAddPandalPicker() {
+    // State must live outside the sheet builder. Dismissing the keyboard
+    // changes MediaQuery and rebuilds the sheet; if these were inside the
+    // builder they would reset and the filtered pandal would disappear.
+    String filter = '';
+    bool hideStampedInPicker = _excludeVisitedStamps;
+    final Set<Pandal> selectedPandals = {};
+    final searchController = TextEditingController();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
-        String filter = '';
-        bool hideStampedInPicker = _excludeVisitedStamps;
-        final Set<Pandal> selectedPandals = {};
-
         return StatefulBuilder(
           builder: (modalCtx, setModalState) {
             final existingIds = _circuitStops.map((p) => p.id).toSet();
@@ -788,6 +792,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                   ),
                   const SizedBox(height: 10),
                   TextField(
+                    controller: searchController,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
                       hintText:
@@ -1025,7 +1030,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
           },
         );
       },
-    );
+    ).whenComplete(() => searchController.dispose());
   }
 
 
