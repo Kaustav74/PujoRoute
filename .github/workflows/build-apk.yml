@@ -1,0 +1,67 @@
+name: Build PujoRoute Android APK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Android App/**"
+      - ".github/workflows/build-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pujoroute-android-apk
+  cancel-in-progress: false
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "Android App"
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze Dart code
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        run: flutter test
+
+      - name: Build universal Android APK
+        run: flutter build apk --release
+
+      - name: Rename APK for distribution
+        run: cp build/app/outputs/flutter-apk/app-release.apk ../PujoRoute-Android-Testing.apk
+
+      - name: Publish testing APK to rolling GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-ci
+          name: PujoRoute Android — Latest CI Testing Build
+          body: |
+            Automated testing build from the latest successful main-branch workflow.
+
+            IMPORTANT: This APK is built by CI without the private production keystore and is signed with the Android debug key by the current Gradle configuration. It is for testing only, not a production/store release. It may not install as an update over a differently signed existing installation; back up data before uninstalling any existing app.
+          prerelease: true
+          make_latest: false
+          overwrite_files: true
+          files: PujoRoute-Android-Testing.apk
