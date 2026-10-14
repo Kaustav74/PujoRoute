@@ -47,10 +47,14 @@ jobs:
         run: flutter test
 
       - name: Build universal Android APK
-        run: flutter build apk --release --dart-define=GEOAPIFY_API_KEY=bd63d62af74146b2b361a6e1d2cbf090
+        run: |
+          flutter build apk --release --dart-define=GEOAPIFY_API_KEY=bd63d62af74146b2b361a6e1d2cbf090
+          flutter build apk --debug --dart-define=GEOAPIFY_API_KEY=bd63d62af74146b2b361a6e1d2cbf090
 
-      - name: Rename APK for distribution
-        run: cp build/app/outputs/flutter-apk/app-release.apk ../PujoRoute-Android-Testing.apk
+      - name: Rename APKs for distribution
+        run: |
+          cp build/app/outputs/flutter-apk/app-release.apk ../PujoRoute-Android-Testing.apk
+          cp build/app/outputs/flutter-apk/app-debug.apk ../PujoRoute-Android-Debug.apk
 
       - name: Publish testing APK to rolling GitHub Release
         uses: softprops/action-gh-release@v2
@@ -60,8 +64,13 @@ jobs:
           body: |
             Automated testing build from the latest successful main-branch workflow.
 
-            IMPORTANT: This APK is built by CI without the private production keystore and is signed with the Android debug key by the current Gradle configuration. It is for testing only, not a production/store release. It may not install as an update over a differently signed existing installation; back up data before uninstalling any existing app.
+            ### Installation & Troubleshooting Notes:
+            - **App is invalid / Package conflicts**: If your Android phone shows *"App not installed as package appears to be invalid"* or *"App is invalid"*, **uninstall any existing PujoRoute app from your phone first** before installing. Android prevents updating apps signed with differing development certificates.
+            - **Play Protect**: If Google Play Protect warns about an unrecognized developer, tap **"More details"** and then **"Install anyway"**.
+            - **Debug APK**: We provide both `PujoRoute-Android-Testing.apk` (release optimized) and `PujoRoute-Android-Debug.apk` (standard debug).
           prerelease: true
           make_latest: false
           overwrite_files: true
-          files: PujoRoute-Android-Testing.apk
+          files: |
+            PujoRoute-Android-Testing.apk
+            PujoRoute-Android-Debug.apk
