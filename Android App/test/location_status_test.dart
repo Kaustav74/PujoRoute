@@ -35,7 +35,7 @@ void main() {
     expect(kDuplicatePandalIds['saltlake_ak_block'], 'ak-block-association-salt-lake');
     expect(kDuplicatePandalIds['behala-club-sarbojanin-durgotsav-comm'], 'behala_club');
     // Visible on the map / nearest list / route planning.
-    expect(kAllKolkataPujas.where((p) => p.hasMappableLocation).length, 379);
+    expect(kAllKolkataPujas.where((p) => p.hasMappableLocation).length, 407);
     expect(distinct.where((p) => kVerifiedLocationIds.contains(p.id)).length, 57);
     expect(distinct.where((p) => p.isLocationUnverified).length, 108);
   });

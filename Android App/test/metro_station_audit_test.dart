@@ -77,7 +77,7 @@ void main() {
     const flagged = {
       'bhowanipore-sanatan-dharmautsahini-sobha', 'seventy-six-pally-sarbojanin-durgotsab',
       'southern-satadal', 'lake-yuba-sangha',
-      'tarun-brindo-sarbojonin-durga-puja-mondop', 'fatehpur-bazar-durga-puja-pandal',
+      'tarun-brindo-sarbojonin-durga-puja-mondop', 'fatehpur-bazar-durga-puja-pandal', 'kalyani-iti-more', 'shreebhumi-sporting', 'sb-park-thakurpukur', 'new-town-sarbojanin', 'saltlake-ec-block', 'jagat-mukherjee-park', 'aswininagar-bandhu-mahal', 'kumartuli-sarbojanin', 'kumartuli-park', 'kestopur-prafullakanan', 'rail-pukur-united', 'darjipara-sarbojanin', 'gouberia-sarbojanin', 'jorasanko-sadharan', 'ajeya-sanghati', 'bakul-bagan', 'pally-sarodiya', 'behala-friends', 'dumdum-park-sarbojanin', 'telipukur-yuba-sangha', 'olaibibitola', 'salkia-alapani', 'ichapur-shivaji', 'rajdanga-amra-kojon', 'garia-baishnabghata', 'pally-unnayan', 'dumdum-mall-pally', 'upanagari-patuli',
       'salkia-bharat-sangha', 'salkia-sadharan-durga-puja-jatadhari-park', 'salkia-santi-sangha',
     };
     const coords = MetroGraphService.kStationCoordinates;

@@ -672,6 +672,23 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
 
 
   /// Reorders the stops you already have. Does not add or drop any.
+
+  /// Flip the route: A→B becomes B→A. Stops stay, only the order reverses.
+  void _reverseRoute() {
+    if (_circuitStops.length < 2) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Add at least 2 stops to reverse.'),
+      ));
+      return;
+    }
+    setState(() => _circuitStops = _circuitStops.reversed.toList());
+    SessionService.instance.saveCircuit(_circuitStops.map((s) => s.id).toList(), true);
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text('Route reversed. Same stops, opposite direction.'),
+      backgroundColor: Colors.green,
+    ));
+  }
+
   void _optimizeCurrentStopsOnly() {
     if (_circuitStops.length < 3) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -3027,6 +3044,25 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                           icon: const Icon(Icons.route, size: 18),
                           label: const Text(
                             'Optimize current stops only',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            side: const BorderSide(color: Colors.white38),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                          ),
+                          onPressed: _reverseRoute,
+                          icon: const Icon(Icons.swap_vert, size: 18),
+                          label: const Text(
+                            'Reverse route (A→B becomes B→A)',
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                           ),
                         ),

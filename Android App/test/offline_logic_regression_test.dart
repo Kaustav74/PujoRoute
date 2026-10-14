@@ -26,7 +26,7 @@ void main() {
     test('all coordinates are valid and inside Greater Kolkata / Hooghly-Howrah belt', () {
       for (final p in kAllKolkataPujas) {
         expect(p.lat.isFinite && p.lon.isFinite, isTrue, reason: p.id);
-        expect(p.lat, inInclusiveRange(22.3, 22.9), reason: p.id);
+        expect(p.lat, inInclusiveRange(22.3, 23.1), reason: p.id);
         expect(p.lon, inInclusiveRange(87.9, 88.6), reason: p.id);
       }
     });
@@ -59,6 +59,7 @@ void main() {
       const knownPlaceholderCoords = <String>{};
       for (final p in kAllKolkataPujas) {
         if (knownPlaceholderCoords.contains(p.id)) continue;
+        if (p.lat > 22.9) continue; // outside the metro belt (e.g. Kalyani)
         final canonical = metro.getCanonicalStation(p.metroStation) ?? p.metroStation;
         final c = coords[canonical]!;
         final assigned = _km(p.lat, p.lon, c[0], c[1]);

@@ -8,7 +8,7 @@ import '../data/pujas_data.dart';
 class PandalRepository {
   static const String schemaVersion = '1';
   static const String datasetVersion = '2026.x';
-  static const int expectedRecordCount = 504;
+  static const int expectedRecordCount = 532;
 
   /// Singleton instance
   static final PandalRepository _instance = PandalRepository._internal();
