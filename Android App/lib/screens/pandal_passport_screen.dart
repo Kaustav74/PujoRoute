@@ -4,7 +4,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../data/pujas_data.dart';
 import '../services/pandal_search_service.dart';
 import '../services/session_service.dart';
-import '../services/pandal_search_service.dart';
 
 class CulturalStamp {
   final String id;

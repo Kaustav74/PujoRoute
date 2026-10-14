@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -10,7 +8,6 @@ import '../services/session_service.dart';
 import '../services/live_feed_service.dart';
 import '../services/pandal_deduplication_service.dart';
 import '../services/hardened_pujo_optimizer.dart';
-import '../services/pandal_search_service.dart';
 import '../services/metro_graph_service.dart';
 import '../services/pandal_search_service.dart';
 import '../services/external_places_service.dart';
@@ -722,7 +719,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
       backgroundColor: Colors.transparent,
       builder: (ctx) {
         bool isSearching = false;
-        String query = '';
         List<Pandal> localMatches = [];
         List<ExternalPlaceCandidate> externalCandidates = [];
         String? statusMessage;
@@ -734,7 +730,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
               if (q.length < 2) return;
               setModalState(() {
                 isSearching = true;
-                query = q;
                 statusMessage = null;
               });
 
@@ -1020,7 +1015,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
           },
         );
       },
-    );
+    ).whenComplete(searchController.dispose);
   }
 
   /// External place search results as pandals via Geoapify. Our optimizer still owns the route.

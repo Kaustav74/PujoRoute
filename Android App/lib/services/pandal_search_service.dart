@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 import '../data/pujas_data.dart';
-import '../services/pandal_deduplication_service.dart';
 import '../services/session_service.dart';
 import 'pandal_repository.dart';
 
