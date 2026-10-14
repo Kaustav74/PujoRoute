@@ -181,9 +181,11 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
 
       if (!mounted) return;
       if (pos != null && ExternalPlacesService.isValidCoordinate(pos.latitude, pos.longitude)) {
+        final fixLat = pos.latitude;
+        final fixLon = pos.longitude;
         setState(() {
-          _originLat = pos.latitude;
-          _originLon = pos.longitude;
+          _originLat = fixLat;
+          _originLon = fixLon;
           _originLabel = 'Your Live Location';
           _locationError = null;
           _isLocating = false;
