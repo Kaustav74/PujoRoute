@@ -483,7 +483,7 @@ Pandal(
     subsection: 'North Kolkata (Tala / Belgachia)',
     lat: 22.607,
     lon: 88.377,
-    landmark: 'Tala Barowari Durgotsab, Kolkata',
+    landmark: '23/2, Banamali Chatterjee Street, Tala, Kolkata - 700002',
     metroStation: 'Belgachhia',
     history: 'A historic public festival celebrating over a century of continuous celebrations, known for huge community participation. The atmosphere is open, joyous, and vibrant. Champions traditional community customs, showcasing towering traditional idols crafted by seasoned Kumartuli artisans. Celebrated for rich bhog distribution and lively dhunuchi performances.',
     gateStatus: 'open',
