@@ -47,7 +47,7 @@ jobs:
         run: flutter test
 
       - name: Build universal Android APK
-        run: flutter build apk --release --dart-define=GOOGLE_PLACES_API_KEY=bd63d62af74146b2b361a6e1d2cbf090
+        run: flutter build apk --release --dart-define=GEOAPIFY_API_KEY=bd63d62af74146b2b361a6e1d2cbf090
 
       - name: Rename APK for distribution
         run: cp build/app/outputs/flutter-apk/app-release.apk ../PujoRoute-Android-Testing.apk

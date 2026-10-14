@@ -1,5 +1,4 @@
 import '../data/pujas_data.dart';
-import 'pandal_deduplication_service.dart';
 import 'pandal_repository.dart';
 
 /// Ranked local search over the bundled pandal dataset.

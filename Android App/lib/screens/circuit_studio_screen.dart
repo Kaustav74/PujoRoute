@@ -798,59 +798,46 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
 
 
   /// Google Places (or map fallback) results as pandals. Our optimizer still owns the route.
+  /// External place search via Geoapify. Local results are shown separately.
   Future<List<Pandal>> _googleSearchPandals(String query) async {
     final q = query.trim();
     if (q.length < 2) return [];
     final out = <Pandal>[];
     try {
       final client = HttpClient();
-      const placesKey = String.fromEnvironment('GOOGLE_PLACES_API_KEY');
-      // Clean queries. "Durga Puja" made the search return nothing.
-      final tries = placesKey.isNotEmpty
-          ? ['$q Durga Puja Kolkata', '$q Kolkata', q]
-          : ['$q Kolkata', q, '$q West Bengal'];
-      for (final attempt in tries) {
-        final encoded = Uri.encodeComponent(attempt);
-        final uri = placesKey.isNotEmpty
-            ? Uri.parse('https://maps.googleapis.com/maps/api/place/textsearch/json?query=$encoded&key=$placesKey')
-            : Uri.parse('https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=6');
-        final req = await client.getUrl(uri);
-        req.headers.set(HttpHeaders.userAgentHeader, 'PujoRoute/1.0 (pandals)');
-        final res = await req.close();
-        final body = await res.transform(utf8.decoder).join();
-        if (placesKey.isNotEmpty) {
-          final decoded = json.decode(body) as Map;
-          for (final hit in ((decoded['results'] as List?) ?? []).take(6)) {
-            final m = hit as Map;
-            final loc = (m['geometry'] as Map)['location'] as Map;
-            out.add(Pandal.create(
-              id: 'g-${m['place_id'] ?? DateTime.now().millisecondsSinceEpoch}',
-              name: (m['name'] ?? q).toString(),
-              zone: 'Google',
-              lat: (loc['lat'] as num).toDouble(),
-              lon: (loc['lng'] as num).toDouble(),
-              landmark: (m['formatted_address'] ?? '').toString(),
-              history: 'From Google Places. Route logic is ours.',
-            ));
-          }
-        } else {
-          final list = json.decode(body) as List;
-          for (final hit in list.take(6)) {
-            final m = hit as Map;
-            out.add(Pandal.create(
-              id: 'g-${m['osm_id'] ?? DateTime.now().millisecondsSinceEpoch}',
-              name: (m['name'] ?? q).toString(),
-              zone: 'Search',
-              lat: double.parse(m['lat'].toString()),
-              lon: double.parse(m['lon'].toString()),
-              landmark: (m['display_name'] ?? '').toString().split(',').take(3).join(', '),
-              history: 'From map search. Route logic is ours.',
-            ));
-          }
-        }
-        if (out.isNotEmpty) break;
+      const geoKey = String.fromEnvironment('GEOAPIFY_API_KEY');
+      if (geoKey.isEmpty) {
+        client.close();
+        return [];
       }
+      final encoded = Uri.encodeComponent('$q Kolkata');
+      final uri = Uri.parse(
+        'https://api.geoapify.com/v1/geocode/autocomplete?text=$encoded&apiKey=$geoKey&limit=6&filter=countrycode:in',
+      );
+      final req = await client.getUrl(uri);
+      req.headers.set(HttpHeaders.userAgentHeader, 'PujoRoute/1.0');
+      final res = await req.close();
+      final body = await res.transform(utf8.decoder).join();
       client.close();
+      final decoded = json.decode(body) as Map;
+      for (final hit in ((decoded['features'] as List?) ?? []).take(6)) {
+        final m = hit as Map;
+        final props = (m['properties'] as Map?) ?? {};
+        final coords = (m['geometry'] as Map?)?['coordinates'] as List?;
+        if (coords == null || coords.length < 2) continue;
+        final lon = (coords[0] as num).toDouble();
+        final lat = (coords[1] as num).toDouble();
+        if (lat < -90 || lat > 90 || lon < -180 || lon > 180) continue;
+        out.add(Pandal.create(
+          id: 'geo-${props['place_id'] ?? props['osm_id'] ?? lat}',
+          name: (props['name'] ?? props['formatted'] ?? q).toString(),
+          zone: 'Geoapify',
+          lat: lat,
+          lon: lon,
+          landmark: (props['formatted'] ?? '').toString(),
+          history: 'From Geoapify. Confirm before navigating. Route logic is ours.',
+        ));
+      }
     } catch (_) {}
     return out;
   }
