@@ -12,6 +12,8 @@ import '../services/pandal_deduplication_service.dart';
 import '../services/hardened_pujo_optimizer.dart';
 import '../services/pandal_search_service.dart';
 import '../services/metro_graph_service.dart';
+import '../services/pandal_search_service.dart';
+import '../services/external_places_service.dart';
 import 'puja_calendar_screen.dart';
 
 class MetroStationLocation {
@@ -711,135 +713,331 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     ));
   }
 
-  /// Search any pandal name on the map and add it, even if it is not in the list.
+  /// Search local pandals or external places (Geoapify) and add to circuit with review.
   Future<void> _searchAndAddAnyPandal() async {
-    final controller = TextEditingController();
-    final query = await showDialog<String>(
+    final searchController = TextEditingController();
+    showModalBottomSheet<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Search any pandal'),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(hintText: 'e.g. Kalyani ITI More'),
-          onSubmitted: (v) => Navigator.pop(ctx, v),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(ctx, controller.text), child: const Text('Search')),
-        ],
-      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        bool isSearching = false;
+        String query = '';
+        List<Pandal> localMatches = [];
+        List<ExternalPlaceCandidate> externalCandidates = [];
+        String? statusMessage;
+
+        return StatefulBuilder(
+          builder: (modalCtx, setModalState) {
+            void performSearch(String text) async {
+              final q = text.trim();
+              if (q.length < 2) return;
+              setModalState(() {
+                isSearching = true;
+                query = q;
+                statusMessage = null;
+              });
+
+              // 1. Search bundled local dataset first
+              final local = PandalSearchService.instance.search(
+                q,
+                includeUnverified: true,
+                excludeDuplicates: true,
+                limit: 5,
+              );
+
+              // 2. Query Geoapify external search
+              List<ExternalPlaceCandidate> externalList = [];
+              try {
+                externalList = await ExternalPlacesService.instance.searchPlaces(q);
+              } catch (_) {
+                statusMessage = 'External network error. Showing local pandals.';
+              }
+
+              if (!mounted) return;
+              setModalState(() {
+                localMatches = local;
+                externalCandidates = externalList;
+                isSearching = false;
+                if (local.isEmpty && externalList.isEmpty && statusMessage == null) {
+                  statusMessage = 'No places found. Try a fuller or alternate name.';
+                }
+              });
+            }
+
+            void addPandalToCircuit(Pandal p) {
+              // Deduplication check
+              final alreadyInCircuit = _circuitStops.any((s) => s.id == p.id);
+              if (alreadyInCircuit) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('${p.name} is already in your circuit!')),
+                );
+                return;
+              }
+              final isDuplicate = _circuitStops.any(
+                (s) => PandalDeduplicationService.instance.isDuplicatePair(s, p),
+              );
+              if (isDuplicate) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('A stop matching "${p.name}" is already in circuit.')),
+                );
+                return;
+              }
+
+              setState(() {
+                _circuitStops = [..._circuitStops, p];
+              });
+              SessionService.instance
+                  .saveCircuit(_circuitStops.map((s) => s.id).toList(), true);
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Added ${p.name}. Tap Optimize to reorder.')),
+              );
+            }
+
+            void addExternalCandidateToCircuit(ExternalPlaceCandidate candidate) {
+              if (!ExternalPlacesService.isValidCoordinate(candidate.lat, candidate.lon)) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Invalid coordinates for this place.')),
+                );
+                return;
+              }
+              final p = candidate.toPandal();
+              addPandalToCircuit(p);
+            }
+
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.85,
+              decoration: const BoxDecoration(
+                color: Color(0xFF141424),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                border: Border(top: BorderSide(color: kMarigoldAmber, width: 2.5)),
+              ),
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 44,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Search & Add Pandal or Place',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: searchController,
+                    autofocus: true,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'e.g. Suruchi Sangha, Kalyani ITI More...',
+                      hintStyle: const TextStyle(color: Colors.white38, fontSize: 13),
+                      prefixIcon: const Icon(Icons.search, color: kMarigoldAmber),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.arrow_forward, color: kMarigoldAmber),
+                        onPressed: () => performSearch(searchController.text),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xFF1C1C2E),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    onSubmitted: (v) => performSearch(v),
+                  ),
+                  const SizedBox(height: 10),
+                  if (isSearching)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: LinearProgressIndicator(minHeight: 2.5),
+                    ),
+                  if (statusMessage != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Text(
+                        statusMessage!,
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
+                      ),
+                    ),
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        if (localMatches.isNotEmpty) ...[
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6),
+                            child: Text(
+                              'Verified Bundled Pandals',
+                              style: TextStyle(
+                                color: kMarigoldAmber,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                          ...localMatches.map((p) => Container(
+                                margin: const EdgeInsets.symmetric(vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF1C1C2E),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.white12),
+                                ),
+                                child: ListTile(
+                                  title: Text(
+                                    p.name,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    '${p.zone} • ${p.landmark}',
+                                    style: const TextStyle(
+                                      color: Colors.white60,
+                                      fontSize: 11.5,
+                                    ),
+                                  ),
+                                  trailing: FilledButton.icon(
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: kSindoorRed,
+                                      visualDensity: VisualDensity.compact,
+                                    ),
+                                    onPressed: () => addPandalToCircuit(p),
+                                    icon: const Icon(Icons.add, size: 16),
+                                    label: const Text('Add'),
+                                  ),
+                                ),
+                              )),
+                          const SizedBox(height: 12),
+                        ],
+                        if (externalCandidates.isNotEmpty) ...[
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6),
+                            child: Text(
+                              'External Places (Geoapify • Unverified)',
+                              style: TextStyle(
+                                color: Colors.cyanAccent,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                          ...externalCandidates.map((c) => Container(
+                                margin: const EdgeInsets.symmetric(vertical: 4),
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF1C1C2E),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Colors.cyanAccent.withValues(alpha: 0.3),
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.travel_explore,
+                                            color: Colors.cyanAccent, size: 18),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(
+                                            c.name,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 6, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: Colors.cyanAccent
+                                                .withValues(alpha: 0.15),
+                                            borderRadius:
+                                                BorderRadius.circular(4),
+                                          ),
+                                          child: Text(
+                                            '${c.source} • Unverified',
+                                            style: const TextStyle(
+                                              color: Colors.cyanAccent,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      c.address,
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        FilledButton.icon(
+                                          style: FilledButton.styleFrom(
+                                            backgroundColor: kSindoorRed,
+                                            visualDensity:
+                                                VisualDensity.compact,
+                                          ),
+                                          onPressed: () =>
+                                              addExternalCandidateToCircuit(c),
+                                          icon: const Icon(Icons.add, size: 16),
+                                          label: const Text('Add to Circuit'),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              )),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
-    if (query == null || query.trim().isEmpty) return;
-    try {
-      final client = HttpClient();
-      const placesKey = String.fromEnvironment('GOOGLE_PLACES_API_KEY');
-      final encoded = Uri.encodeComponent('${query.trim()} Durga Puja Kolkata');
-      final uri = placesKey.isNotEmpty
-          ? Uri.parse('https://maps.googleapis.com/maps/api/place/textsearch/json?query=$encoded&key=$placesKey')
-          : Uri.parse('https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=5');
-      final req = await client.getUrl(uri);
-      req.headers.set(HttpHeaders.userAgentHeader, 'PujoRoute/1.0 (pandals)');
-      final res = await req.close();
-      final body = await res.transform(utf8.decoder).join();
-      client.close();
-      double lat; double lon; String landmark;
-      if (placesKey.isNotEmpty) {
-        final decoded = json.decode(body) as Map;
-        final results = (decoded['results'] as List?) ?? [];
-        if (results.isEmpty) {
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Google found nothing. Try a fuller name.')),
-          );
-          return;
-        }
-        final hit = results.first as Map;
-        final loc = (hit['geometry'] as Map)['location'] as Map;
-        lat = (loc['lat'] as num).toDouble();
-        lon = (loc['lng'] as num).toDouble();
-        landmark = (hit['formatted_address'] ?? '').toString();
-      } else {
-        final list = json.decode(body) as List;
-        if (list.isEmpty) {
-          if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No place found. Try a fuller name.')),
-          );
-          return;
-        }
-        final hit = list.first as Map;
-        lat = double.parse(hit['lat'].toString());
-        lon = double.parse(hit['lon'].toString());
-        landmark = (hit['display_name'] ?? '').toString().split(',').take(2).join(', ');
-      }
-      final pandal = Pandal.create(
-        id: 'search-${DateTime.now().millisecondsSinceEpoch}',
-        name: query.trim(),
-        zone: 'Central',
-        lat: lat,
-        lon: lon,
-        landmark: landmark,
-        history: 'Added from Google / map search.',
-      );
-      setState(() => _circuitStops = [..._circuitStops, pandal]);
-      SessionService.instance.saveCircuit(_circuitStops.map((s) => s.id).toList(), true);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Added ${pandal.name}. Tap Optimize to reorder.')),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Search failed. Check your connection.')),
-      );
-    }
   }
 
-
-  /// Google Places (or map fallback) results as pandals. Our optimizer still owns the route.
-  /// External place search via Geoapify. Local results are shown separately.
+  /// External place search results as pandals via Geoapify. Our optimizer still owns the route.
   Future<List<Pandal>> _googleSearchPandals(String query) async {
+    return _externalSearchPandals(query);
+  }
+
+  /// External search implementation using Geoapify
+  Future<List<Pandal>> _externalSearchPandals(String query) async {
     final q = query.trim();
     if (q.length < 2) return [];
-    final out = <Pandal>[];
     try {
-      final client = HttpClient();
-      const geoKey = String.fromEnvironment('GEOAPIFY_API_KEY');
-      if (geoKey.isEmpty) {
-        client.close();
-        return [];
-      }
-      final encoded = Uri.encodeComponent('$q Kolkata');
-      final uri = Uri.parse(
-        'https://api.geoapify.com/v1/geocode/autocomplete?text=$encoded&apiKey=$geoKey&limit=6&filter=countrycode:in',
-      );
-      final req = await client.getUrl(uri);
-      req.headers.set(HttpHeaders.userAgentHeader, 'PujoRoute/1.0');
-      final res = await req.close();
-      final body = await res.transform(utf8.decoder).join();
-      client.close();
-      final decoded = json.decode(body) as Map;
-      for (final hit in ((decoded['features'] as List?) ?? []).take(6)) {
-        final m = hit as Map;
-        final props = (m['properties'] as Map?) ?? {};
-        final coords = (m['geometry'] as Map?)?['coordinates'] as List?;
-        if (coords == null || coords.length < 2) continue;
-        final lon = (coords[0] as num).toDouble();
-        final lat = (coords[1] as num).toDouble();
-        if (lat < -90 || lat > 90 || lon < -180 || lon > 180) continue;
-        out.add(Pandal.create(
-          id: 'geo-${props['place_id'] ?? props['osm_id'] ?? lat}',
-          name: (props['name'] ?? props['formatted'] ?? q).toString(),
-          zone: 'Geoapify',
-          lat: lat,
-          lon: lon,
-          landmark: (props['formatted'] ?? '').toString(),
-          history: 'Approximate from Geoapify. Confirm the exact address before use.',
-        ));
-      }
-    } catch (_) {}
-    return out;
+      final candidates = await ExternalPlacesService.instance.searchPlaces(q);
+      return candidates.map((c) => c.toPandal()).toList();
+    } catch (_) {
+      return [];
+    }
   }
 
   void _showAddPandalPicker() {
@@ -874,24 +1072,22 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                 ? _circuitStops.last.name
                 : 'Your Location';
 
-            final localHits = PandalSearchService.instance.search(filter);
-            final available = localHits
-                .where((p) =>
-                    p.hasMappableLocation &&
-                    !existingIds.contains(p.id) &&
-                    (!hideStampedInPicker || !visitedIds.contains(p.id)) &&
-                    (metroFilter.isEmpty ||
-                        p.metroStation.toLowerCase() == metroFilter.toLowerCase()))
-                .toList();
-
-            // Sort available by distance from reference location
-            available.sort((a, b) {
-              final da =
-                  _getDistanceMeters(referenceLat, referenceLon, a.lat, a.lon);
-              final db =
-                  _getDistanceMeters(referenceLat, referenceLon, b.lat, b.lon);
-              return da.compareTo(db);
-            });
+            final available = PandalSearchService.instance.search(
+              filter,
+              sourceList: kAllKolkataPujas
+                  .where((p) =>
+                      p.hasMappableLocation &&
+                      !existingIds.contains(p.id) &&
+                      (!hideStampedInPicker || !visitedIds.contains(p.id)) &&
+                      (metroFilter.isEmpty ||
+                          p.metroStation.toLowerCase() == metroFilter.toLowerCase()))
+                  .toList(),
+              userLat: referenceLat,
+              userLon: referenceLon,
+              excludeDuplicates: true,
+              includeUnverified: false,
+              returnAllOnEmpty: true,
+            );
 
             return Container(
               height: MediaQuery.of(context).size.height * 0.82,
@@ -1096,11 +1292,24 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(children: [
-                                  const Icon(Icons.travel_explore, color: Colors.lightBlueAccent, size: 18),
-                                  const SizedBox(width: 4),
-                                  const Text('Geoapify', style: TextStyle(color: Colors.lightBlueAccent, fontSize: 10)),
+                                  const Icon(Icons.travel_explore, color: Colors.cyanAccent, size: 18),
                                   const SizedBox(width: 6),
                                   Expanded(child: Text(g.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14))),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.cyanAccent.withValues(alpha: 0.15),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: const Text(
+                                      'Geoapify • Unverified',
+                                      style: TextStyle(
+                                        color: Colors.cyanAccent,
+                                        fontSize: 9.5,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
                                 ]),
                                 const SizedBox(height: 4),
                                 Text(g.landmark, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, fontSize: 12)),
@@ -3107,7 +3316,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                           onPressed: _searchAndAddAnyPandal,
                           icon: const Icon(Icons.travel_explore, size: 18),
                           label: const Text(
-                            'Search Google for any pandal',
+                            'Search external places (Geoapify)',
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                           ),
                         ),

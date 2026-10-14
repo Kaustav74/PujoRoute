@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import '../data/pujas_data.dart';
+import 'pandal_search_service.dart';
 
 /// Production-grade Local Read Replica for PujoRoute (Durga Puja 2026).
 /// Provides 0-network offline access to all 504 bundled pandal records
@@ -60,18 +61,12 @@ class PandalRepository {
 
   /// Search local pandals by keyword matching name, zone, subsection, category, landmark, metroStation, or history
   List<Pandal> searchPandals(String query) {
-    final cleanQuery = query.trim().toLowerCase();
-    if (cleanQuery.isEmpty) return allPandals;
-
-    return kAllKolkataPujas.where((pandal) {
-      return pandal.name.toLowerCase().contains(cleanQuery) ||
-          pandal.zone.toLowerCase().contains(cleanQuery) ||
-          pandal.category.toLowerCase().contains(cleanQuery) ||
-          pandal.subsection.toLowerCase().contains(cleanQuery) ||
-          pandal.landmark.toLowerCase().contains(cleanQuery) ||
-          pandal.metroStation.toLowerCase().contains(cleanQuery) ||
-          pandal.history.toLowerCase().contains(cleanQuery);
-    }).toList();
+    if (query.trim().isEmpty) return allPandals;
+    return PandalSearchService.instance.search(
+      query,
+      includeUnverified: true,
+      excludeDuplicates: false,
+    );
   }
 
   /// Filter pandals by zone, category, or subsection

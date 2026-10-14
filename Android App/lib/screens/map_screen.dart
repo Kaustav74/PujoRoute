@@ -255,56 +255,18 @@ class _MapScreenState extends State<MapScreen>
 
   List<Pandal> _getSortedFilteredPandals() {
     final bool searching = _searchQuery.trim().isNotEmpty;
-    List<Pandal> list = kAllKolkataPujas.where((p) {
-      // Duplicate entries are never listed; pandals with an unverified
-      // location only appear when the user searches for them.
-      if (p.isDuplicateEntry) return false;
-      if (p.isLocationUnverified && !searching) return false;
-
-      // Category filter
-      if (p.category == 'mega' && !_filterMega) return false;
-      if (p.category == 'heritage' && !_filterHeritage) return false;
-
-      // Zone & Session Filters
-      if (_selectedZone == 'Bookmarked ⭐') {
-        if (!SessionService.instance.isBookmarked(p.id)) return false;
-      } else if (_selectedZone == 'Visited ✅') {
-        if (!SessionService.instance.isVisited(p.id)) return false;
-      } else if (_selectedZone != 'All' && p.zone != _selectedZone) {
-        return false;
-      }
-
-      // Metro station filter
-      if (_metroFilter.isNotEmpty &&
-          p.metroStation.toLowerCase() != _metroFilter.toLowerCase()) {
-        return false;
-      }
-
-      // Search query via shared ranked engine (filters already applied above)
-      if (_searchQuery.trim().isNotEmpty) {
-        final hits = PandalSearchService.instance.search(
-          _searchQuery,
-          pool: [p],
-        );
-        if (hits.isEmpty) return false;
-      }
-
-      return true;
-    }).toList();
-
-    // Sort by proximity to user position (unverified locations last)
-    list.sort((a, b) {
-      if (a.isLocationUnverified != b.isLocationUnverified) {
-        return a.isLocationUnverified ? 1 : -1;
-      }
-      final distA = _getDistanceMeters(
-          _userPosition.latitude, _userPosition.longitude, a.lat, a.lon);
-      final distB = _getDistanceMeters(
-          _userPosition.latitude, _userPosition.longitude, b.lat, b.lon);
-      return distA.compareTo(distB);
-    });
-
-    return list;
+    return PandalSearchService.instance.search(
+      _searchQuery,
+      zone: _selectedZone,
+      filterMega: _filterMega,
+      filterHeritage: _filterHeritage,
+      metroStation: _metroFilter,
+      excludeDuplicates: true,
+      includeUnverified: searching,
+      userLat: _userPosition.latitude,
+      userLon: _userPosition.longitude,
+      returnAllOnEmpty: true,
+    );
   }
 
   // Dynamic Pin Clustering algorithm based on current zoom level
@@ -1650,6 +1612,37 @@ class _MapScreenState extends State<MapScreen>
                     ],
                   ),
                 ),
+                if (_searchQuery.trim().isNotEmpty && visibleList.isEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xEE2A1616),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: Colors.redAccent.withOpacity(0.5)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.info_outline, color: Colors.redAccent, size: 16),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'No pandals found for "$_searchQuery"',
+                              style: const TextStyle(color: Colors.white, fontSize: 12),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() => _searchQuery = '');
+                            },
+                            child: const Text('Clear', style: TextStyle(color: kMarigoldAmber, fontSize: 12)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

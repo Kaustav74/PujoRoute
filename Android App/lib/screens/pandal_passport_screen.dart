@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../data/pujas_data.dart';
 import '../services/pandal_search_service.dart';
 import '../services/session_service.dart';
+import '../services/pandal_search_service.dart';
 
 class CulturalStamp {
   final String id;
@@ -429,13 +430,16 @@ class _PandalPassportScreenState extends State<PandalPassportScreen> {
                 const SizedBox(height: 10),
                 Autocomplete<Pandal>(
                   optionsBuilder: (TextEditingValue textEditingValue) {
-                    if (textEditingValue.text.isEmpty) {
+                    if (textEditingValue.text.trim().isEmpty) {
                       return const Iterable<Pandal>.empty();
                     }
                     return PandalSearchService.instance.search(
                       textEditingValue.text,
-                      limit: 8,
-                    ); // Show top 5 matches
+                      limit: 6,
+                      excludeDuplicates: true,
+                      includeUnverified: true,
+                      returnAllOnEmpty: false,
+                    );
                   },
                   displayStringForOption: (Pandal p) => p.name,
                   fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
