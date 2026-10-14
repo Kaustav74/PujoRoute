@@ -778,6 +778,60 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     }
   }
 
+
+  /// Google Places (or map fallback) results as pandals. Our optimizer still owns the route.
+  Future<List<Pandal>> _googleSearchPandals(String query) async {
+    final q = query.trim();
+    if (q.length < 3) return [];
+    try {
+      final client = HttpClient();
+      const placesKey = String.fromEnvironment('GOOGLE_PLACES_API_KEY');
+      final encoded = Uri.encodeComponent('$q Durga Puja Kolkata');
+      final uri = placesKey.isNotEmpty
+          ? Uri.parse('https://maps.googleapis.com/maps/api/place/textsearch/json?query=$encoded&key=$placesKey')
+          : Uri.parse('https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=6');
+      final req = await client.getUrl(uri);
+      req.headers.set(HttpHeaders.userAgentHeader, 'PujoRoute/1.0 (pandals)');
+      final res = await req.close();
+      final body = await res.transform(utf8.decoder).join();
+      client.close();
+      final out = <Pandal>[];
+      if (placesKey.isNotEmpty) {
+        final decoded = json.decode(body) as Map;
+        for (final hit in ((decoded['results'] as List?) ?? []).take(6)) {
+          final m = hit as Map;
+          final loc = (m['geometry'] as Map)['location'] as Map;
+          out.add(Pandal.create(
+            id: 'g-${m['place_id'] ?? DateTime.now().millisecondsSinceEpoch}',
+            name: (m['name'] ?? q).toString(),
+            zone: 'Google',
+            lat: (loc['lat'] as num).toDouble(),
+            lon: (loc['lng'] as num).toDouble(),
+            landmark: (m['formatted_address'] ?? '').toString(),
+            history: 'From Google Places. Route logic is ours.',
+          ));
+        }
+      } else {
+        final list = json.decode(body) as List;
+        for (final hit in list.take(6)) {
+          final m = hit as Map;
+          out.add(Pandal.create(
+            id: 'g-${m['place_id'] ?? m['osm_id'] ?? DateTime.now().millisecondsSinceEpoch}',
+            name: q,
+            zone: 'Google',
+            lat: double.parse(m['lat'].toString()),
+            lon: double.parse(m['lon'].toString()),
+            landmark: (m['display_name'] ?? '').toString().split(',').take(3).join(', '),
+            history: 'From map search. Route logic is ours.',
+          ));
+        }
+      }
+      return out;
+    } catch (_) {
+      return [];
+    }
+  }
+
   void _showAddPandalPicker() {
     // State must live outside the sheet builder. Dismissing the keyboard
     // changes MediaQuery and rebuilds the sheet; if these were inside the
@@ -787,6 +841,9 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     bool hideStampedInPicker = _excludeVisitedStamps;
     final Set<Pandal> selectedPandals = {};
     final searchController = TextEditingController();
+    List<Pandal> googleHits = [];
+    bool googleBusy = false;
+    int googleToken = 0;
 
     showModalBottomSheet(
       context: context,
@@ -940,8 +997,19 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                           borderSide: BorderSide.none),
                     ),
                     onChanged: (val) {
-                      setModalState(() {
-                        filter = val;
+                      setModalState(() => filter = val);
+                      final token = ++googleToken;
+                      if (val.trim().length < 3) {
+                        setModalState(() => googleHits = []);
+                        return;
+                      }
+                      setModalState(() => googleBusy = true);
+                      _googleSearchPandals(val).then((hits) {
+                        if (token != googleToken) return;
+                        setModalState(() {
+                          googleHits = hits;
+                          googleBusy = false;
+                        });
                       });
                     },
                   ),
@@ -999,11 +1067,33 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                         fontStyle: FontStyle.italic),
                   ),
                   const SizedBox(height: 8),
+                  if (googleBusy)
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 6),
+                      child: LinearProgressIndicator(minHeight: 2),
+                    ),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: available.length,
+                      itemCount: googleHits.length + available.length,
                       itemBuilder: (c, idx) {
-                        final p = available[idx];
+                        if (idx < googleHits.length) {
+                          final g = googleHits[idx];
+                          final already = selectedPandals.any((s) => s.id == g.id);
+                          return ListTile(
+                            leading: const Icon(Icons.travel_explore, color: Colors.lightBlueAccent),
+                            title: Text(g.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                            subtitle: Text('Google • ${g.landmark}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11)),
+                            trailing: Icon(already ? Icons.check_circle : Icons.add_circle_outline, color: already ? kMarigoldAmber : Colors.white54),
+                            onTap: () => setModalState(() {
+                              if (already) {
+                                selectedPandals.removeWhere((s) => s.id == g.id);
+                              } else {
+                                selectedPandals.add(g);
+                              }
+                            }),
+                          );
+                        }
+                        final p = available[idx - googleHits.length];
                         final isSelected = selectedPandals.any((s) => s.id == p.id);
                         final dist = _getDistanceMeters(
                                 referenceLat, referenceLon, p.lat, p.lon)
