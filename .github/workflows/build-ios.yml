@@ -26,16 +26,27 @@ jobs:
           channel: stable
       - name: Pub get
         run: flutter pub get
-      - name: Build iOS (no codesign)
-        run: flutter build ios --release --no-codesign
+      - name: Generate iOS config
+        run: flutter build ios --config-only --release
+      - name: Build unsigned with xcodebuild
+        run: |
+          xcodebuild -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build/ios \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM=""
       - name: Package unsigned IPA
         run: |
-          cd build/ios/iphoneos
+          APP=$(find build/ios -name "Runner.app" -type d | head -1)
+          echo "App at $APP"
           rm -rf Payload
           mkdir Payload
-          cp -R Runner.app Payload/
-          zip -r ../../../PujoRoute-iOS-unsigned.ipa Payload
-          cd ../../..
+          cp -R "$APP" Payload/
+          zip -r PujoRoute-iOS-unsigned.ipa Payload
           ls -lh PujoRoute-iOS-unsigned.ipa
       - name: Publish to ios-ci release
         uses: softprops/action-gh-release@v2
