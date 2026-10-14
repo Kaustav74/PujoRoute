@@ -200,7 +200,8 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
 
       // Verify that "Search Pandal in Google" does NOT appear anywhere
       expect(find.textContaining('Search Pandal in Google'), findsNothing);
