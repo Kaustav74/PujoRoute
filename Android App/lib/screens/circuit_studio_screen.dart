@@ -11,7 +11,6 @@ import '../services/live_feed_service.dart';
 import '../services/pandal_deduplication_service.dart';
 import '../services/hardened_pujo_optimizer.dart';
 import '../services/metro_graph_service.dart';
-import '../services/pandal_search_service.dart';
 import '../services/external_places_service.dart';
 import '../services/hybrid_pandal_search_service.dart';
 import 'puja_calendar_screen.dart';
@@ -88,13 +87,10 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
   String _originLabel = 'Your Live Location';
   bool _isLocating = false;
   String? _locationError;
-  bool _isLocationPermissionPermanentlyDenied = false;
-  bool _isLocationServiceDisabled = false;
 
   // Additional Planner Options
   bool _isRoundTrip = true; // Round-trip: return to starting point
   String _travelMode = 'walk'; // 'walk', 'drive', 'transit'
-  final Set<String> _lockedStopIds = {};
 
   // Generated Circuit
   List<Pandal> _circuitStops = [];
@@ -137,8 +133,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     setState(() {
       _isLocating = true;
       _locationError = null;
-      _isLocationPermissionPermanentlyDenied = false;
-      _isLocationServiceDisabled = false;
     });
 
     try {
@@ -147,7 +141,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
         if (!mounted) return;
         setState(() {
           _isLocating = false;
-          _isLocationServiceDisabled = true;
           _locationError = 'Device location services are off. Turn on GPS.';
         });
         return;
@@ -162,7 +155,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
         if (!mounted) return;
         setState(() {
           _isLocating = false;
-          _isLocationPermissionPermanentlyDenied = true;
           _locationError = 'Location permission permanently denied. Enable in Settings.';
         });
         return;
@@ -190,8 +182,8 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
       if (!mounted) return;
       if (pos != null && ExternalPlacesService.isValidCoordinate(pos.latitude, pos.longitude)) {
         setState(() {
-          _originLat = pos!.latitude;
-          _originLon = pos!.longitude;
+          _originLat = pos.latitude;
+          _originLon = pos.longitude;
           _originLabel = 'Your Live Location';
           _locationError = null;
           _isLocating = false;
@@ -1512,7 +1504,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
   }
 
   void _showAddPandalPicker() => _showHybridSearchPicker();
-  void _searchAndAddAnyPandal() => _showHybridSearchPicker();
 
   Widget _buildOriginTile() {
     final effectiveLat = _originLat ?? (widget.userLat != 0.0 ? widget.userLat : null);

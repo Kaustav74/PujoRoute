@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pujoroute/data/pujas_data.dart';
 import 'package:pujoroute/services/external_places_service.dart';
 import 'package:pujoroute/services/hybrid_pandal_search_service.dart';
-import 'package:pujoroute/services/pandal_deduplication_service.dart';
 import 'package:pujoroute/services/hardened_pujo_optimizer.dart';
 import 'package:pujoroute/screens/circuit_studio_screen.dart';
 
