@@ -678,7 +678,7 @@ Pandal(
     subsection: 'Central Kolkata (College Street / Bowbazar)',
     lat: 22.5683,
     lon: 88.3663,
-    landmark: 'Santosh Mitra Square (Lebutala Park), Kolkata',
+    landmark: 'Natabar Dutta Row, Lebutala, Bowbazar, Kolkata - 700014',
     metroStation: 'Sealdah',
     history: 'A mega-festival iconic for its sprawling waterside setting, where massive illuminated facades reflect across the lake. The atmosphere is festive, nostalgic, and radiant. Celebrated for towering palace replicas draped in dynamic Chandannagar LED lights and housing a luminous Sabeki Daker Saaj deity.',
     gateStatus: 'open',
