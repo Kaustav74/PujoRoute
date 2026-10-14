@@ -799,54 +799,59 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
   /// Google Places (or map fallback) results as pandals. Our optimizer still owns the route.
   Future<List<Pandal>> _googleSearchPandals(String query) async {
     final q = query.trim();
-    if (q.length < 3) return [];
+    if (q.length < 2) return [];
+    final out = <Pandal>[];
     try {
       final client = HttpClient();
       const placesKey = String.fromEnvironment('GOOGLE_PLACES_API_KEY');
-      final encoded = Uri.encodeComponent('$q Durga Puja Kolkata');
-      final uri = placesKey.isNotEmpty
-          ? Uri.parse('https://maps.googleapis.com/maps/api/place/textsearch/json?query=$encoded&key=$placesKey')
-          : Uri.parse('https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=6');
-      final req = await client.getUrl(uri);
-      req.headers.set(HttpHeaders.userAgentHeader, 'PujoRoute/1.0 (pandals)');
-      final res = await req.close();
-      final body = await res.transform(utf8.decoder).join();
-      client.close();
-      final out = <Pandal>[];
-      if (placesKey.isNotEmpty) {
-        final decoded = json.decode(body) as Map;
-        for (final hit in ((decoded['results'] as List?) ?? []).take(6)) {
-          final m = hit as Map;
-          final loc = (m['geometry'] as Map)['location'] as Map;
-          out.add(Pandal.create(
-            id: 'g-${m['place_id'] ?? DateTime.now().millisecondsSinceEpoch}',
-            name: (m['name'] ?? q).toString(),
-            zone: 'Google',
-            lat: (loc['lat'] as num).toDouble(),
-            lon: (loc['lng'] as num).toDouble(),
-            landmark: (m['formatted_address'] ?? '').toString(),
-            history: 'From Google Places. Route logic is ours.',
-          ));
+      // Clean queries. "Durga Puja" made the search return nothing.
+      final tries = placesKey.isNotEmpty
+          ? ['$q Durga Puja Kolkata', '$q Kolkata', q]
+          : ['$q Kolkata', q, '$q West Bengal'];
+      for (final attempt in tries) {
+        final encoded = Uri.encodeComponent(attempt);
+        final uri = placesKey.isNotEmpty
+            ? Uri.parse('https://maps.googleapis.com/maps/api/place/textsearch/json?query=$encoded&key=$placesKey')
+            : Uri.parse('https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=6');
+        final req = await client.getUrl(uri);
+        req.headers.set(HttpHeaders.userAgentHeader, 'PujoRoute/1.0 (pandals)');
+        final res = await req.close();
+        final body = await res.transform(utf8.decoder).join();
+        if (placesKey.isNotEmpty) {
+          final decoded = json.decode(body) as Map;
+          for (final hit in ((decoded['results'] as List?) ?? []).take(6)) {
+            final m = hit as Map;
+            final loc = (m['geometry'] as Map)['location'] as Map;
+            out.add(Pandal.create(
+              id: 'g-${m['place_id'] ?? DateTime.now().millisecondsSinceEpoch}',
+              name: (m['name'] ?? q).toString(),
+              zone: 'Google',
+              lat: (loc['lat'] as num).toDouble(),
+              lon: (loc['lng'] as num).toDouble(),
+              landmark: (m['formatted_address'] ?? '').toString(),
+              history: 'From Google Places. Route logic is ours.',
+            ));
+          }
+        } else {
+          final list = json.decode(body) as List;
+          for (final hit in list.take(6)) {
+            final m = hit as Map;
+            out.add(Pandal.create(
+              id: 'g-${m['osm_id'] ?? DateTime.now().millisecondsSinceEpoch}',
+              name: (m['name'] ?? q).toString(),
+              zone: 'Search',
+              lat: double.parse(m['lat'].toString()),
+              lon: double.parse(m['lon'].toString()),
+              landmark: (m['display_name'] ?? '').toString().split(',').take(3).join(', '),
+              history: 'From map search. Route logic is ours.',
+            ));
+          }
         }
-      } else {
-        final list = json.decode(body) as List;
-        for (final hit in list.take(6)) {
-          final m = hit as Map;
-          out.add(Pandal.create(
-            id: 'g-${m['place_id'] ?? m['osm_id'] ?? DateTime.now().millisecondsSinceEpoch}',
-            name: q,
-            zone: 'Google',
-            lat: double.parse(m['lat'].toString()),
-            lon: double.parse(m['lon'].toString()),
-            landmark: (m['display_name'] ?? '').toString().split(',').take(3).join(', '),
-            history: 'From map search. Route logic is ours.',
-          ));
-        }
+        if (out.isNotEmpty) break;
       }
-      return out;
-    } catch (_) {
-      return [];
-    }
+      client.close();
+    } catch (_) {}
+    return out;
   }
 
   void _showAddPandalPicker() {
@@ -887,11 +892,11 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                     !existingIds.contains(p.id) &&
                     (!hideStampedInPicker || !visitedIds.contains(p.id)) &&
                     (filter.isEmpty ||
-                        p.name.toLowerCase().contains(filter.toLowerCase()) ||
-                        p.zone.toLowerCase().contains(filter.toLowerCase()) ||
-                        p.landmark
-                            .toLowerCase()
-                            .contains(filter.toLowerCase())) &&
+                        filter.toLowerCase().split(' ').every((w) =>
+                            w.isEmpty ||
+                            p.name.toLowerCase().contains(w) ||
+                            p.landmark.toLowerCase().contains(w) ||
+                            p.zone.toLowerCase().contains(w))) &&
                     (metroFilter.isEmpty ||
                         p.metroStation.toLowerCase() == metroFilter.toLowerCase()))
                 .toList();
@@ -1016,7 +1021,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                     onChanged: (val) {
                       setModalState(() => filter = val);
                       final token = ++googleToken;
-                      if (val.trim().length < 3) {
+                      if (val.trim().length < 2) {
                         setModalState(() => googleHits = []);
                         return;
                       }
