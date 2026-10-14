@@ -1,0 +1,58 @@
+name: Build PujoRoute iOS
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "app/ios/**"
+      - "app/lib/**"
+      - "app/pubspec.yaml"
+      - ".github/workflows/build-ios.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  ios:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Pub get
+        run: flutter pub get
+      - name: Build iOS (no codesign)
+        run: flutter build ios --release --no-codesign
+      - name: Package unsigned IPA
+        run: |
+          cd build/ios/iphoneos
+          rm -rf Payload
+          mkdir Payload
+          cp -R Runner.app Payload/
+          zip -r ../../../PujoRoute-iOS-unsigned.ipa Payload
+          cd ../../..
+          ls -lh PujoRoute-iOS-unsigned.ipa
+      - name: Publish to ios-ci release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ios-ci
+          name: PujoRoute iOS — unsigned build
+          prerelease: true
+          body: |
+            Unsigned iOS build of PujoRoute.
+
+            This file cannot be installed by tapping it. iOS requires an Apple
+            signature. To install on a device:
+            1. Open the project in Xcode on a Mac (`app/ios/Runner.xcworkspace`).
+            2. Sign in with your Apple ID under Signing & Capabilities.
+            3. Select your iPhone and press Run.
+
+            A paid Apple Developer account is required for TestFlight or the App Store.
+          files: app/PujoRoute-iOS-unsigned.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

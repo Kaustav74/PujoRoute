@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Pujoroute</string>
+	<string>PujoRoute</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -66,5 +66,13 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>PujoRoute uses your location to show nearby pandals and build a walking route.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>PujoRoute uses your location to keep the route accurate while you walk.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>PujoRoute uses speech recognition so you can ask for a route by voice.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>PujoRoute uses the microphone for voice search and the route assistant.</string>
 </dict>
 </plist>
