@@ -1,0 +1,6 @@
+﻿source_name,source_url,advertised_total,pages_discovered,pages_processed,pages_failed,raw_records_extracted,duplicate_rows_removed,unique_records_extracted,extraction_status,timestamp_utc,notes
+DharmKriya,https://dharmkriya.com/kolkata/pandals,786,1,1,0,789,0,789,Success,2026-10-14T18:35:50Z,Extracted via official Next.js React Server Component payload embedded in page.
+Pujor Shohor,https://pujorshohor.in/pandals,686,12,12,0,686,0,686,Success,2026-10-14T18:35:53Z,"Paginated through all 12 pages (60 items/page, 26 items on page 12) + concurrent detail resolution."
+PujoRoute App Dataset,Android App/lib/data/pujas_data.dart,532,1,1,0,532,17,532,Success,2026-10-14T18:36:04Z,Official bundled offline dataset parsed from Pandal.create() constructors.
+MoodKolkata,https://moodkolkata.com/puja/pandals,191,1,1,0,193,1,192,Success,2026-10-14T18:36:05Z,Extracted from public directory headings and listing cards.
+2026 Research Staging Intake,docs/data-research/2026-pandal-research/candidate-pandals-not-found-by-name-match.csv,45,1,1,0,45,0,45,Success,2026-10-14T18:36:07Z,Candidate records from indexed 2026 directories preserved for verification.
