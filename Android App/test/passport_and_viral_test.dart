@@ -13,8 +13,8 @@ void main() {
   });
 
   group('Hyper-Local Street Utility & Pandal Metadata Tests', () {
-    test('All 504 pandals have detailedMetroGate naming the station and its line', () {
-      expect(kAllKolkataPujas.length, equals(504));
+    test('All 532 pandals have detailedMetroGate naming the station and its line', () {
+      expect(kAllKolkataPujas.length, equals(532));
 
       for (var p in kAllKolkataPujas) {
         expect(p.detailedMetroGate, isNotEmpty);

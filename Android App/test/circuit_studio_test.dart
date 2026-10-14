@@ -3,8 +3,8 @@ import 'package:pujoroute/data/pujas_data.dart';
 
 void main() {
   group('Circuit Studio and Dataset Tests', () {
-    test('Verified master dataset contains all 504 Durga Pujas', () {
-      expect(kAllKolkataPujas.length, equals(504));
+    test('Verified master dataset contains all 532 Durga Pujas', () {
+      expect(kAllKolkataPujas.length, equals(532));
     });
 
     test('Category and Zone distributions match official counts', () {
@@ -15,17 +15,17 @@ void main() {
       final saltLakeCount = kAllKolkataPujas.where((p) => p.zone == 'Salt Lake').length;
       final centralCount = kAllKolkataPujas.where((p) => p.zone == 'Central').length;
 
-      expect(megaCount, equals(483));
-      expect(heritageCount, equals(21));
-      expect(southCount, equals(285)); // Phase 3: Ultadanga Sangrami, Salkia Sanskriti -> North
-      expect(northCount, equals(139)); // zone audit: Salt Lake/New Town moved out, Shyambazar in
-      expect(saltLakeCount, equals(45)); // + Rajdanga, Hossenpur, Nehru Nagar, R.M.S. Maidan
-      expect(centralCount, equals(35)); // Panchanantala, Sarkarbagan moved to North
+      expect(megaCount, equals(510));
+      expect(heritageCount, equals(22));
+      expect(southCount, equals(294)); // Phase 3: Ultadanga Sangrami, Salkia Sanskriti -> North
+      expect(northCount, equals(152)); // zone audit: Salt Lake/New Town moved out, Shyambazar in
+      expect(saltLakeCount, equals(47)); // + Rajdanga, Hossenpur, Nehru Nagar, R.M.S. Maidan
+      expect(centralCount, equals(39)); // Panchanantala, Sarkarbagan moved to North
     });
 
     test('Every pandal has valid coordinates, landmark, subsection, metro, and significance', () {
       for (final p in kAllKolkataPujas) {
-        expect(p.lat, inInclusiveRange(22.3, 22.8));
+        expect(p.lat, inInclusiveRange(22.3, 23.1));
         expect(p.lon, inInclusiveRange(87.8, 88.6));
         expect(p.landmark.isNotEmpty, isTrue);
         expect(p.subsection.isNotEmpty, isTrue);

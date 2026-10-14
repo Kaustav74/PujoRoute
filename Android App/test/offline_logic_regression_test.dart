@@ -16,11 +16,11 @@ Pandal _p(String id, double lat, double lng) =>
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('Pandal dataset integrity (504 bundled pandals)', () {
-    test('504 records with unique ids and names', () {
-      expect(kAllKolkataPujas.length, 504);
-      expect(kAllKolkataPujas.map((p) => p.id).toSet().length, 504);
-      expect(kAllKolkataPujas.map((p) => p.name.trim().toLowerCase()).toSet().length, 504);
+  group('Pandal dataset integrity (532 bundled pandals)', () {
+    test('532 records with unique ids and names', () {
+      expect(kAllKolkataPujas.length, 532);
+      expect(kAllKolkataPujas.map((p) => p.id).toSet().length, 532);
+      expect(kAllKolkataPujas.map((p) => p.name.trim().toLowerCase()).toSet().length, 532);
     });
 
     test('all coordinates are valid and inside Greater Kolkata / Hooghly-Howrah belt', () {

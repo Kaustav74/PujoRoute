@@ -28,9 +28,9 @@ void main() {
     expect(kVerifiedLocationIds.intersection(kUnverifiedLocationIds), isEmpty);
   });
 
-  test('Phase 3 counts: 487 distinct, 57 verified, 108 hidden as unverified', () {
+  test('Phase 3 counts: 515 distinct, 57 verified, 108 hidden as unverified', () {
     final distinct = kAllKolkataPujas.where((p) => !p.isDuplicateEntry).toList();
-    expect(distinct.length, 487);
+    expect(distinct.length, 515);
     expect(kDuplicatePandalIds.length, 17);
     expect(kDuplicatePandalIds['saltlake_ak_block'], 'ak-block-association-salt-lake');
     expect(kDuplicatePandalIds['behala-club-sarbojanin-durgotsav-comm'], 'behala_club');

@@ -12,9 +12,9 @@ void main() {
       quickReply = QuickReplyService();
     });
 
-    test('1. PandalRepository packages exactly 504 verified pandal records', () {
-      expect(repo.recordCount, equals(504));
-      expect(repo.allPandals.length, equals(504));
+    test('1. PandalRepository packages exactly 532 verified pandal records', () {
+      expect(repo.recordCount, equals(532));
+      expect(repo.allPandals.length, equals(532));
     });
 
     test('2. datasetVersion is 2026.x and schemaVersion is 1', () {
@@ -42,7 +42,7 @@ void main() {
         expect(ids.contains(p.id), isFalse, reason: 'Duplicate ID: ${p.id}');
         ids.add(p.id);
       }
-      expect(ids.length, equals(504));
+      expect(ids.length, equals(532));
     });
 
     test('6. All 504 pandal names are non-empty strings', () {
@@ -92,7 +92,7 @@ void main() {
       const userLon = 88.3636;
       final sorted = repo.sortByDistance(userLat, userLon);
 
-      expect(sorted.length, equals(504));
+      expect(sorted.length, equals(532));
       double prevDist = 0.0;
       for (int i = 0; i < 10; i++) {
         final dist = repo.calculateHaversineDistanceMeters(
@@ -105,7 +105,7 @@ void main() {
 
     test('12. sortAlphabetically() sorts pandals alphabetically by name', () {
       final sorted = repo.sortAlphabetically();
-      expect(sorted.length, equals(504));
+      expect(sorted.length, equals(532));
       for (int i = 0; i < sorted.length - 1; i++) {
         final cmp = sorted[i].name.toLowerCase().compareTo(sorted[i + 1].name.toLowerCase());
         expect(cmp <= 0, isTrue,

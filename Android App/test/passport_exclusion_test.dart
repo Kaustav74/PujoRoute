@@ -16,8 +16,8 @@ void main() {
   });
 
   group('Pandal Descriptions Dataset Tests', () {
-    test('All 504 pandals have valid, non-empty descriptions', () {
-      expect(kAllKolkataPujas.length, 504);
+    test('All 532 pandals have valid, non-empty descriptions', () {
+      expect(kAllKolkataPujas.length, 532);
       for (final p in kAllKolkataPujas) {
         expect(p.history.trim().isNotEmpty, isTrue, reason: 'Pandal ${p.name} has empty history');
         expect(p.history.length >= 30, isTrue, reason: 'Pandal ${p.name} has short history');

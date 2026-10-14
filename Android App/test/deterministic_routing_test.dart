@@ -135,7 +135,7 @@ void main() {
       expect(guidance.detailedAdvice.toLowerCase(), contains('door to door'));
     });
 
-    test('All 504 pandals resolve valid nearest metro info and gate', () {
+    test('All 532 pandals resolve valid nearest metro info and gate', () {
       for (final p in kAllKolkataPujas) {
         final info = metroGraph.getPandalMetroInfo(p);
         expect(info.station.isNotEmpty, true, reason: '${p.name} station is empty');

@@ -3,11 +3,11 @@ import 'package:pujoroute/data/pujas_data.dart';
 
 void main() {
   test(
-      'kDistinctPandalCount is derived from data (504 records - 17 duplicates)',
+      'kDistinctPandalCount is derived from data (532 records)',
       () {
     expect(kDistinctPandalCount,
         kAllKolkataPujas.where((p) => !p.isDuplicateEntry).length);
-    expect(kDistinctPandalCount, 487);
+    expect(kDistinctPandalCount, 515);
   });
 
   test('No pandal description contains stray markdown', () {
