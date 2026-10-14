@@ -15,6 +15,33 @@ import '../services/external_places_service.dart';
 import '../services/hybrid_pandal_search_service.dart';
 import 'puja_calendar_screen.dart';
 
+class MetroStationLocation {
+  final String name;
+  final double lat;
+  final double lon;
+  final String line;
+
+  const MetroStationLocation(this.name, this.lat, this.lon, this.line);
+}
+
+/// Station locations for map links, derived from the single audited source
+/// (MetroGraphService.kStationCoordinates, OpenStreetMap station nodes).
+final List<MetroStationLocation> kKolkataMetroCoordinates = [
+  for (final e in MetroGraphService.kStationCoordinates.entries)
+    MetroStationLocation(e.key, e.value[0], e.value[1], _lineLabel(e.key)),
+];
+
+String _lineLabel(String station) {
+  final lines = <String>[
+    if (MetroGraphService.kBlueLineStations.contains(station)) 'Blue Line',
+    if (MetroGraphService.kGreenLineStations.contains(station)) 'Green Line',
+    if (MetroGraphService.kPurpleLineStations.contains(station)) 'Purple Line',
+    if (MetroGraphService.kOrangeLineStations.contains(station)) 'Orange Line',
+    if (MetroGraphService.kYellowLineStations.contains(station)) 'Yellow Line',
+  ];
+  return lines.join(' / ');
+}
+
 class CircuitStudioScreen extends StatefulWidget {
   final double userLat;
   final double userLon;
