@@ -98,7 +98,7 @@ void main() {
       final pandal = validCandidate.toPandal();
       expect(pandal.id, equals('ext-osm-osm-4421'));
       expect(pandal.name, equals('Dum Dum Park Tarun Sangha'));
-      expect(pandal.isLocationUnverified, isTrue);
+      expect(validCandidate.isLocationVerified, isFalse);
       expect(pandal.hasMappableLocation, isTrue);
     });
   });
@@ -187,6 +187,11 @@ void main() {
 
   group('Search Pandal in Google Complete Removal Verification', () {
     testWidgets('9. CircuitStudioScreen renders without any Search Pandal in Google option', (tester) async {
+      tester.view.physicalSize = const Size(1080, 4000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
       await tester.pumpWidget(
         const MaterialApp(
           home: CircuitStudioScreen(

@@ -19,6 +19,7 @@ __pycache__/
 venv/
 .pytest_cache/
 .cache/
+tools/monitor_ci.py
 
 # ---- Build outputs ----
 **/build/
