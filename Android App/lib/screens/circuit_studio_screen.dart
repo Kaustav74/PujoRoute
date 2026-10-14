@@ -835,7 +835,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
           lat: lat,
           lon: lon,
           landmark: (props['formatted'] ?? '').toString(),
-          history: 'From Geoapify. Confirm before navigating. Route logic is ours.',
+          history: 'Approximate from Geoapify. Confirm the exact address before use.',
         ));
       }
     } catch (_) {}
@@ -1097,6 +1097,8 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                               children: [
                                 Row(children: [
                                   const Icon(Icons.travel_explore, color: Colors.lightBlueAccent, size: 18),
+                                  const SizedBox(width: 4),
+                                  const Text('Geoapify', style: TextStyle(color: Colors.lightBlueAccent, fontSize: 10)),
                                   const SizedBox(width: 6),
                                   Expanded(child: Text(g.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14))),
                                 ]),
