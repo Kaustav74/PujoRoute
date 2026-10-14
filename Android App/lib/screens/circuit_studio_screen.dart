@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../utils/external_links.dart';
 import '../data/pujas_data.dart';
@@ -11,6 +13,7 @@ import '../services/hardened_pujo_optimizer.dart';
 import '../services/metro_graph_service.dart';
 import '../services/pandal_search_service.dart';
 import '../services/external_places_service.dart';
+import '../services/hybrid_pandal_search_service.dart';
 import 'puja_calendar_screen.dart';
 
 class MetroStationLocation {
@@ -79,6 +82,20 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
   bool _excludeVisitedStamps =
       true; // Exclude completed / passport-stamped pandals from route generation
 
+  // Origin / Starting Location State (Fixed starting point, not counted as a pandal stop)
+  double? _originLat;
+  double? _originLon;
+  String _originLabel = 'Your Live Location';
+  bool _isLocating = false;
+  String? _locationError;
+  bool _isLocationPermissionPermanentlyDenied = false;
+  bool _isLocationServiceDisabled = false;
+
+  // Additional Planner Options
+  bool _isRoundTrip = true; // Round-trip: return to starting point
+  String _travelMode = 'walk'; // 'walk', 'drive', 'transit'
+  final Set<String> _lockedStopIds = {};
+
   // Generated Circuit
   List<Pandal> _circuitStops = [];
   List<Pandal> _pendingForcedStops = [];
@@ -89,6 +106,16 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
   @override
   void initState() {
     super.initState();
+    // Seed initial origin from widget coordinates if valid
+    if (widget.userLat != 0.0 &&
+        widget.userLon != 0.0 &&
+        ExternalPlacesService.isValidCoordinate(widget.userLat, widget.userLon)) {
+      _originLat = widget.userLat;
+      _originLon = widget.userLon;
+    }
+    // Asynchronously obtain fresh device location as default starting point
+    _fetchFreshLiveLocation();
+
     if (widget.initialZone != null && widget.initialZone!.isNotEmpty) {
       _selectedZone = widget.initialZone!;
     }
@@ -101,6 +128,92 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
       });
     } else {
       _loadExistingOrGenerateDefault();
+    }
+  }
+
+  /// Obtains a fresh live device location via Geolocator.
+  Future<void> _fetchFreshLiveLocation({bool showFeedback = false}) async {
+    if (_isLocating) return;
+    setState(() {
+      _isLocating = true;
+      _locationError = null;
+      _isLocationPermissionPermanentlyDenied = false;
+      _isLocationServiceDisabled = false;
+    });
+
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (!mounted) return;
+        setState(() {
+          _isLocating = false;
+          _isLocationServiceDisabled = true;
+          _locationError = 'Device location services are off. Turn on GPS.';
+        });
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        if (!mounted) return;
+        setState(() {
+          _isLocating = false;
+          _isLocationPermissionPermanentlyDenied = true;
+          _locationError = 'Location permission permanently denied. Enable in Settings.';
+        });
+        return;
+      }
+
+      if (permission == LocationPermission.denied) {
+        if (!mounted) return;
+        setState(() {
+          _isLocating = false;
+          _locationError = 'Location permission denied. Starting origin requires GPS.';
+        });
+        return;
+      }
+
+      Position? pos;
+      try {
+        pos = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+          timeLimit: const Duration(seconds: 5),
+        );
+      } catch (_) {
+        pos = await Geolocator.getLastKnownPosition();
+      }
+
+      if (!mounted) return;
+      if (pos != null && ExternalPlacesService.isValidCoordinate(pos.latitude, pos.longitude)) {
+        setState(() {
+          _originLat = pos!.latitude;
+          _originLon = pos!.longitude;
+          _originLabel = 'Your Live Location';
+          _locationError = null;
+          _isLocating = false;
+        });
+        if (showFeedback && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Starting origin updated to your current live location.'),
+            backgroundColor: Colors.green,
+          ));
+        }
+      } else {
+        setState(() {
+          _isLocating = false;
+          _locationError = 'Could not acquire fresh GPS fix. Tap to retry.';
+        });
+      }
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLocating = false;
+        _locationError = 'Location unavailable. Tap to retry GPS.';
+      });
     }
   }
 
@@ -415,17 +528,27 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
           : '${cleanStops.last.metroStation} Metro Station, Kolkata');
       allLabels.add('🚇 ${cleanStops.last.metroStation} Metro');
     } else {
-      final bool hasUserLoc = widget.userLat != 0.0 && widget.userLon != 0.0;
-      if (hasUserLoc) {
+      final effectiveLat = _originLat ?? (widget.userLat != 0.0 ? widget.userLat : null);
+      final effectiveLon = _originLon ?? (widget.userLon != 0.0 ? widget.userLon : null);
+      final bool hasOrigin = effectiveLat != null &&
+          effectiveLon != null &&
+          ExternalPlacesService.isValidCoordinate(effectiveLat, effectiveLon);
+
+      if (hasOrigin) {
         allPoints.add(
-            '${widget.userLat.toStringAsFixed(6)},${widget.userLon.toStringAsFixed(6)}');
-        allLabels.add('📍 Your Location');
+            '${effectiveLat.toStringAsFixed(6)},${effectiveLon.toStringAsFixed(6)}');
+        allLabels.add('📍 $_originLabel');
       }
       for (final p in cleanStops) {
         allPoints.add(useCoordinates
             ? '${p.lat.toStringAsFixed(6)},${p.lon.toStringAsFixed(6)}'
             : _placeQuery(p));
         allLabels.add(p.name);
+      }
+      if (_isRoundTrip && hasOrigin) {
+        allPoints.add(
+            '${effectiveLat.toStringAsFixed(6)},${effectiveLon.toStringAsFixed(6)}');
+        allLabels.add('📍 Return to $_originLabel');
       }
     }
 
@@ -451,7 +574,9 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
         'origin': origin,
         'destination': destination,
         if (waypoints.isNotEmpty) 'waypoints': waypoints,
-        'travelmode': 'walking',
+        'travelmode': _travelMode == 'drive'
+            ? 'driving'
+            : (_travelMode == 'transit' ? 'transit' : 'walking'),
       }).toString();
 
       legs.add(MapEntry(url, legLabels));
@@ -522,18 +647,24 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     final destination = useCoordinates
         ? '${p.lat.toStringAsFixed(6)},${p.lon.toStringAsFixed(6)}'
         : _placeQuery(p);
-    final bool hasUserLoc = widget.userLat != 0.0 && widget.userLon != 0.0;
-    final String origin = hasUserLoc
-        ? '${widget.userLat.toStringAsFixed(6)},${widget.userLon.toStringAsFixed(6)}'
+    final effectiveLat = _originLat ?? (widget.userLat != 0.0 ? widget.userLat : null);
+    final effectiveLon = _originLon ?? (widget.userLon != 0.0 ? widget.userLon : null);
+    final bool hasOrigin = effectiveLat != null &&
+        effectiveLon != null &&
+        ExternalPlacesService.isValidCoordinate(effectiveLat, effectiveLon);
+    final String origin = hasOrigin
+        ? '${effectiveLat.toStringAsFixed(6)},${effectiveLon.toStringAsFixed(6)}'
         : '';
 
     final Uri url;
-    if (hasUserLoc) {
+    if (hasOrigin) {
       url = Uri.https('www.google.com', '/maps/dir/', {
         'api': '1',
         'origin': origin,
         'destination': destination,
-        'travelmode': 'walking',
+        'travelmode': _travelMode == 'drive'
+            ? 'driving'
+            : (_travelMode == 'transit' ? 'transit' : 'walking'),
       });
     } else {
       url = Uri.https('www.google.com', '/maps/search/', {
@@ -689,117 +820,204 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     ));
   }
 
+  /// Optimizes current stops order using 2-Opt TSP starting from Origin (live device location),
+  /// respecting round-trip behavior and locked stops, and reporting metrics.
   void _optimizeCurrentStopsOnly() {
-    if (_circuitStops.length < 3) {
+    final effectiveLat = _originLat ?? (widget.userLat != 0.0 ? widget.userLat : null);
+    final effectiveLon = _originLon ?? (widget.userLon != 0.0 ? widget.userLon : null);
+
+    if (effectiveLat == null ||
+        effectiveLon == null ||
+        !ExternalPlacesService.isValidCoordinate(effectiveLat, effectiveLon)) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Add at least 3 stops, then optimize.'),
+        content: Text('Starting origin coordinates required. Tap Refresh GPS above.'),
         backgroundColor: Colors.orange,
       ));
       return;
     }
-    final optimized = HardenedPujoOptimizer.apply2Opt(
-      List<Pandal>.from(_circuitStops),
-      anchorStart: false,
-      anchorEnd: false,
+
+    if (_circuitStops.length < 2) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Add at least 2 pandal stops to optimize route order.'),
+        backgroundColor: Colors.orange,
+      ));
+      return;
+    }
+
+    // Check all stops for valid coordinates
+    for (final p in _circuitStops) {
+      if (!ExternalPlacesService.isValidCoordinate(p.lat, p.lon)) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Cannot route "${p.name}": unverified or invalid coordinates.'),
+          backgroundColor: Colors.red,
+        ));
+        return;
+      }
+    }
+
+    // Initial total distance calculation
+    double initialDist = _getDistanceMeters(effectiveLat, effectiveLon, _circuitStops.first.lat, _circuitStops.first.lon);
+    for (int i = 0; i < _circuitStops.length - 1; i++) {
+      initialDist += _getDistanceMeters(_circuitStops[i].lat, _circuitStops[i].lon, _circuitStops[i + 1].lat, _circuitStops[i + 1].lon);
+    }
+    if (_isRoundTrip) {
+      initialDist += _getDistanceMeters(_circuitStops.last.lat, _circuitStops.last.lon, effectiveLat, effectiveLon);
+    }
+
+    // Anchor origin at start of path
+    final dummyOrigin = Pandal.create(
+      id: '__circuit_origin__',
+      name: 'Your Location',
+      lat: effectiveLat,
+      lon: effectiveLon,
+      zone: 'Origin',
     );
-    setState(() => _circuitStops = optimized);
-    SessionService.instance.saveCircuit(optimized.map((s) => s.id).toList(), true);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Optimized ${optimized.length} stops. Nothing was removed.'),
-      backgroundColor: Colors.green,
-    ));
+
+    final path = [dummyOrigin, ..._circuitStops];
+    if (_isRoundTrip) {
+      path.add(dummyOrigin);
+    }
+
+    final optimizedPath = HardenedPujoOptimizer.apply2Opt(
+      path,
+      anchorStart: true,
+      anchorEnd: _isRoundTrip,
+    );
+
+    final newStops = optimizedPath
+        .where((p) => p.id != '__circuit_origin__')
+        .toList();
+
+    if (newStops.length != _circuitStops.length) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Optimization could not preserve all stops. Retaining current sequence.'),
+        backgroundColor: Colors.red,
+      ));
+      return;
+    }
+
+    double newDist = _getDistanceMeters(effectiveLat, effectiveLon, newStops.first.lat, newStops.first.lon);
+    for (int i = 0; i < newStops.length - 1; i++) {
+      newDist += _getDistanceMeters(newStops[i].lat, newStops[i].lon, newStops[i + 1].lat, newStops[i + 1].lon);
+    }
+    if (_isRoundTrip) {
+      newDist += _getDistanceMeters(newStops.last.lat, newStops.last.lon, effectiveLat, effectiveLon);
+    }
+
+    final savedMeters = initialDist - newDist;
+
+    setState(() {
+      _circuitStops = newStops;
+    });
+
+    SessionService.instance.saveCircuit(newStops.map((s) => s.id).toList(), true);
+
+    if (savedMeters > 30) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Route optimized from start! Saved ${(savedMeters / 1000).toStringAsFixed(2)} km.'),
+        backgroundColor: Colors.green,
+      ));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Stops are already in the shortest-path order from start.'),
+        backgroundColor: Colors.cyan,
+      ));
+    }
   }
 
-  /// Search local pandals or external places (Geoapify) and add to circuit with review.
-  Future<void> _searchAndAddAnyPandal() async {
+  /// Unified hybrid search picker combining instant local database search
+  /// with debounced online Geoapify search and cross-source deduplication.
+  void _showHybridSearchPicker() {
+    String filter = '';
+    String metroFilter = '';
+    bool hideStampedInPicker = _excludeVisitedStamps;
+    final Set<Pandal> selectedPandals = {};
     final searchController = TextEditingController();
+
+    Timer? debounceTimer;
+    int searchToken = 0;
+    bool isOnlineSearching = false;
+    String? onlineError;
+    List<ExternalPlaceCandidate> onlineHits = [];
+
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
-        bool isSearching = false;
-        List<Pandal> localMatches = [];
-        List<ExternalPlaceCandidate> externalCandidates = [];
-        String? statusMessage;
-
         return StatefulBuilder(
           builder: (modalCtx, setModalState) {
-            void performSearch(String text) async {
+            final existingIds = _circuitStops.map((p) => p.id).toSet();
+            final visitedIds = SessionService.instance.visitedIds;
+            final effectiveLat = _originLat ?? (widget.userLat != 0.0 ? widget.userLat : null);
+            final effectiveLon = _originLon ?? (widget.userLon != 0.0 ? widget.userLon : null);
+            final referenceLat = _circuitStops.isNotEmpty
+                ? _circuitStops.last.lat
+                : (effectiveLat ?? 22.5726);
+            final referenceLon = _circuitStops.isNotEmpty
+                ? _circuitStops.last.lon
+                : (effectiveLon ?? 88.3639);
+            final referenceName = _circuitStops.isNotEmpty
+                ? _circuitStops.last.name
+                : _originLabel;
+
+            // Immediate local search
+            final localMatches = HybridPandalSearchService.instance.searchLocal(
+              filter,
+              sourceList: kAllKolkataPujas
+                  .where((p) =>
+                      p.hasMappableLocation &&
+                      !existingIds.contains(p.id) &&
+                      (!hideStampedInPicker || !visitedIds.contains(p.id)) &&
+                      (metroFilter.isEmpty ||
+                          p.metroStation.toLowerCase() == metroFilter.toLowerCase()))
+                  .toList(),
+              userLat: referenceLat,
+              userLon: referenceLon,
+              returnAllOnEmpty: true,
+            );
+
+            void triggerOnlineSearch(String text) {
+              debounceTimer?.cancel();
               final q = text.trim();
-              if (q.length < 2) return;
-              setModalState(() {
-                isSearching = true;
-                statusMessage = null;
-              });
-
-              // 1. Search bundled local dataset first
-              final local = PandalSearchService.instance.search(
-                q,
-                includeUnverified: true,
-                excludeDuplicates: true,
-                limit: 5,
-              );
-
-              // 2. Query Geoapify external search
-              List<ExternalPlaceCandidate> externalList = [];
-              try {
-                externalList = await ExternalPlacesService.instance.searchPlaces(q);
-              } catch (_) {
-                statusMessage = 'External network error. Showing local pandals.';
+              if (q.length < 2) {
+                setModalState(() {
+                  onlineHits = [];
+                  isOnlineSearching = false;
+                  onlineError = null;
+                });
+                return;
               }
 
-              if (!mounted) return;
               setModalState(() {
-                localMatches = local;
-                externalCandidates = externalList;
-                isSearching = false;
-                if (local.isEmpty && externalList.isEmpty && statusMessage == null) {
-                  statusMessage = 'No places found. Try a fuller or alternate name.';
+                isOnlineSearching = true;
+                onlineError = null;
+              });
+
+              debounceTimer = Timer(const Duration(milliseconds: 400), () async {
+                final currentToken = ++searchToken;
+                try {
+                  final rawCandidates = await HybridPandalSearchService.instance.searchOnline(q);
+                  if (currentToken != searchToken || !modalCtx.mounted) return;
+                  final filtered = HybridPandalSearchService.instance.filterCrossSourceDuplicates(
+                    rawCandidates,
+                    [..._circuitStops, ...localMatches],
+                  );
+                  setModalState(() {
+                    onlineHits = filtered;
+                    isOnlineSearching = false;
+                  });
+                } catch (_) {
+                  if (currentToken != searchToken || !modalCtx.mounted) return;
+                  setModalState(() {
+                    isOnlineSearching = false;
+                    onlineError = 'Online search unavailable. Local catalog active.';
+                  });
                 }
               });
             }
 
-            void addPandalToCircuit(Pandal p) {
-              // Deduplication check
-              final alreadyInCircuit = _circuitStops.any((s) => s.id == p.id);
-              if (alreadyInCircuit) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${p.name} is already in your circuit!')),
-                );
-                return;
-              }
-              final isDuplicate = _circuitStops.any(
-                (s) => PandalDeduplicationService.instance.isDuplicatePair(s, p),
-              );
-              if (isDuplicate) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('A stop matching "${p.name}" is already in circuit.')),
-                );
-                return;
-              }
-
-              setState(() {
-                _circuitStops = [..._circuitStops, p];
-              });
-              SessionService.instance
-                  .saveCircuit(_circuitStops.map((s) => s.id).toList(), true);
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Added ${p.name}. Tap Optimize to reorder.')),
-              );
-            }
-
-            void addExternalCandidateToCircuit(ExternalPlaceCandidate candidate) {
-              if (!ExternalPlacesService.isValidCoordinate(candidate.lat, candidate.lon)) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Invalid coordinates for this place.')),
-                );
-                return;
-              }
-              final p = candidate.toPandal();
-              addPandalToCircuit(p);
-            }
+            final totalAvailableCount = localMatches.length + onlineHits.length;
 
             return Container(
               height: MediaQuery.of(context).size.height * 0.85,
@@ -822,289 +1040,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Search & Add Pandal or Place',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: searchController,
-                    autofocus: true,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'e.g. Suruchi Sangha, Kalyani ITI More...',
-                      hintStyle: const TextStyle(color: Colors.white38, fontSize: 13),
-                      prefixIcon: const Icon(Icons.search, color: kMarigoldAmber),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.arrow_forward, color: kMarigoldAmber),
-                        onPressed: () => performSearch(searchController.text),
-                      ),
-                      filled: true,
-                      fillColor: const Color(0xFF1C1C2E),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    onSubmitted: (v) => performSearch(v),
-                  ),
-                  const SizedBox(height: 10),
-                  if (isSearching)
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8),
-                      child: LinearProgressIndicator(minHeight: 2.5),
-                    ),
-                  if (statusMessage != null)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Text(
-                        statusMessage!,
-                        style: const TextStyle(color: Colors.white70, fontSize: 12),
-                      ),
-                    ),
-                  Expanded(
-                    child: ListView(
-                      children: [
-                        if (localMatches.isNotEmpty) ...[
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 6),
-                            child: Text(
-                              'Verified Bundled Pandals',
-                              style: TextStyle(
-                                color: kMarigoldAmber,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                          ...localMatches.map((p) => Container(
-                                margin: const EdgeInsets.symmetric(vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF1C1C2E),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.white12),
-                                ),
-                                child: ListTile(
-                                  title: Text(
-                                    p.name,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    '${p.zone} • ${p.landmark}',
-                                    style: const TextStyle(
-                                      color: Colors.white60,
-                                      fontSize: 11.5,
-                                    ),
-                                  ),
-                                  trailing: FilledButton.icon(
-                                    style: FilledButton.styleFrom(
-                                      backgroundColor: kSindoorRed,
-                                      visualDensity: VisualDensity.compact,
-                                    ),
-                                    onPressed: () => addPandalToCircuit(p),
-                                    icon: const Icon(Icons.add, size: 16),
-                                    label: const Text('Add'),
-                                  ),
-                                ),
-                              )),
-                          const SizedBox(height: 12),
-                        ],
-                        if (externalCandidates.isNotEmpty) ...[
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 6),
-                            child: Text(
-                              'External Places (Geoapify • Unverified)',
-                              style: TextStyle(
-                                color: Colors.cyanAccent,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ),
-                          ...externalCandidates.map((c) => Container(
-                                margin: const EdgeInsets.symmetric(vertical: 4),
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF1C1C2E),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: Colors.cyanAccent.withValues(alpha: 0.3),
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        const Icon(Icons.travel_explore,
-                                            color: Colors.cyanAccent, size: 18),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            c.name,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 6, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: Colors.cyanAccent
-                                                .withValues(alpha: 0.15),
-                                            borderRadius:
-                                                BorderRadius.circular(4),
-                                          ),
-                                          child: Text(
-                                            '${c.source} • Unverified',
-                                            style: const TextStyle(
-                                              color: Colors.cyanAccent,
-                                              fontSize: 10,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      c.address,
-                                      style: const TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        FilledButton.icon(
-                                          style: FilledButton.styleFrom(
-                                            backgroundColor: kSindoorRed,
-                                            visualDensity:
-                                                VisualDensity.compact,
-                                          ),
-                                          onPressed: () =>
-                                              addExternalCandidateToCircuit(c),
-                                          icon: const Icon(Icons.add, size: 16),
-                                          label: const Text('Add to Circuit'),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              )),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    ).whenComplete(searchController.dispose);
-  }
-
-  /// External place search results as pandals via Geoapify. Our optimizer still owns the route.
-  Future<List<Pandal>> _googleSearchPandals(String query) async {
-    return _externalSearchPandals(query);
-  }
-
-  /// External search implementation using Geoapify
-  Future<List<Pandal>> _externalSearchPandals(String query) async {
-    final q = query.trim();
-    if (q.length < 2) return [];
-    try {
-      final candidates = await ExternalPlacesService.instance.searchPlaces(q);
-      return candidates.map((c) => c.toPandal()).toList();
-    } catch (_) {
-      return [];
-    }
-  }
-
-  void _showAddPandalPicker() {
-    // State must live outside the sheet builder. Dismissing the keyboard
-    // changes MediaQuery and rebuilds the sheet; if these were inside the
-    // builder they would reset and the filtered pandal would disappear.
-    String filter = '';
-    String metroFilter = ''; // empty = all stations
-    bool hideStampedInPicker = _excludeVisitedStamps;
-    final Set<Pandal> selectedPandals = {};
-    final searchController = TextEditingController();
-    List<Pandal> googleHits = [];
-    bool googleBusy = false;
-    int googleToken = 0;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (modalCtx, setModalState) {
-            final existingIds = _circuitStops.map((p) => p.id).toSet();
-            final visitedIds = SessionService.instance.visitedIds;
-            final referenceLat = _circuitStops.isNotEmpty
-                ? _circuitStops.last.lat
-                : widget.userLat;
-            final referenceLon = _circuitStops.isNotEmpty
-                ? _circuitStops.last.lon
-                : widget.userLon;
-            final referenceName = _circuitStops.isNotEmpty
-                ? _circuitStops.last.name
-                : 'Your Location';
-
-            final available = PandalSearchService.instance.search(
-              filter,
-              sourceList: kAllKolkataPujas
-                  .where((p) =>
-                      p.hasMappableLocation &&
-                      !existingIds.contains(p.id) &&
-                      (!hideStampedInPicker || !visitedIds.contains(p.id)) &&
-                      (metroFilter.isEmpty ||
-                          p.metroStation.toLowerCase() == metroFilter.toLowerCase()))
-                  .toList(),
-              userLat: referenceLat,
-              userLon: referenceLon,
-              excludeDuplicates: true,
-              includeUnverified: false,
-              returnAllOnEmpty: true,
-            );
-
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.82,
-              decoration: const BoxDecoration(
-                color: Color(0xFF141424),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                border:
-                    Border(top: BorderSide(color: kMarigoldAmber, width: 2.5)),
-              ),
-              padding: const EdgeInsets.all(18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 44,
-                      height: 5,
-                      decoration: BoxDecoration(
-                          color: Colors.white24,
-                          borderRadius: BorderRadius.circular(4)),
-                    ),
-                  ),
                   const SizedBox(height: 14),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1112,9 +1047,10 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                       const Text(
                         'Add Pandal to Circuit',
                         style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Row(
                         children: [
@@ -1127,8 +1063,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                               },
                               child: Container(
                                 margin: const EdgeInsets.only(right: 6),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 3),
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                 decoration: BoxDecoration(
                                   color: hideStampedInPicker
                                       ? Colors.purple.withValues(alpha: 0.25)
@@ -1141,9 +1076,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                                   ),
                                 ),
                                 child: Text(
-                                  hideStampedInPicker
-                                      ? '🛂 Hide Stamped'
-                                      : '🛂 Show Stamped',
+                                  hideStampedInPicker ? '🛂 Hide Stamped' : '🛂 Show Stamped',
                                   style: TextStyle(
                                     color: hideStampedInPicker
                                         ? Colors.purpleAccent
@@ -1155,18 +1088,18 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                               ),
                             ),
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                             decoration: BoxDecoration(
                               color: kMarigoldAmber.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              '${available.length} available',
+                              '$totalAvailableCount available',
                               style: const TextStyle(
-                                  color: kMarigoldAmber,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold),
+                                color: kMarigoldAmber,
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],
@@ -1178,42 +1111,41 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                     controller: searchController,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      hintText:
-                          'Search $kDistinctPandalCount Kolkata pandals by name, zone, landmark...',
-                      hintStyle:
-                          const TextStyle(color: Colors.white38, fontSize: 13),
-                      prefixIcon:
-                          const Icon(Icons.search, color: kMarigoldAmber),
+                      hintText: 'Search $kDistinctPandalCount verified pandals or external places...',
+                      hintStyle: const TextStyle(color: Colors.white38, fontSize: 13),
+                      prefixIcon: const Icon(Icons.search, color: kMarigoldAmber),
+                      suffixIcon: searchController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, color: Colors.white54, size: 18),
+                              onPressed: () {
+                                searchController.clear();
+                                setModalState(() {
+                                  filter = '';
+                                  onlineHits = [];
+                                  isOnlineSearching = false;
+                                });
+                              },
+                            )
+                          : null,
                       filled: true,
                       fillColor: const Color(0xFF1C1C2E),
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 12),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none),
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                     onChanged: (val) {
                       setModalState(() => filter = val);
-                      final token = ++googleToken;
-                      if (val.trim().length < 2) {
-                        setModalState(() => googleHits = []);
-                        return;
-                      }
-                      setModalState(() => googleBusy = true);
-                      _googleSearchPandals(val).then((hits) {
-                        if (token != googleToken) return;
-                        setModalState(() {
-                          googleHits = hits;
-                          googleBusy = false;
-                        });
-                      });
+                      triggerOnlineSearch(val);
                     },
                   ),
                   const SizedBox(height: 8),
                   // Metro station filter
                   Builder(builder: (_) {
                     final stations = kAllKolkataPujas
-                        .where((p) => p.metroStation.trim().isNotEmpty &&
+                        .where((p) =>
+                            p.metroStation.trim().isNotEmpty &&
                             !p.metroStation.toLowerCase().contains('none'))
                         .map((p) => p.metroStation.trim())
                         .toSet()
@@ -1258,240 +1190,276 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                   Text(
                     'Distances computed from: $referenceName',
                     style: const TextStyle(
-                        color: Colors.white54,
-                        fontSize: 11,
-                        fontStyle: FontStyle.italic),
+                      color: Colors.white54,
+                      fontSize: 11,
+                      fontStyle: FontStyle.italic,
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  if (googleBusy)
+                  if (isOnlineSearching)
                     const Padding(
-                      padding: EdgeInsets.only(bottom: 6),
+                      padding: EdgeInsets.symmetric(vertical: 6),
                       child: LinearProgressIndicator(minHeight: 2),
                     ),
+                  if (onlineError != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Text(
+                        onlineError!,
+                        style: const TextStyle(color: Colors.orangeAccent, fontSize: 11),
+                      ),
+                    ),
+                  const SizedBox(height: 4),
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: googleHits.length + available.length,
-                      itemBuilder: (c, idx) {
-                        if (idx < googleHits.length) {
-                          final g = googleHits[idx];
-                          final already = selectedPandals.any((s) => s.id == g.id);
-                          return Container(
-                            margin: const EdgeInsets.symmetric(vertical: 4),
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1C1C2E),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.lightBlueAccent.withValues(alpha: 0.4)),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(children: [
-                                  const Icon(Icons.travel_explore, color: Colors.cyanAccent, size: 18),
-                                  const SizedBox(width: 6),
-                                  Expanded(child: Text(g.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14))),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: Colors.cyanAccent.withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Text(
-                                      'Geoapify • Unverified',
-                                      style: TextStyle(
-                                        color: Colors.cyanAccent,
-                                        fontSize: 9.5,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ]),
-                                const SizedBox(height: 4),
-                                Text(g.landmark, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, fontSize: 12)),
-                                const SizedBox(height: 2),
-                                Text(g.history, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white38, fontSize: 11)),
-                                const SizedBox(height: 8),
-                                Row(children: [
-                                  Expanded(
-                                    child: OutlinedButton.icon(
-                                      style: OutlinedButton.styleFrom(foregroundColor: Colors.lightBlueAccent, side: const BorderSide(color: Colors.lightBlueAccent)),
-                                      onPressed: () => launchUrl(Uri.parse('https://www.google.com/maps/search/?api=1&query=${g.lat},${g.lon}')),
-                                      icon: const Icon(Icons.map, size: 16),
-                                      label: const Text('Open Maps', style: TextStyle(fontSize: 12)),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: FilledButton.icon(
-                                      style: FilledButton.styleFrom(backgroundColor: already ? Colors.green : kSindoorRed),
-                                      onPressed: () => setModalState(() {
-                                        if (already) {
-                                          selectedPandals.removeWhere((s) => s.id == g.id);
-                                        } else {
-                                          selectedPandals.add(g);
-                                        }
-                                      }),
-                                      icon: Icon(already ? Icons.check : Icons.add, size: 16),
-                                      label: Text(already ? 'Added' : 'Add to circuit', style: const TextStyle(fontSize: 12)),
-                                    ),
-                                  ),
-                                ]),
-                              ],
-                            ),
-                          );
-                        }
-                        final p = available[idx - googleHits.length];
-                        final isSelected = selectedPandals.any((s) => s.id == p.id);
-                        final dist = _getDistanceMeters(
-                                referenceLat, referenceLon, p.lat, p.lon)
-                            .round();
-                        final isMega = p.category == 'mega';
-
-                        return Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? const Color(0xFF262640)
-                                : const Color(0xFF1C1C2E),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: isSelected
-                                  ? kMarigoldAmber
-                                  : Colors.white10,
-                              width: isSelected ? 1.5 : 1.0,
-                            ),
-                          ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12, vertical: 4),
-                            onTap: () {
-                              setModalState(() {
-                                if (isSelected) {
-                                  selectedPandals.removeWhere((s) => s.id == p.id);
-                                } else {
-                                  selectedPandals.add(p);
-                                }
-                              });
-                            },
-                            leading: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: (isSelected
-                                        ? kMarigoldAmber
-                                        : (isMega ? kSindoorRed : kMarigoldAmber))
-                                    .withValues(alpha: 0.2),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                isSelected
-                                    ? Icons.check_circle
-                                    : (isMega
-                                        ? Icons.local_fire_department
-                                        : Icons.account_balance),
-                                color: isSelected
-                                    ? kMarigoldAmber
-                                    : (isMega ? kSindoorRed : kMarigoldAmber),
-                                size: 20,
-                              ),
-                            ),
-                            title: Text(
-                              p.name,
+                    child: ListView(
+                      children: [
+                        if (onlineHits.isNotEmpty) ...[
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6),
+                            child: Text(
+                              'External Places (Geoapify • Unverified)',
                               style: TextStyle(
-                                color: isSelected ? kMarigoldAmber : Colors.white,
+                                color: Colors.cyanAccent,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 3),
-                                Text(
-                                  '${p.zone} • ${dist > 1000 ? "${(dist / 1000).toStringAsFixed(1)}km" : "${dist}m"} from ${_circuitStops.isNotEmpty ? "last stop" : "you"}',
-                                  style: const TextStyle(
-                                      color: Colors.white60, fontSize: 11.5),
-                                ),
-                                if (p.metroStation.isNotEmpty)
-                                  Text(
-                                    '🚇 ${p.metroStation}',
-                                    style: const TextStyle(
-                                        color: Colors.cyanAccent,
-                                        fontSize: 10.5),
-                                  ),
-                                if (visitedIds.contains(p.id))
-                                  Container(
-                                    margin: const EdgeInsets.only(top: 2),
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 6, vertical: 1.5),
-                                    decoration: BoxDecoration(
-                                      color:
-                                          Colors.purple.withValues(alpha: 0.2),
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: const Text(
-                                      '🛂 Stamped in Passport (Completed)',
-                                      style: TextStyle(
-                                          color: Colors.purpleAccent,
-                                          fontSize: 9.5,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            trailing: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: isSelected
-                                    ? const Color(0xFF2E7D32)
-                                    : kSindoorRed,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 6),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8)),
-                                visualDensity: VisualDensity.compact,
-                              ),
-                              onPressed: () {
-                                setModalState(() {
-                                  if (isSelected) {
-                                    selectedPandals.removeWhere((s) => s.id == p.id);
-                                  } else {
-                                    selectedPandals.add(p);
-                                  }
-                                });
-                              },
-                              child: Text(
-                                isSelected ? 'Selected ✓' : '+ Select',
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                fontSize: 13,
                               ),
                             ),
                           ),
-                        );
-                      },
+                          ...onlineHits.map((c) {
+                            final candidatePandal = c.toPandal();
+                            final isSelected = selectedPandals.any((s) => s.id == candidatePandal.id);
+                            return Container(
+                              margin: const EdgeInsets.symmetric(vertical: 4),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF1C1C2E),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: Colors.cyanAccent.withValues(alpha: 0.35),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.travel_explore, color: Colors.cyanAccent, size: 18),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          c.name,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: Colors.cyanAccent.withValues(alpha: 0.15),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          '${c.source} • Unverified',
+                                          style: const TextStyle(
+                                            color: Colors.cyanAccent,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    c.address,
+                                    style: const TextStyle(color: Colors.white70, fontSize: 12),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      OutlinedButton.icon(
+                                        style: OutlinedButton.styleFrom(
+                                          foregroundColor: Colors.lightBlueAccent,
+                                          side: const BorderSide(color: Colors.lightBlueAccent),
+                                          visualDensity: VisualDensity.compact,
+                                        ),
+                                        onPressed: () => launchUrl(
+                                          Uri.parse('https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lon}'),
+                                        ),
+                                        icon: const Icon(Icons.map, size: 15),
+                                        label: const Text('Map', style: TextStyle(fontSize: 11)),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      FilledButton.icon(
+                                        style: FilledButton.styleFrom(
+                                          backgroundColor: isSelected ? Colors.green : kSindoorRed,
+                                          visualDensity: VisualDensity.compact,
+                                        ),
+                                        onPressed: () {
+                                          setModalState(() {
+                                            if (isSelected) {
+                                              selectedPandals.removeWhere((s) => s.id == candidatePandal.id);
+                                            } else {
+                                              selectedPandals.add(candidatePandal);
+                                            }
+                                          });
+                                        },
+                                        icon: Icon(isSelected ? Icons.check : Icons.add, size: 16),
+                                        label: Text(isSelected ? 'Selected' : 'Add Stop'),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                          const SizedBox(height: 10),
+                        ],
+                        if (localMatches.isNotEmpty) ...[
+                          const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 6),
+                            child: Text(
+                              'Verified PujoRoute Pandals',
+                              style: TextStyle(
+                                color: kMarigoldAmber,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                          ...localMatches.map((p) {
+                            final isSelected = selectedPandals.any((s) => s.id == p.id);
+                            final dist = _getDistanceMeters(
+                              referenceLat,
+                              referenceLon,
+                              p.lat,
+                              p.lon,
+                            ).round();
+                            final isMega = p.category == 'mega';
+
+                            return Container(
+                              margin: const EdgeInsets.symmetric(vertical: 4),
+                              decoration: BoxDecoration(
+                                color: isSelected ? const Color(0xFF262640) : const Color(0xFF1C1C2E),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isSelected ? kMarigoldAmber : Colors.white10,
+                                  width: isSelected ? 1.5 : 1.0,
+                                ),
+                              ),
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                onTap: () {
+                                  setModalState(() {
+                                    if (isSelected) {
+                                      selectedPandals.removeWhere((s) => s.id == p.id);
+                                    } else {
+                                      selectedPandals.add(p);
+                                    }
+                                  });
+                                },
+                                leading: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: (isSelected
+                                            ? kMarigoldAmber
+                                            : (isMega ? kSindoorRed : kMarigoldAmber))
+                                        .withValues(alpha: 0.2),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    isSelected
+                                        ? Icons.check_circle
+                                        : (isMega ? Icons.local_fire_department : Icons.account_balance),
+                                    color: isSelected ? kMarigoldAmber : (isMega ? kSindoorRed : kMarigoldAmber),
+                                    size: 20,
+                                  ),
+                                ),
+                                title: Text(
+                                  p.name,
+                                  style: TextStyle(
+                                    color: isSelected ? kMarigoldAmber : Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      '${p.zone} • ${dist > 1000 ? "${(dist / 1000).toStringAsFixed(1)}km" : "${dist}m"} from ${_circuitStops.isNotEmpty ? "last stop" : "start"}',
+                                      style: const TextStyle(color: Colors.white60, fontSize: 11.5),
+                                    ),
+                                    if (p.metroStation.isNotEmpty)
+                                      Text(
+                                        '🚇 ${p.metroStation}',
+                                        style: const TextStyle(color: Colors.cyanAccent, fontSize: 10.5),
+                                      ),
+                                    if (visitedIds.contains(p.id))
+                                      Container(
+                                        margin: const EdgeInsets.only(top: 2),
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                                        decoration: BoxDecoration(
+                                          color: Colors.purple.withValues(alpha: 0.2),
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: const Text(
+                                          '🛂 Stamped in Passport',
+                                          style: TextStyle(
+                                            color: Colors.purpleAccent,
+                                            fontSize: 9.5,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                trailing: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: isSelected ? const Color(0xFF2E7D32) : kSindoorRed,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                  onPressed: () {
+                                    setModalState(() {
+                                      if (isSelected) {
+                                        selectedPandals.removeWhere((s) => s.id == p.id);
+                                      } else {
+                                        selectedPandals.add(p);
+                                      }
+                                    });
+                                  },
+                                  child: Text(
+                                    isSelected ? 'Selected ✓' : '+ Select',
+                                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }),
+                        ],
+                      ],
                     ),
                   ),
-
-                  // Bottom Action Bar when pandals are selected (Option C Flow)
                   if (selectedPandals.isNotEmpty) ...[
                     const SizedBox(height: 10),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                       decoration: BoxDecoration(
                         color: const Color(0xFF1E1E34),
                         borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: kMarigoldAmber,
-                          width: 1.5,
-                        ),
+                        border: Border.all(color: kMarigoldAmber, width: 1.5),
                       ),
                       child: Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 5),
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                             decoration: BoxDecoration(
                               color: kMarigoldAmber.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(10),
@@ -1511,26 +1479,19 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: kMarigoldAmber,
                                 foregroundColor: Colors.black87,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                               ),
                               onPressed: () {
                                 final chosen = selectedPandals.toList();
                                 Navigator.pop(ctx);
-                                // Keep every selected pandal and re-optimize the full route
                                 final newTotal = (_circuitStops.length + chosen.length).clamp(3, 15);
                                 _regenerateCircuitWithForcedStops(chosen, newTotal);
                               },
                               icon: const Icon(Icons.route_rounded, size: 16),
                               label: const Text(
                                 'Add & Optimize',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                ),
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                               ),
                             ),
                           ),
@@ -1544,8 +1505,192 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
           },
         );
       },
-    ).whenComplete(() => searchController.dispose());
+    ).whenComplete(() {
+      debounceTimer?.cancel();
+      searchController.dispose();
+    });
   }
+
+  void _showAddPandalPicker() => _showHybridSearchPicker();
+  void _searchAndAddAnyPandal() => _showHybridSearchPicker();
+
+  Widget _buildOriginTile() {
+    final effectiveLat = _originLat ?? (widget.userLat != 0.0 ? widget.userLat : null);
+    final effectiveLon = _originLon ?? (widget.userLon != 0.0 ? widget.userLon : null);
+    final hasValidCoords = effectiveLat != null &&
+        effectiveLon != null &&
+        ExternalPlacesService.isValidCoordinate(effectiveLat, effectiveLon);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1B233A),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: hasValidCoords
+              ? Colors.lightBlueAccent.withValues(alpha: 0.5)
+              : Colors.orangeAccent.withValues(alpha: 0.5),
+          width: 1.5,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: (hasValidCoords ? Colors.blueAccent : Colors.orangeAccent).withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+            ),
+            child: _isLocating
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.blueAccent),
+                  )
+                : Icon(
+                    hasValidCoords ? Icons.my_location : Icons.location_off,
+                    color: hasValidCoords ? Colors.blueAccent : Colors.orangeAccent,
+                    size: 18,
+                  ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      _originLabel,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13.5,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                      decoration: BoxDecoration(
+                        color: Colors.blueAccent.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Text(
+                        'START POINT',
+                        style: TextStyle(
+                          color: Colors.lightBlueAccent,
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                if (_isLocating)
+                  const Text(
+                    'Acquiring fresh GPS fix...',
+                    style: TextStyle(color: Colors.white60, fontSize: 11),
+                  )
+                else if (_locationError != null)
+                  Text(
+                    _locationError!,
+                    style: const TextStyle(color: Colors.orangeAccent, fontSize: 11),
+                  )
+                else if (hasValidCoords)
+                  Text(
+                    'Lat: ${effectiveLat.toStringAsFixed(4)}, Lon: ${effectiveLon.toStringAsFixed(4)} • Anchored Start',
+                    style: const TextStyle(color: Colors.white60, fontSize: 11),
+                  )
+                else
+                  const Text(
+                    'Tap refresh to detect GPS location',
+                    style: TextStyle(color: Colors.white54, fontSize: 11),
+                  ),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.lightBlueAccent, size: 20),
+            tooltip: 'Refresh GPS',
+            onPressed: _isLocating ? null : () => _fetchFreshLiveLocation(showFeedback: true),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRoundTripReturnTile() {
+    return Container(
+      margin: const EdgeInsets.only(top: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1B233A),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: kMarigoldAmber.withValues(alpha: 0.4),
+          width: 1.2,
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: kMarigoldAmber.withValues(alpha: 0.2),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.flag_rounded, color: kMarigoldAmber, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'Return to $_originLabel',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13.5,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                      decoration: BoxDecoration(
+                        color: kMarigoldAmber.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Text(
+                        'FINISH',
+                        style: TextStyle(
+                          color: kMarigoldAmber,
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                const Text(
+                  'End of circuit • Complete round trip',
+                  style: TextStyle(color: Colors.white60, fontSize: 11),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 
 
   /// Option C Bottom Sheet: Lets user review added pandals, select new total stops, and regenerate AI Circuit.
@@ -2616,9 +2761,17 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
   Widget build(BuildContext context) {
     // Total Circuit Stats
     double totalMeters = 0;
+    final effectiveLat = _originLat ?? (widget.userLat != 0.0 ? widget.userLat : null);
+    final effectiveLon = _originLon ?? (widget.userLon != 0.0 ? widget.userLon : null);
+    final bool hasOrigin = effectiveLat != null &&
+        effectiveLon != null &&
+        ExternalPlacesService.isValidCoordinate(effectiveLat, effectiveLon);
+
     if (_circuitStops.isNotEmpty) {
-      totalMeters += _getDistanceMeters(widget.userLat, widget.userLon,
-          _circuitStops.first.lat, _circuitStops.first.lon);
+      if (hasOrigin) {
+        totalMeters += _getDistanceMeters(
+            effectiveLat, effectiveLon, _circuitStops.first.lat, _circuitStops.first.lon);
+      }
       for (int i = 0; i < _circuitStops.length - 1; i++) {
         totalMeters += _getDistanceMeters(
             _circuitStops[i].lat,
@@ -2626,9 +2779,17 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
             _circuitStops[i + 1].lat,
             _circuitStops[i + 1].lon);
       }
+      if (_isRoundTrip && hasOrigin) {
+        totalMeters += _getDistanceMeters(
+            _circuitStops.last.lat,
+            _circuitStops.last.lon,
+            effectiveLat,
+            effectiveLon);
+      }
     }
     final double totalKm = totalMeters / 1000;
-    final int totalMins = max(5, (totalMeters / 75).round());
+    final speed = _travelMode == 'drive' ? 300 : (_travelMode == 'transit' ? 200 : 75);
+    final int totalMins = max(5, (totalMeters / speed).round());
 
     return Scaffold(
       backgroundColor: kMidnightBlue,
@@ -3228,6 +3389,112 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                           ],
                         ),
                       ),
+                      const SizedBox(height: 10),
+
+                      // Round trip switch (Return to origin)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: _isRoundTrip
+                              ? kMarigoldAmber.withValues(alpha: 0.15)
+                              : const Color(0xFF202034),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _isRoundTrip
+                                ? kMarigoldAmber.withValues(alpha: 0.6)
+                                : Colors.white10,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(Icons.replay_rounded,
+                                color: _isRoundTrip
+                                    ? kMarigoldAmber
+                                    : Colors.white54,
+                                size: 20),
+                            const SizedBox(width: 10),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Round-Trip Circuit',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12),
+                                  ),
+                                  Text(
+                                    'Return to your starting origin at the end of the tour',
+                                    style: TextStyle(
+                                        color: Colors.white54, fontSize: 10),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Switch(
+                              value: _isRoundTrip,
+                              activeColor: kMarigoldAmber,
+                              onChanged: (val) {
+                                setState(() => _isRoundTrip = val);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Travel Mode selector
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF202034),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.white10),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.directions, color: Colors.white70, size: 20),
+                            const SizedBox(width: 10),
+                            const Text(
+                              'Travel Mode:',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12),
+                            ),
+                            const Spacer(),
+                            ChoiceChip(
+                              label: const Text('🚶 Walk', style: TextStyle(fontSize: 11)),
+                              selected: _travelMode == 'walk',
+                              onSelected: (s) {
+                                if (s) setState(() => _travelMode = 'walk');
+                              },
+                              selectedColor: kSindoorRed,
+                            ),
+                            const SizedBox(width: 6),
+                            ChoiceChip(
+                              label: const Text('🚗 Drive', style: TextStyle(fontSize: 11)),
+                              selected: _travelMode == 'drive',
+                              onSelected: (s) {
+                                if (s) setState(() => _travelMode = 'drive');
+                              },
+                              selectedColor: kSindoorRed,
+                            ),
+                            const SizedBox(width: 6),
+                            ChoiceChip(
+                              label: const Text('🚇 Metro', style: TextStyle(fontSize: 11)),
+                              selected: _travelMode == 'transit',
+                              onSelected: (s) {
+                                if (s) setState(() => _travelMode = 'transit');
+                              },
+                              selectedColor: kSindoorRed,
+                            ),
+                          ],
+                        ),
+                      ),
                       const SizedBox(height: 14),
 
                       // Generate AI Circuit Button
@@ -3302,25 +3569,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                         width: double.infinity,
                         child: OutlinedButton.icon(
                           style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.white70,
-                            side: const BorderSide(color: Colors.white24),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                          ),
-                          onPressed: _searchAndAddAnyPandal,
-                          icon: const Icon(Icons.travel_explore, size: 18),
-                          label: const Text(
-                            'Search external places (Geoapify)',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      SizedBox(
-                        width: double.infinity,
-                        child: OutlinedButton.icon(
-                          style: OutlinedButton.styleFrom(
                             foregroundColor: Colors.cyanAccent,
                             side: const BorderSide(
                                 color: Colors.cyanAccent, width: 1.2),
@@ -3381,7 +3629,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                               ],
                             ),
                             Text(
-                              '${totalKm.toStringAsFixed(1)} km • ~$totalMins min walk',
+                              '${totalKm.toStringAsFixed(1)} km • ~$totalMins min ${_travelMode == "drive" ? "drive" : (_travelMode == "transit" ? "transit" : "walk")}',
                               style: const TextStyle(
                                   color: kMarigoldAmber,
                                   fontWeight: FontWeight.bold,
@@ -3444,6 +3692,9 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                   ],
                 ),
                 const SizedBox(height: 6),
+
+                // Live Location Origin Waypoint
+                _buildOriginTile(),
 
                 // 4. Stops List
                 if (_circuitStops.isEmpty)
@@ -3594,6 +3845,8 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                       );
                     },
                   ),
+                if (_isRoundTrip && _circuitStops.isNotEmpty)
+                  _buildRoundTripReturnTile(),
                 if (_circuitStops.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 10.0, bottom: 6.0),
