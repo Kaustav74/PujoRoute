@@ -7818,7 +7818,7 @@ Pandal(
     lat: 22.6038,
     lon: 88.4012,
     landmark: 'Shreebhumi, Lake Town',
-    metroStation: 'Bidhannagar',
+    metroStation: 'Belgachia',
     history: 'Major North Kolkata theme puja at Shreebhumi.',
     popularityRank: 15,
   ),
@@ -7832,7 +7832,7 @@ Pandal(
     lon: 88.3095,
     landmark: 'State Bank Park, Thakurpukur',
     metroStation: 'Kalighat',
-    history: 'Thakurpukur State Bank Park Sarbojanin.',
+    history: 'Thakurpukur State Bank Park Sarbojanin. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 40,
   ),
   Pandal(
@@ -7845,7 +7845,7 @@ Pandal(
     lon: 88.4590,
     landmark: 'New Town, Rajarhat',
     metroStation: 'Salt Lake Sector V',
-    history: 'New Town Sarbojanin Durga Puja.',
+    history: 'New Town Sarbojanin Durga Puja. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 35,
   ),
   Pandal(
@@ -7884,7 +7884,7 @@ Pandal(
     lon: 88.4210,
     landmark: 'Aswininagar',
     metroStation: 'Dum Dum',
-    history: 'Aswininagar Bandhu Mahal Club.',
+    history: 'Aswininagar Bandhu Mahal Club. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 45,
   ),
   Pandal(
@@ -7896,8 +7896,8 @@ Pandal(
     lat: 22.5998,
     lon: 88.3612,
     landmark: 'Kumartuli',
-    metroStation: 'Sovabazar',
-    history: 'Kumartuli Sarbojanin Durgotsab.',
+    metroStation: 'Sovabazar Sutanuti',
+    history: 'Kumartuli Sarbojanin Durgotsab. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 18,
   ),
   Pandal(
@@ -7909,8 +7909,8 @@ Pandal(
     lat: 22.6005,
     lon: 88.3620,
     landmark: 'Kumartuli Park',
-    metroStation: 'Sovabazar',
-    history: 'Kumartuli Park Sarbojanin.',
+    metroStation: 'Sovabazar Sutanuti',
+    history: 'Kumartuli Park Sarbojanin. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 22,
   ),
   Pandal(
@@ -7936,7 +7936,7 @@ Pandal(
     lon: 88.3760,
     landmark: 'Rail Pukur',
     metroStation: 'Shyambazar',
-    history: 'Rail Pukur United Club.',
+    history: 'Rail Pukur United Club. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 55,
   ),
   Pandal(
@@ -7949,7 +7949,7 @@ Pandal(
     lon: 88.3660,
     landmark: 'Darjipara',
     metroStation: 'Girish Park',
-    history: 'Darjipara Sarbojanin Durgotsab.',
+    history: 'Darjipara Sarbojanin Durgotsab. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 50,
   ),
   Pandal(
@@ -7961,8 +7961,8 @@ Pandal(
     lat: 22.5810,
     lon: 88.3625,
     landmark: 'Gouberia',
-    metroStation: 'Girish Park',
-    history: 'Gouberia Sarbojanin.',
+    metroStation: 'Mahatma Gandhi Road',
+    history: 'Gouberia Sarbojanin. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 55,
   ),
   Pandal(
@@ -7975,7 +7975,7 @@ Pandal(
     lon: 88.3555,
     landmark: 'Jorasanko',
     metroStation: 'Girish Park',
-    history: 'Jorasanko Sadharan Durgotsab Samity.',
+    history: 'Jorasanko Sadharan Durgotsab Samity. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 35,
   ),
   Pandal(
@@ -7988,7 +7988,7 @@ Pandal(
     lon: 88.3410,
     landmark: 'Haridevpur',
     metroStation: 'Kalighat',
-    history: 'Ajeya Sanghati, Haridevpur.',
+    history: 'Ajeya Sanghati, Haridevpur. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 40,
   ),
   Pandal(
@@ -8000,8 +8000,8 @@ Pandal(
     lat: 22.5255,
     lon: 88.3460,
     landmark: 'Bakul Bagan, Bhowanipore',
-    metroStation: 'Rabindra Sadan',
-    history: 'Bakul Bagan Sarbojanin, Bhowanipore.',
+    metroStation: 'Kalighat',
+    history: 'Bakul Bagan Sarbojanin, Bhowanipore. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 30,
   ),
   Pandal(
@@ -8014,7 +8014,7 @@ Pandal(
     lon: 88.3210,
     landmark: 'Khidderpore',
     metroStation: 'Rabindra Sadan',
-    history: 'Pally Sarodiya, Khidderpore.',
+    history: 'Pally Sarodiya, Khidderpore. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 50,
   ),
   Pandal(
@@ -8027,7 +8027,7 @@ Pandal(
     lon: 88.3110,
     landmark: 'Behala',
     metroStation: 'Kalighat',
-    history: 'Behala Friends Club.',
+    history: 'Behala Friends Club. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 45,
   ),
   Pandal(
@@ -8040,7 +8040,7 @@ Pandal(
     lon: 88.4095,
     landmark: 'Dum Dum Park',
     metroStation: 'Dum Dum',
-    history: 'Dum Dum Park Sarbojanin.',
+    history: 'Dum Dum Park Sarbojanin. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 35,
   ),
       Pandal(
@@ -8066,7 +8066,7 @@ Pandal(
     lon: 88.3400,
     landmark: 'Olaibibitola, Howrah',
     metroStation: 'Howrah Maidan',
-    history: 'Olaibibitola Sarbojanin, Howrah.',
+    history: 'Olaibibitola Sarbojanin, Howrah. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 55,
   ),
   Pandal(
@@ -8079,7 +8079,7 @@ Pandal(
     lon: 88.3480,
     landmark: 'Salkia, Howrah',
     metroStation: 'Howrah Maidan',
-    history: 'Salkia Alapani Durga Puja.',
+    history: 'Salkia Alapani Durga Puja. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 55,
   ),
   Pandal(
@@ -8092,7 +8092,7 @@ Pandal(
     lon: 88.3350,
     landmark: 'Ichapur, Howrah',
     metroStation: 'Howrah Maidan',
-    history: 'Ichapur Shivaji Sangha, Howrah.',
+    history: 'Ichapur Shivaji Sangha, Howrah. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 60,
   ),
   Pandal(
@@ -8105,7 +8105,7 @@ Pandal(
     lon: 88.3920,
     landmark: 'Rajdanga',
     metroStation: 'Kalighat',
-    history: 'Rajdanga Amra Kojon Kalyan Samity.',
+    history: 'Rajdanga Amra Kojon Kalyan Samity. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 45,
   ),
   Pandal(
@@ -8118,7 +8118,7 @@ Pandal(
     lon: 88.3850,
     landmark: 'Baishnabghata, Garia',
     metroStation: 'Kalighat',
-    history: 'Garia Baishnabghata Sarbojanin.',
+    history: 'Garia Baishnabghata Sarbojanin. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 50,
   ),
   Pandal(
@@ -8131,7 +8131,7 @@ Pandal(
     lon: 88.3650,
     landmark: 'South Kolkata',
     metroStation: 'Kalighat',
-    history: 'Pally Unnayan Samity.',
+    history: 'Pally Unnayan Samity. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 55,
   ),
   Pandal(
@@ -8144,7 +8144,7 @@ Pandal(
     lon: 88.4210,
     landmark: 'Dum Dum',
     metroStation: 'Dum Dum',
-    history: 'Dumdum Mall Pally.',
+    history: 'Dumdum Mall Pally. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 55,
   ),
   Pandal(
@@ -8157,7 +8157,7 @@ Pandal(
     lon: 88.3910,
     landmark: 'Patuli',
     metroStation: 'Kalighat',
-    history: 'Upanagari Sarbojanin, Patuli.',
+    history: 'Upanagari Sarbojanin, Patuli. Added for the 2026 Kolkata and Kalyani pandal circuit.',
     popularityRank: 45,
   ),
 ];

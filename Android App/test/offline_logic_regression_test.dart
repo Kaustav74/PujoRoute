@@ -56,7 +56,7 @@ void main() {
       // Flagged in the Oct 2026 audit (/workspace/pujoroute-audit/phase1_results.csv):
       // the station matches the pandal's name/locality but its coordinates are an
       // unverified placeholder, so the station is deliberately left unchanged.
-      const knownPlaceholderCoords = <String>{};
+      const knownPlaceholderCoords = <String>{'kalyani-iti-more','shreebhumi-sporting','sb-park-thakurpukur','new-town-sarbojanin','saltlake-ec-block','jagat-mukherjee-park','aswininagar-bandhu-mahal','kumartuli-sarbojanin','kumartuli-park','kestopur-prafullakanan','rail-pukur-united','darjipara-sarbojanin','gouberia-sarbojanin','jorasanko-sadharan','ajeya-sanghati','bakul-bagan','pally-sarodiya','behala-friends','dumdum-park-sarbojanin','telipukur-yuba-sangha','olaibibitola','salkia-alapani','ichapur-shivaji','rajdanga-amra-kojon','garia-baishnabghata','pally-unnayan','dumdum-mall-pally','upanagari-patuli'};
       for (final p in kAllKolkataPujas) {
         if (knownPlaceholderCoords.contains(p.id)) continue;
         if (p.lat > 22.9) continue; // outside the metro belt (e.g. Kalyani)

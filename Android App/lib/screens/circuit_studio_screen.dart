@@ -1096,18 +1096,54 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                         if (idx < googleHits.length) {
                           final g = googleHits[idx];
                           final already = selectedPandals.any((s) => s.id == g.id);
-                          return ListTile(
-                            leading: const Icon(Icons.travel_explore, color: Colors.lightBlueAccent),
-                            title: Text(g.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                            subtitle: Text('Google • ${g.landmark}', maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11)),
-                            trailing: Icon(already ? Icons.check_circle : Icons.add_circle_outline, color: already ? kMarigoldAmber : Colors.white54),
-                            onTap: () => setModalState(() {
-                              if (already) {
-                                selectedPandals.removeWhere((s) => s.id == g.id);
-                              } else {
-                                selectedPandals.add(g);
-                              }
-                            }),
+                          return Container(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1C1C2E),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.lightBlueAccent.withValues(alpha: 0.4)),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(children: [
+                                  const Icon(Icons.travel_explore, color: Colors.lightBlueAccent, size: 18),
+                                  const SizedBox(width: 6),
+                                  Expanded(child: Text(g.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14))),
+                                ]),
+                                const SizedBox(height: 4),
+                                Text(g.landmark, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                                const SizedBox(height: 2),
+                                Text(g.history, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white38, fontSize: 11)),
+                                const SizedBox(height: 8),
+                                Row(children: [
+                                  Expanded(
+                                    child: OutlinedButton.icon(
+                                      style: OutlinedButton.styleFrom(foregroundColor: Colors.lightBlueAccent, side: const BorderSide(color: Colors.lightBlueAccent)),
+                                      onPressed: () => launchUrl(Uri.parse('https://www.google.com/maps/search/?api=1&query=${g.lat},${g.lon}')),
+                                      icon: const Icon(Icons.map, size: 16),
+                                      label: const Text('Open Maps', style: TextStyle(fontSize: 12)),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: FilledButton.icon(
+                                      style: FilledButton.styleFrom(backgroundColor: already ? Colors.green : kSindoorRed),
+                                      onPressed: () => setModalState(() {
+                                        if (already) {
+                                          selectedPandals.removeWhere((s) => s.id == g.id);
+                                        } else {
+                                          selectedPandals.add(g);
+                                        }
+                                      }),
+                                      icon: Icon(already ? Icons.check : Icons.add, size: 16),
+                                      label: Text(already ? 'Added' : 'Add to circuit', style: const TextStyle(fontSize: 12)),
+                                    ),
+                                  ),
+                                ]),
+                              ],
+                            ),
                           );
                         }
                         final p = available[idx - googleHits.length];

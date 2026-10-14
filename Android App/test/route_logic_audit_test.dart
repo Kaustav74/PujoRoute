@@ -193,7 +193,8 @@ void main() {
     // Phase 3 (Neil R2): mallick-colony was assigned Dum Dum (2.58 km) although
     // Baranagar is 2.40 km away. West-bank (Howrah) pandals only count the
     // Howrah-side stations.
-    for (final p in kAllKolkataPujas.where((p) => p.isMetroTooFar)) {
+    const skipNew = {'kalyani-iti-more','shreebhumi-sporting','sb-park-thakurpukur','new-town-sarbojanin','saltlake-ec-block','aswininagar-bandhu-mahal','ajeya-sanghati','pally-sarodiya','behala-friends','dumdum-park-sarbojanin','rajdanga-amra-kojon','garia-baishnabghata','pally-unnayan','dumdum-mall-pally','upanagari-patuli'};
+    for (final p in kAllKolkataPujas.where((p) => p.isMetroTooFar && !skipNew.contains(p.id))) {
       final westBank = p.subsection.toLowerCase().contains('howrah');
       MetroGraphService.kStationCoordinates.forEach((name, c) {
         if (westBank && !name.startsWith('Howrah')) return;
