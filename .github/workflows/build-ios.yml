@@ -26,28 +26,13 @@ jobs:
           channel: stable
       - name: Pub get
         run: flutter pub get
-      - name: Generate iOS config
-        run: flutter build ios --config-only --release
-      - name: Build unsigned with xcodebuild
+      - name: Build iOS simulator (no Apple account needed)
+        run: flutter build ios --simulator --release
+      - name: Zip simulator app
         run: |
-          xcodebuild -workspace ios/Runner.xcworkspace \
-            -scheme Runner \
-            -configuration Release \
-            -sdk iphoneos \
-            -derivedDataPath build/ios \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY="" \
-            DEVELOPMENT_TEAM=""
-      - name: Package unsigned IPA
-        run: |
-          APP=$(find build/ios -name "Runner.app" -type d | head -1)
-          echo "App at $APP"
-          rm -rf Payload
-          mkdir Payload
-          cp -R "$APP" Payload/
-          zip -r PujoRoute-iOS-unsigned.ipa Payload
-          ls -lh PujoRoute-iOS-unsigned.ipa
+          cd build/ios/iphonesimulator
+          zip -r ../../../PujoRoute-iOS-simulator.zip Runner.app
+          ls -lh ../../../PujoRoute-iOS-simulator.zip
       - name: Publish to ios-ci release
         uses: softprops/action-gh-release@v2
         with:
@@ -64,6 +49,6 @@ jobs:
             3. Select your iPhone and press Run.
 
             A paid Apple Developer account is required for TestFlight or the App Store.
-          files: app/PujoRoute-iOS-unsigned.ipa
+          files: app/PujoRoute-iOS-simulator.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
