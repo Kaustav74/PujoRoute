@@ -58,18 +58,12 @@ android {
     }
 
     signingConfigs {
-        getByName("debug") {
-            v1SigningEnabled = true
-            v2SigningEnabled = true
-        }
         if (hasReleaseSigning) {
             create("release") {
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
                 storeFile = releaseStoreFile
                 storePassword = keystoreProperties.getProperty("storePassword")
-                v1SigningEnabled = true
-                v2SigningEnabled = true
             }
         }
     }
