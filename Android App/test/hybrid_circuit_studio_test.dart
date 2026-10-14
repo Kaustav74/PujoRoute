@@ -172,21 +172,16 @@ void main() {
       expect(finalStops.length, equals(pandalStops.length));
     });
 
-    test('8. Total circuit metric incorporates travel mode speeds', () {
+    test('8. Total circuit metric incorporates standard hopping walking pace', () {
       const totalMeters = 3000.0; // 3 km
-
-      final walkMins = (totalMeters / 75).round(); // ~40 mins
-      final driveMins = (totalMeters / 300).round(); // ~10 mins
-      final transitMins = (totalMeters / 200).round(); // ~15 mins
-
-      expect(walkMins, equals(40));
-      expect(driveMins, equals(10));
-      expect(transitMins, equals(15));
+      const speed = 75; // Standard pandal-hopping walking pace (meters per minute)
+      final mins = (totalMeters / speed).round(); // 40 mins
+      expect(mins, equals(40));
     });
   });
 
   group('Search Pandal in Google Complete Removal Verification', () {
-    testWidgets('9. CircuitStudioScreen renders without any Search Pandal in Google option', (tester) async {
+    testWidgets('9. CircuitStudioScreen renders without Search Pandal in Google or Travel Mode options', (tester) async {
       tester.view.physicalSize = const Size(1080, 4000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -206,6 +201,12 @@ void main() {
       // Verify that "Search Pandal in Google" does NOT appear anywhere
       expect(find.textContaining('Search Pandal in Google'), findsNothing);
       expect(find.textContaining('Search external places (Geoapify)'), findsNothing);
+
+      // Verify that "Travel Mode" selector does NOT appear anywhere
+      expect(find.textContaining('Travel Mode:'), findsNothing);
+      expect(find.text('🚶 Walk'), findsNothing);
+      expect(find.text('🚗 Drive'), findsNothing);
+      expect(find.text('🚇 Metro'), findsNothing);
 
       // Verify that "+ Add Stop" buttons exist
       expect(find.text('+ Add Stop'), findsOneWidget);

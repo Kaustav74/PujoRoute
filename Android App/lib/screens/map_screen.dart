@@ -327,16 +327,11 @@ class _MapScreenState extends State<MapScreen>
     final destination = Uri.encodeComponent('${p.name}, Kolkata');
     final bool hasUserLoc =
         _userPosition.latitude != 0.0 && _userPosition.longitude != 0.0;
-    final String urlString;
-    if (hasUserLoc) {
-      final origin =
-          '${_userPosition.latitude.toStringAsFixed(5)},${_userPosition.longitude.toStringAsFixed(5)}';
-      urlString =
-          'https://www.google.com/maps/dir/?api=1&origin=$origin&destination=$destination&travelmode=walking';
-    } else {
-      urlString =
-          'https://www.google.com/maps/search/?api=1&query=$destination';
-    }
+    final String origin = hasUserLoc
+        ? '${_userPosition.latitude.toStringAsFixed(5)},${_userPosition.longitude.toStringAsFixed(5)}'
+        : 'Current+Location';
+    final urlString =
+        'https://www.google.com/maps/dir/?api=1&origin=$origin&destination=$destination';
     final url = Uri.parse(urlString);
     try {
       if (!mounted) return;
@@ -363,19 +358,17 @@ class _MapScreenState extends State<MapScreen>
         _userPosition.latitude != 0.0 && _userPosition.longitude != 0.0;
     final origin = hasUserLoc
         ? '${_userPosition.latitude.toStringAsFixed(5)},${_userPosition.longitude.toStringAsFixed(5)}'
-        : '${stops.first.lat.toStringAsFixed(5)},${stops.first.lon.toStringAsFixed(5)}';
+        : 'Current+Location';
     final destination = Uri.encodeComponent('${stops.last.name}, Kolkata');
 
-    final intermediateStops = hasUserLoc
-        ? stops.sublist(0, stops.length - 1)
-        : (stops.length > 2 ? stops.sublist(1, stops.length - 1) : <Pandal>[]);
+    final intermediateStops = stops.sublist(0, stops.length - 1);
     final waypoints = intermediateStops
         .take(9)
         .map((p) => Uri.encodeComponent('${p.name}, Kolkata'))
         .join('|');
 
     String urlString =
-        'https://www.google.com/maps/dir/?api=1&origin=$origin&destination=$destination&travelmode=walking';
+        'https://www.google.com/maps/dir/?api=1&origin=$origin&destination=$destination';
     if (waypoints.isNotEmpty) {
       urlString += '&waypoints=$waypoints';
     }

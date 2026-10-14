@@ -90,7 +90,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
 
   // Additional Planner Options
   bool _isRoundTrip = true; // Round-trip: return to starting point
-  String _travelMode = 'walk'; // 'walk', 'drive', 'transit'
 
   // Generated Circuit
   List<Pandal> _circuitStops = [];
@@ -498,58 +497,36 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
 
     if (cleanStops.isEmpty) return [];
 
-    // Build ordered list: [origin, pandal1, pandal2, ..., pandalN]
+    // Build ordered list strictly starting from Live Location to the Pandals:
+    // [Live Location, pandal1, pandal2, ..., pandalN]
     final List<String> allPoints = [];
     final List<String> allLabels = []; // human-readable labels
 
-    if (_optimizeByMetro) {
-      final startMetro = _getNearestMetroForPandal(cleanStops.first);
+    final effectiveLat = _originLat ?? (widget.userLat != 0.0 ? widget.userLat : null);
+    final effectiveLon = _originLon ?? (widget.userLon != 0.0 ? widget.userLon : null);
+    final bool hasOrigin = effectiveLat != null &&
+        effectiveLon != null &&
+        ExternalPlacesService.isValidCoordinate(effectiveLat, effectiveLon);
+
+    final String originPoint = hasOrigin
+        ? '${effectiveLat.toStringAsFixed(6)},${effectiveLon.toStringAsFixed(6)}'
+        : 'Current+Location';
+    final String originLabel = hasOrigin ? '📍 $_originLabel' : '📍 Your Live Location';
+
+    allPoints.add(originPoint);
+    allLabels.add(originLabel);
+
+    for (final p in cleanStops) {
       allPoints.add(useCoordinates
-          ? '${startMetro.lat.toStringAsFixed(6)},${startMetro.lon.toStringAsFixed(6)}'
-          : '${cleanStops.first.metroStation} Metro Station, Kolkata');
-      allLabels.add('🚇 ${cleanStops.first.metroStation} Metro');
-
-      for (final p in cleanStops) {
-        allPoints.add(useCoordinates
-            ? '${p.lat.toStringAsFixed(6)},${p.lon.toStringAsFixed(6)}'
-            : _placeQuery(p));
-        allLabels.add(p.name);
-      }
-
-      final endMetro = _getNearestMetroForPandal(cleanStops.last);
-      allPoints.add(useCoordinates
-          ? '${endMetro.lat.toStringAsFixed(6)},${endMetro.lon.toStringAsFixed(6)}'
-          : '${cleanStops.last.metroStation} Metro Station, Kolkata');
-      allLabels.add('🚇 ${cleanStops.last.metroStation} Metro');
-    } else {
-      final effectiveLat = _originLat ?? (widget.userLat != 0.0 ? widget.userLat : null);
-      final effectiveLon = _originLon ?? (widget.userLon != 0.0 ? widget.userLon : null);
-      final bool hasOrigin = effectiveLat != null &&
-          effectiveLon != null &&
-          ExternalPlacesService.isValidCoordinate(effectiveLat, effectiveLon);
-
-      if (hasOrigin) {
-        allPoints.add(
-            '${effectiveLat.toStringAsFixed(6)},${effectiveLon.toStringAsFixed(6)}');
-        allLabels.add('📍 $_originLabel');
-      }
-      for (final p in cleanStops) {
-        allPoints.add(useCoordinates
-            ? '${p.lat.toStringAsFixed(6)},${p.lon.toStringAsFixed(6)}'
-            : _placeQuery(p));
-        allLabels.add(p.name);
-      }
-      if (_isRoundTrip && hasOrigin) {
-        allPoints.add(
-            '${effectiveLat.toStringAsFixed(6)},${effectiveLon.toStringAsFixed(6)}');
-        allLabels.add('📍 Return to $_originLabel');
-      }
+          ? '${p.lat.toStringAsFixed(6)},${p.lon.toStringAsFixed(6)}'
+          : _placeQuery(p));
+      allLabels.add(p.name);
     }
 
     if (allPoints.length < 2) return [];
 
-    // Split into legs of up to 11 points each
-    const int maxPointsPerLeg = 11;
+    // Split into legs of up to 10 points (1 origin + up to 8 waypoints + 1 destination)
+    const int maxPointsPerLeg = 10;
     final List<MapEntry<String, List<String>>> legs = [];
     int i = 0;
     while (i < allPoints.length - 1) {
@@ -563,18 +540,18 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
           ? legPoints.sublist(1, legPoints.length - 1).join('|')
           : '';
 
-      final url = Uri.https('www.google.com', '/maps/dir/', {
+      final Map<String, String> queryParams = {
         'api': '1',
         'origin': origin,
         'destination': destination,
-        if (waypoints.isNotEmpty) 'waypoints': waypoints,
-        'travelmode': _travelMode == 'drive'
-            ? 'driving'
-            : (_travelMode == 'transit' ? 'transit' : 'walking'),
-      }).toString();
+      };
+      if (waypoints.isNotEmpty) {
+        queryParams['waypoints'] = waypoints;
+      }
 
+      final url = Uri.https('www.google.com', '/maps/dir/', queryParams).toString();
       legs.add(MapEntry(url, legLabels));
-      i = end - 1; // overlap
+      i = end - 1; // overlap so next leg starts where previous ended
     }
     return legs;
   }
@@ -648,24 +625,13 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
         ExternalPlacesService.isValidCoordinate(effectiveLat, effectiveLon);
     final String origin = hasOrigin
         ? '${effectiveLat.toStringAsFixed(6)},${effectiveLon.toStringAsFixed(6)}'
-        : '';
+        : 'Current+Location';
 
-    final Uri url;
-    if (hasOrigin) {
-      url = Uri.https('www.google.com', '/maps/dir/', {
-        'api': '1',
-        'origin': origin,
-        'destination': destination,
-        'travelmode': _travelMode == 'drive'
-            ? 'driving'
-            : (_travelMode == 'transit' ? 'transit' : 'walking'),
-      });
-    } else {
-      url = Uri.https('www.google.com', '/maps/search/', {
-        'api': '1',
-        'query': destination,
-      });
-    }
+    final Uri url = Uri.https('www.google.com', '/maps/dir/', {
+      'api': '1',
+      'origin': origin,
+      'destination': destination,
+    });
 
     if (!mounted) return;
     await openExternalLink(context, url);
@@ -706,7 +672,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
         'origin': origin,
         'destination': destination,
         if (waypoints.isNotEmpty) 'waypoints': waypoints,
-        'travelmode': 'walking',
       }).toString();
       mapUrls.add(mapsUrl);
       i = end - 1;
@@ -2781,7 +2746,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
       }
     }
     final double totalKm = totalMeters / 1000;
-    final speed = _travelMode == 'drive' ? 300 : (_travelMode == 'transit' ? 200 : 75);
+    const speed = 75; // Standard pandal-hopping walking pace (meters per minute)
     final int totalMins = max(5, (totalMeters / speed).round());
 
     return Scaffold(
@@ -3436,58 +3401,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10),
-
-                      // Travel Mode selector
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF202034),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.white10),
-                        ),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.directions, color: Colors.white70, size: 20),
-                            const SizedBox(width: 10),
-                            const Text(
-                              'Travel Mode:',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12),
-                            ),
-                            const Spacer(),
-                            ChoiceChip(
-                              label: const Text('🚶 Walk', style: TextStyle(fontSize: 11)),
-                              selected: _travelMode == 'walk',
-                              onSelected: (s) {
-                                if (s) setState(() => _travelMode = 'walk');
-                              },
-                              selectedColor: kSindoorRed,
-                            ),
-                            const SizedBox(width: 6),
-                            ChoiceChip(
-                              label: const Text('🚗 Drive', style: TextStyle(fontSize: 11)),
-                              selected: _travelMode == 'drive',
-                              onSelected: (s) {
-                                if (s) setState(() => _travelMode = 'drive');
-                              },
-                              selectedColor: kSindoorRed,
-                            ),
-                            const SizedBox(width: 6),
-                            ChoiceChip(
-                              label: const Text('🚇 Metro', style: TextStyle(fontSize: 11)),
-                              selected: _travelMode == 'transit',
-                              onSelected: (s) {
-                                if (s) setState(() => _travelMode = 'transit');
-                              },
-                              selectedColor: kSindoorRed,
-                            ),
-                          ],
-                        ),
-                      ),
                       const SizedBox(height: 14),
 
                       // Generate AI Circuit Button
@@ -3622,7 +3535,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                               ],
                             ),
                             Text(
-                              '${totalKm.toStringAsFixed(1)} km • ~$totalMins min ${_travelMode == "drive" ? "drive" : (_travelMode == "transit" ? "transit" : "walk")}',
+                              '${totalKm.toStringAsFixed(1)} km • ~$totalMins min',
                               style: const TextStyle(
                                   color: kMarigoldAmber,
                                   fontWeight: FontWeight.bold,
