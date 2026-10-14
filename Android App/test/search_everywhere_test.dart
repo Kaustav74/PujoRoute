@@ -43,7 +43,7 @@ void main() {
       expect(byMetro.any((p) => p.metroStation.toLowerCase().contains('kalighat') || p.landmark.toLowerCase().contains('kalighat')), isTrue);
 
       final byId = PandalSearchService.instance.search('college-square');
-      expect(byId.any((p) => p.id == 'college-square'), isTrue);
+      expect(byId.any((p) => p.id == 'college_square'), isTrue);
     });
 
     test('7. Empty query behavior', () {
