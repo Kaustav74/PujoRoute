@@ -31,7 +31,7 @@ These advertised counts are **not additive**. The same pandal can appear on many
 - evidence type;
 - review status.
 
-The seed rows were transcribed from public directory pages and search results. A first-pass comparison against the current `main` dataset's 532 pandal names was also run on 66 candidate names. The resulting 23 low-similarity candidates are in `candidate-pandals-not-found-by-name-match.csv`. They are not yet confirmed new: name-only matching cannot reliably resolve aliases, Bengali spellings, or locality-specific duplicates.
+The seed rows were transcribed from public directory pages and search results. A first-pass comparison against the current `main` dataset's 532 pandal names was also run on 66 candidate names. The initial 23 low-similarity candidates, plus 22 additional names surfaced in indexed 2026 directory pages and nearby-pandal sections, are in `candidate-pandals-not-found-by-name-match.csv` (45 candidate rows total). The file intentionally preserves possible-alias/possible-duplicate cases for review rather than silently dropping them. These are not yet confirmed new: name-only matching cannot reliably resolve aliases, Bengali spellings, locality-specific duplicates, or nearby-list context.
 
 ## Required ingestion workflow
 
@@ -48,7 +48,7 @@ The seed rows were transcribed from public directory pages and search results. A
 
 ## Limitations of this initial pass
 
-This is a seed of discoveries, **not a claim that every website or every page has been scraped**. Some directories load records dynamically or paginate, and the search index exposes only a subset. A complete census requires source-by-source pagination/API review and record-level reconciliation. Do not label the production dataset "complete" until this work is done.
+This is a seed of discoveries, **not a claim that all 786 DharmKriya records or every other directory has been extracted**. The current web-search interface exposes rendered/indexed snippets, not a complete export of the dynamic 786-record listing; opening the full directory returned a cache-miss rather than its full record set. The extra 22 names added in this pass include some entries visible only in nearby-pandal sections, so they must be reviewed as candidates and not automatically imported. To reach the requested full census, the next required step is a permitted source export/API or an allowed, polite source-specific crawl of every paginated record, followed by record-level reconciliation against the existing 532-entry app catalogue and against all other sources. Do not fabricate the missing records, infer coordinates, or label the production dataset complete until this work is done.
 
 ## Acceptance criteria before production import
 
@@ -60,3 +60,11 @@ This is a seed of discoveries, **not a claim that every website or every page ha
 - Unknown coordinates remain explicitly unverified and cannot enter routing as real coordinates.
 - Source and retrieval date are retained in the research artifact or equivalent provenance store.
 - Dataset integrity tests pass and the final accepted/duplicate/unverified counts are reported separately.
+
+
+## Latest research pass (2026-10-14)
+
+- DharmKriya currently advertises **786 pandals**; Pujor Shohor advertises **686**. These are separate source totals and overlap substantially, so they must not be added together as if they were unique. See https://dharmkriya.com/kolkata/pandals and https://pujorshohor.in/pandals.
+- Search-indexed records added in this pass include Baguiati, Kestopur, Dum Dum Park, Baghbazar, Bowbazar, and South Kolkata listings. Each row preserves its source URL and a provisional comparison status.
+- The 45-row candidate CSV is **not** a 786-row master list. Full extraction is blocked by the lack of a complete permitted export or crawlable full listing in the current retrieval channel. This limitation is explicit to prevent false claims of completeness.
+- No rows from this research CSV have been imported into `pujas_data.dart`; the app's production catalogue remains unchanged.
