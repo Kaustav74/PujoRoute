@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -666,6 +668,114 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
         onPressed: () => _loadDayPreset(dayId),
       ),
     );
+  }
+
+
+  /// Reorders the stops you already have. Does not add or drop any.
+  void _optimizeCurrentStopsOnly() {
+    if (_circuitStops.length < 3) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Add at least 3 stops, then optimize.'),
+        backgroundColor: Colors.orange,
+      ));
+      return;
+    }
+    final optimized = HardenedPujoOptimizer.apply2Opt(
+      List<Pandal>.from(_circuitStops),
+      anchorStart: false,
+      anchorEnd: false,
+    );
+    setState(() => _circuitStops = optimized);
+    SessionService.instance.saveCircuit(optimized.map((s) => s.id).toList(), true);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Optimized ${optimized.length} stops. Nothing was removed.'),
+      backgroundColor: Colors.green,
+    ));
+  }
+
+  /// Search any pandal name on the map and add it, even if it is not in the list.
+  Future<void> _searchAndAddAnyPandal() async {
+    final controller = TextEditingController();
+    final query = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Search any pandal'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          decoration: const InputDecoration(hintText: 'e.g. Kalyani ITI More'),
+          onSubmitted: (v) => Navigator.pop(ctx, v),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, controller.text), child: const Text('Search')),
+        ],
+      ),
+    );
+    if (query == null || query.trim().isEmpty) return;
+    try {
+      final client = HttpClient();
+      const placesKey = String.fromEnvironment('GOOGLE_PLACES_API_KEY');
+      final encoded = Uri.encodeComponent(query.trim() + ' Durga Puja Kolkata');
+      final uri = placesKey.isNotEmpty
+          ? Uri.parse('https://maps.googleapis.com/maps/api/place/textsearch/json?query=$encoded&key=$placesKey')
+          : Uri.parse('https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=5');
+      final req = await client.getUrl(uri);
+      req.headers.set(HttpHeaders.userAgentHeader, 'PujoRoute/1.0 (pandals)');
+      final res = await req.close();
+      final body = await res.transform(utf8.decoder).join();
+      client.close();
+      double lat; double lon; String landmark;
+      if (placesKey.isNotEmpty) {
+        final decoded = json.decode(body) as Map;
+        final results = (decoded['results'] as List?) ?? [];
+        if (results.isEmpty) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Google found nothing. Try a fuller name.')),
+          );
+          return;
+        }
+        final hit = results.first as Map;
+        final loc = (hit['geometry'] as Map)['location'] as Map;
+        lat = (loc['lat'] as num).toDouble();
+        lon = (loc['lng'] as num).toDouble();
+        landmark = (hit['formatted_address'] ?? '').toString();
+      } else {
+        final list = json.decode(body) as List;
+        if (list.isEmpty) {
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No place found. Try a fuller name.')),
+          );
+          return;
+        }
+        final hit = list.first as Map;
+        lat = double.parse(hit['lat'].toString());
+        lon = double.parse(hit['lon'].toString());
+        landmark = (hit['display_name'] ?? '').toString().split(',').take(2).join(', ');
+      }
+      final pandal = Pandal.create(
+        id: 'search-${DateTime.now().millisecondsSinceEpoch}',
+        name: query.trim(),
+        zone: 'Central',
+        lat: lat,
+        lon: lon,
+        landmark: landmark,
+        history: 'Added from Google / map search.',
+      );
+      setState(() => _circuitStops = [..._circuitStops, pandal]);
+      SessionService.instance.saveCircuit(_circuitStops.map((s) => s.id).toList(), true);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Added ${pandal.name}. Tap Optimize to reorder.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Search failed. Check your connection.')),
+      );
+    }
   }
 
   void _showAddPandalPicker() {
@@ -2809,6 +2919,44 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                                 : '⚡ Generate Route',
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 14),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: kMarigoldAmber,
+                            side: const BorderSide(color: kMarigoldAmber),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                          ),
+                          onPressed: _optimizeCurrentStopsOnly,
+                          icon: const Icon(Icons.route, size: 18),
+                          label: const Text(
+                            'Optimize current stops only',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
+                        child: OutlinedButton.icon(
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.white70,
+                            side: const BorderSide(color: Colors.white24),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                          ),
+                          onPressed: _searchAndAddAnyPandal,
+                          icon: const Icon(Icons.travel_explore, size: 18),
+                          label: const Text(
+                            'Search Google for any pandal',
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                           ),
                         ),
                       ),
