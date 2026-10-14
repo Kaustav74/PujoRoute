@@ -31,7 +31,7 @@ These advertised counts are **not additive**. The same pandal can appear on many
 - evidence type;
 - review status.
 
-The seed rows were transcribed from search-indexed public directory results and editorial snippets. They are not represented as a complete scrape of all pages, and no candidate is yet asserted to be new relative to PujoRoute's existing data.
+The seed rows were transcribed from public directory pages and search results. A first-pass comparison against the current `main` dataset's 532 pandal names was also run on 66 candidate names. The resulting 23 low-similarity candidates are in `candidate-pandals-not-found-by-name-match.csv`. They are not yet confirmed new: name-only matching cannot reliably resolve aliases, Bengali spellings, or locality-specific duplicates.
 
 ## Required ingestion workflow
 
