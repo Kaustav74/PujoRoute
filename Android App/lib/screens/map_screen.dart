@@ -336,7 +336,7 @@ class _MapScreenState extends State<MapScreen>
     try {
       if (!mounted) return;
       await openExternalLink(context, url);
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

@@ -15,35 +15,6 @@ import '../services/external_places_service.dart';
 import '../services/hybrid_pandal_search_service.dart';
 import 'puja_calendar_screen.dart';
 
-class MetroStationLocation {
-  final String name;
-  final double lat;
-  final double lon;
-  final String line;
-
-  const MetroStationLocation(this.name, this.lat, this.lon, this.line);
-}
-
-/// Station locations for map links, derived from the single audited source
-/// (MetroGraphService.kStationCoordinates, OpenStreetMap station nodes).
-/// This used to be a separate hand-typed table with several stations 1-3 km off
-/// (e.g. Kavi Subhash, Shahid Khudiram, Kavi Nazrul) and missing stations.
-final List<MetroStationLocation> kKolkataMetroCoordinates = [
-  for (final e in MetroGraphService.kStationCoordinates.entries)
-    MetroStationLocation(e.key, e.value[0], e.value[1], _lineLabel(e.key)),
-];
-
-String _lineLabel(String station) {
-  final lines = <String>[
-    if (MetroGraphService.kBlueLineStations.contains(station)) 'Blue Line',
-    if (MetroGraphService.kGreenLineStations.contains(station)) 'Green Line',
-    if (MetroGraphService.kPurpleLineStations.contains(station)) 'Purple Line',
-    if (MetroGraphService.kOrangeLineStations.contains(station)) 'Orange Line',
-    if (MetroGraphService.kYellowLineStations.contains(station)) 'Yellow Line',
-  ];
-  return lines.join(' / ');
-}
-
 class CircuitStudioScreen extends StatefulWidget {
   final double userLat;
   final double userLon;
@@ -443,28 +414,6 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     return 'No Metro ride between pandals: $why Circuits are built from pandals close to each other, so most need no Metro; use it to reach the first pandal or to travel between areas. ';
   }
 
-  MetroStationLocation _getNearestMetroForPandal(Pandal p) {
-    // Resolve the pandal's assigned station exactly (alias-aware). The old
-    // substring scan matched 'Central Park' to 'Central' and 'Howrah Maidan'
-    // to 'Maidan'.
-    final canonical =
-        MetroGraphService.instance.getCanonicalStation(p.metroStation);
-    if (canonical != null) {
-      for (final m in kKolkataMetroCoordinates) {
-        if (m.name == canonical) return m;
-      }
-    }
-    MetroStationLocation nearest = kKolkataMetroCoordinates.first;
-    double minDist = double.infinity;
-    for (final m in kKolkataMetroCoordinates) {
-      final d = _getDistanceMeters(p.lat, p.lon, m.lat, m.lon);
-      if (d < minDist) {
-        minDist = d;
-        nearest = m;
-      }
-    }
-    return nearest;
-  }
 
   List<Pandal> _applyHeavyTrafficBypass(List<Pandal> stops) {
     if (!_rerouteHeavyTraffic) return stops;
