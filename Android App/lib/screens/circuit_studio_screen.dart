@@ -716,7 +716,7 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
     try {
       final client = HttpClient();
       const placesKey = String.fromEnvironment('GOOGLE_PLACES_API_KEY');
-      final encoded = Uri.encodeComponent(query.trim() + ' Durga Puja Kolkata');
+      final encoded = Uri.encodeComponent('${query.trim()} Durga Puja Kolkata');
       final uri = placesKey.isNotEmpty
           ? Uri.parse('https://maps.googleapis.com/maps/api/place/textsearch/json?query=$encoded&key=$placesKey')
           : Uri.parse('https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=5');
