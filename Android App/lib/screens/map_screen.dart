@@ -10,6 +10,7 @@ import 'circuit_studio_screen.dart';
 import 'pandal_passport_screen.dart';
 import 'puja_calendar_screen.dart';
 import '../services/session_service.dart';
+import '../services/pandal_search_service.dart';
 
 // Pujo Festive Theme Palette
 const Color kMidnightBlue =
@@ -279,16 +280,13 @@ class _MapScreenState extends State<MapScreen>
         return false;
       }
 
-      // Search query
+      // Search query via shared ranked engine (filters already applied above)
       if (_searchQuery.trim().isNotEmpty) {
-        final q = _searchQuery.trim().toLowerCase();
-        final matchName = p.name.toLowerCase().contains(q);
-        final matchLandmark = p.landmark.toLowerCase().contains(q);
-        final matchMetro = p.metroStation.toLowerCase().contains(q);
-        final matchSubsection = p.subsection.toLowerCase().contains(q);
-        if (!matchName && !matchLandmark && !matchMetro && !matchSubsection) {
-          return false;
-        }
+        final hits = PandalSearchService.instance.search(
+          _searchQuery,
+          pool: [p],
+        );
+        if (hits.isEmpty) return false;
       }
 
       return true;

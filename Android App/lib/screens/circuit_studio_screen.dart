@@ -10,6 +10,7 @@ import '../services/session_service.dart';
 import '../services/live_feed_service.dart';
 import '../services/pandal_deduplication_service.dart';
 import '../services/hardened_pujo_optimizer.dart';
+import '../services/pandal_search_service.dart';
 import '../services/metro_graph_service.dart';
 import 'puja_calendar_screen.dart';
 
@@ -886,17 +887,12 @@ class _CircuitStudioScreenState extends State<CircuitStudioScreen> {
                 ? _circuitStops.last.name
                 : 'Your Location';
 
-            final available = kAllKolkataPujas
+            final localHits = PandalSearchService.instance.search(filter);
+            final available = localHits
                 .where((p) =>
                     p.hasMappableLocation &&
                     !existingIds.contains(p.id) &&
                     (!hideStampedInPicker || !visitedIds.contains(p.id)) &&
-                    (filter.isEmpty ||
-                        filter.toLowerCase().split(' ').every((w) =>
-                            w.isEmpty ||
-                            p.name.toLowerCase().contains(w) ||
-                            p.landmark.toLowerCase().contains(w) ||
-                            p.zone.toLowerCase().contains(w))) &&
                     (metroFilter.isEmpty ||
                         p.metroStation.toLowerCase() == metroFilter.toLowerCase()))
                 .toList();

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../data/pujas_data.dart';
+import '../services/pandal_search_service.dart';
 import '../services/session_service.dart';
 
 class CulturalStamp {
@@ -431,12 +432,10 @@ class _PandalPassportScreenState extends State<PandalPassportScreen> {
                     if (textEditingValue.text.isEmpty) {
                       return const Iterable<Pandal>.empty();
                     }
-                    final query = textEditingValue.text.toLowerCase();
-                    return kAllKolkataPujas.where((p) {
-                      if (p.isDuplicateEntry) return false;
-                      return p.name.toLowerCase().contains(query) ||
-                             p.id.toLowerCase().contains(query);
-                    }).take(5); // Show top 5 matches
+                    return PandalSearchService.instance.search(
+                      textEditingValue.text,
+                      limit: 8,
+                    ); // Show top 5 matches
                   },
                   displayStringForOption: (Pandal p) => p.name,
                   fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
